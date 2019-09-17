@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="108px" height="108px" viewBox="0 0 108 108" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 53.2 (72643) - https://sketchapp.com -->
+    <title>shopping-online</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="setting" transform="translate(-1077.000000, -624.000000)" fill-rule="nonzero">
+            <g id="shopping-online" transform="translate(1077.000000, 624.000000)">
+                <path d="M108,54 C108,83.823761 83.823761,108 54,108 C24.176239,108 0,83.823761 0,54 C0,24.176239 24.176239,0 54,0 C83.823761,0 108,24.176239 108,54 Z" id="Path" fill="#E67481"></path>
+                <path d="M54,108 L54,0 C83.823761,0 108,24.176239 108,54 C108,83.823761 83.823761,108 54,108 Z" id="Combined-Shape" fill="#B73545"></path>
+                <polygon id="Path" fill="#ECECF1" points="86 37.6968739 86 86 23 86 23 37.6968739 26.8141448 34 82.3083882 34"></polygon>
+                <polygon id="Path" fill="#D3D3D8" points="82.2497912 34 54 34 54 86 86 86 86 37.6968739"></polygon>
+                <polygon id="Path" fill="#575F64" points="23 22 86 22 86 37 23 37"></polygon>
+                <polygon id="Path" fill="#32393F" points="54 22 86 22 86 37 54 37"></polygon>
+                <g id="Group" transform="translate(30.000000, 28.000000)" fill="#76E2F8">
+                    <polygon id="Path" points="0.00581787234 0.142269684 7.46758638 0.142269684 7.46758638 3.83388168 0.00581787234 3.83388168"></polygon>
+                    <polygon id="Path" points="11.1976396 0.142269684 18.6594083 0.142269684 18.6594083 3.83388168 11.1976396 3.83388168"></polygon>
+                    <polygon id="Path" points="22.3902926 0.142269684 29.85123 0.142269684 29.85123 3.83388168 22.3902926 3.83388168"></polygon>
+                </g>
+                <path d="M78,29.9995544 C78,31.1044775 77.1051693,32 76,32 C74.8957219,32 74,31.1044775 74,29.9995544 C74,28.8955223 74.8957219,28 76,28 C77.1051693,28 78,28.8955223 78,29.9995544 Z" id="Path" fill="#D8D8FC"></path>
+                <path d="M71,29.9995544 C71,31.1044775 70.1044777,32 69.0004456,32 C67.8955225,32 67,31.1044775 67,29.9995544 C67,28.8955223 67.8955225,28 69.0004456,28 C70.1044777,28 71,28.8955223 71,29.9995544 Z" id="Path" fill="#D8D8FC"></path>
+                <polygon id="Path" fill="#28D0F7" points="54 28 60 28 60 32 54 32"></polygon>
+                <polygon id="Path" fill="#E67481" points="28 52 28 74 54 74 54 52"></polygon>
+                <polygon id="Path" fill="#B73545" points="41 52 54 52 54 74 41 74"></polygon>
+                <path d="M47,50.6248957 L47,60 L43.3333334,60 L43.3333334,50.6248957 C43.3333334,49.5747705 42.5263235,48.750209 41.5004083,48.750209 C40.4736763,48.750209 39.6666666,49.5747705 39.6666666,50.6248957 L39.6666666,60 L36,60 L36,50.6248957 C36,47.5121137 38.4569689,45 41.5004083,45 C44.5430311,45 47,47.5121137 47,50.6248957 L47,50.6248957 Z" id="Path" fill="#575F64"></path>
+                <path d="M47,50.6248957 L47,60 L42.9997031,60 L42.9997031,50.6248957 C42.9997031,49.5747705 42.1192633,48.750209 41,48.750209 L41,45 C44.3194713,45 47,47.5121137 47,50.6248957 L47,50.6248957 Z" id="Path" fill="#32393F"></path>
+                <polygon id="Path" fill="#00C0F1" points="63 70.1995188 60.9995544 72 59 70.1995188 59 63 63 63"></polygon>
+                <polygon id="Path" fill="#5BC980" points="71 71.1423844 69 73 67 71.1423844 67 60 71 60"></polygon>
+                <polygon id="Path" fill="#B73545" points="78 70.1813027 75.9995545 72 74 70.1813027 74 52 78 52"></polygon>
+                <polygon id="Path" fill="#575F64" points="60 70 78 70 78 74 60 74"></polygon>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -1,0 +1,140 @@
+.journals__form {
+    .header {
+        margin-bottom: 1rem;
+
+        .header__item {
+            border-radius: 0.25rem;
+
+            .btn {
+                margin-bottom: 0;
+            }
+        }
+
+        ol {
+            &.breadcrumb {
+                margin-top: 0;
+                margin-bottom: 0;
+                background: unset;
+                padding-left: 0;
+            }
+        }
+    }
+
+    .table {
+        font-weight: 400;
+
+        thead {
+            th {
+                font-family: 'Montserrat';
+                font-weight: 400;
+                text-transform: uppercase;
+                border-bottom: 1px solid rgba(224, 224, 224, 1);
+            }
+        }
+
+        tbody {
+            td {
+                border-bottom: 1px solid rgba(224, 224, 224, 1);
+            }
+
+            tr:hover {
+                background-color: rgba(224, 224, 224, 0.4);
+            }
+        }
+    }
+}
+
+.journals__list {
+    .header {
+        margin-bottom: 1rem;
+
+        .header__item {
+            border-radius: 0.25rem;
+        }
+
+        h1 {
+            font-family: $font-family;
+            color: $color-topbrand;
+        }
+
+        ol {
+            &.breadcrumb {
+                margin-top: 0;
+                margin-bottom: 0;
+                background: unset;
+                padding-left: 0;
+            }
+        }
+    }
+
+    .search {
+        margin: auto 15px auto 0;
+        padding: 0;
+        position: relative;
+        display: flex;
+        align-items: center;
+
+        .search-field {
+            width: 0;
+            margin: auto;
+            border: none;
+            border-radius: 5px;
+            height: 30px;
+            padding-left: 30px;
+            width: 200px;
+
+            &:focus {
+                outline: none;
+            }
+        }
+
+        .search-btn {
+            height: 26px;
+            width: 26px;
+            border-radius: 13px;
+            border: none;
+            padding: 0;
+            background: transparent;
+            position: absolute;
+            left: 5px;
+
+            &:hover {
+                @include themify($themes) {
+                    background-color: themed('colorBackgroundBody');
+                }
+            }
+
+            svg {
+                margin: auto;
+                height: 18px;
+                width: 18px;
+                fill: #737373;
+            }
+        }
+    }
+
+    .delete__icon {
+        cursor: pointer;
+
+        span {
+            color: #80bfff;
+        }
+    }
+
+    .tabs-container {
+        padding: 10px;
+    }
+
+    .card {
+        padding-bottom: 0px;
+    }
+
+    .card-body {
+        padding: 1.25rem;
+    }
+
+    .btn {
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+}

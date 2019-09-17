@@ -1,0 +1,23 @@
+query TotalListCustomer {
+  resPartners(where: { type: "contact", customer: true }) {
+    totalCount
+  }
+}
+
+query TotalListSupplier {
+  resPartners(where: { type: "contact", supplier: true }) {
+    totalCount
+  }
+}
+
+query TotalListCustomerNonActive {
+  resPartners(where: { type: "contact", customer: true, active: false }) {
+    totalCount
+  }
+}
+
+query TotalListSupplierNonActive {
+  resPartners(where: { type: "contact", supplier: true, active: false }) {
+    totalCount
+  }
+}

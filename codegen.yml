@@ -1,0 +1,13 @@
+schema:
+  - https://kjjpup3by7.execute-api.ap-southeast-1.amazonaws.com/staging/graphql-introspect
+documents:
+  - './src/**/*.graphql'
+config: {}
+generates:
+  ./src/generated-models.tsx:
+    config: {}
+    plugins:
+      - 'typescript-common'
+      - 'typescript-client'
+      - 'typescript-react-apollo'
+require: []

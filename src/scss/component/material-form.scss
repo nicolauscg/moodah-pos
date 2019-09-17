@@ -1,0 +1,256 @@
+.material-form {
+  input,
+  p,
+  label,
+  th,
+  td {
+    color: #393e46;
+  }
+
+  .material-form__field {
+    width: 100%;
+    margin-bottom: 20px;
+
+    &.noMB {
+      margin-bottom: 0px;
+    }
+
+    &.disabled {
+      background: #d8d8d8;
+      border-radius: 5px;
+
+      div {
+        &:before {
+          content: unset;
+          border-bottom: unset;
+        }
+        &:after {
+          content: unset;
+          border-bottom: unset;
+        }
+      }
+
+      textarea,
+      label,
+      input,
+      p {
+        padding-left: 5px;
+        color: rgba(0, 0, 0, 0.38) !important;
+        cursor: not-allowed;
+      }
+
+      svg {
+        display: none;
+      }
+    }
+
+    & > div:before {
+      border-bottom-color: #babcbf;
+
+      // @include themify($themes) {
+      //   border-bottom-color: themed('colorFieldsBorder');
+      // }
+    }
+
+    & > div:hover:before {
+      // border-bottom: 1px solid $color-accent !important;
+      border-bottom: 1px solid $color-blue !important;
+    }
+
+    &:not(.error) > div:after {
+      // border-color: $color-accent;
+      border-color: $color-blue;
+    }
+
+    input,
+    textarea {
+      font-size: 13px;
+      font-family: 'Rubik', 'Roboto', sans-serif;
+      color: #393e46;
+
+      // @include themify($themes) {
+      //   color: themed('colorText');
+      // }
+    }
+
+    svg {
+      fill: #393e46;
+
+      // @include themify($themes) {
+      //   fill: themed('colorText');
+      // }
+
+      &.chevron {
+        cursor: pointer;
+        transition: transform 0.3s ease-in-out;
+
+        &.rotate {
+          transform: rotate(180deg);
+        }
+      }
+    }
+
+    &.tcell {
+      margin-bottom: 0;
+    }
+  }
+
+  .material-form__label {
+    margin: 0;
+    font-size: 12px;
+
+    @include themify($themes) {
+      color: themed('colorText');
+    }
+  }
+
+  label {
+    font-size: 12px;
+    font-family: $font-family;
+
+    // @include themify($themes) {
+    //   color: themed('colorText');
+    // }
+
+    // &[data-shrink="true"] {
+    //   transform: translate(0, 1.5px) scale(0.85);
+    // }
+  }
+
+  .material-form__checkbox {
+    span {
+      color: #393e46;
+    }
+
+    svg {
+      fill: $color-blue;
+    }
+
+    &.disabled {
+      background: #d8d8d8;
+      border-radius: 5px;
+      padding: 3px 10px 3px 0;
+      margin-left: 0;
+      cursor: not-allowed;
+
+      div {
+        &:before {
+          content: unset;
+          border-bottom: unset;
+        }
+        &:after {
+          content: unset;
+          border-bottom: unset;
+        }
+      }
+
+      span,
+      input,
+      textarea,
+      label {
+        padding-left: 5px;
+        color: rgba(0, 0, 0, 0.38);
+        cursor: not-allowed;
+      }
+
+      svg {
+        fill: rgba(0, 0, 0, 0.38);
+      }
+    }
+  }
+}
+
+.material-form__option {
+  font-size: 13px !important;
+  height: 18px !important;
+
+  &.disabled {
+    font-style: italic;
+    opacity: 0.5;
+    cursor: default;
+  }
+
+  &.add {
+    color: $color-blue;
+  }
+}
+
+.total {
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+  color: white;
+
+  & > div {
+    background: #393e46;
+    padding-top: 15px;
+    padding-bottom: 15px;
+  }
+
+  & > div:first-child {
+    border-bottom-left-radius: 5px;
+  }
+
+  & > div:last-child {
+    border-bottom-right-radius: 5px;
+  }
+
+  &.single > div:first-child {
+    border-top-left-radius: 5px;
+  }
+
+  &.single > div:last-child {
+    border-top-right-radius: 5px;
+  }
+}
+
+.search {
+  margin: auto 15px auto 0;
+  padding: 0;
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  .search-field {
+    width: 0;
+    margin: auto;
+    border: none;
+    border-radius: 5px;
+    height: 30px;
+    padding-left: 30px;
+    width: 200px;
+    font-family: 'Rubik', 'Roboto', sans-serif;
+
+    &:focus {
+      outline: none;
+    }
+
+    &.invert {
+      background-color: transparent;
+      border: 1px solid lightgray;
+    }
+  }
+
+  .search-btn {
+    height: 26px;
+    width: 26px;
+    border-radius: 13px;
+    border: none;
+    padding: 0;
+    background: transparent;
+    position: absolute;
+    left: 5px;
+
+    &:hover {
+      @include themify($themes) {
+        background-color: themed('colorBackgroundBody');
+      }
+    }
+
+    svg {
+      margin: auto;
+      height: 18px;
+      width: 18px;
+      fill: #737373;
+    }
+  }
+}

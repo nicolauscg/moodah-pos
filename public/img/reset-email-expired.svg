@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="322px" height="192px" viewBox="0 0 322 192" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52.5 (67469) - http://www.bohemiancoding.com/sketch -->
+    <title>Group</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <linearGradient x1="56.0454473%" y1="100%" x2="56.0454473%" y2="29.8609511%" id="linearGradient-1">
+            <stop stop-color="#E85667" offset="0%"></stop>
+            <stop stop-color="#EAEAEA" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Forgot-Password-Copy-2" transform="translate(-817.000000, -321.000000)">
+            <g id="Group" transform="translate(817.000000, 321.000000)">
+                <rect id="Rectangle" fill="#EAEAEA" x="4" y="54" width="278" height="138" rx="5"></rect>
+                <path d="M282,148 L282,187 C282,189.761424 279.761424,192 277,192 L9,192 C6.23857625,192 4,189.761424 4,187 L4,148 L282,148 Z" id="Combined-Shape" fill="url(#linearGradient-1)"></path>
+                <path d="M0.48122293,52.8286991 L0.48122293,79.8149566 C0.48122293,81.6843542 1.52404588,83.3976089 3.18456636,84.2562817 L141.187541,155.619092 C142.628045,156.363992 144.340351,156.363992 145.780855,155.619092 L283.78383,84.2562817 C285.44435,83.3976089 286.487173,81.6843542 286.487173,79.8149566 L286.487173,52.8286991 C286.487173,50.0672754 284.248597,47.8286991 281.487173,47.8286991 L5.48122293,47.8286991 C2.71979918,47.8286991 0.48122293,50.0672754 0.48122293,52.8286991 Z" id="Path-4" fill="#FFFFFF"></path>
+                <circle id="Oval" fill="#E85667" cx="268" cy="54" r="54"></circle>
+                <path d="M268,12 C291.157444,12 310,30.8425556 310,54 C310,77.1574444 291.157444,96 268,96 C244.842556,96 226,77.1574444 226,54 C226,30.8425556 244.842556,12 268,12 Z" id="Combined-Shape" fill="#F39CA6"></path>
+                <rect id="Rectangle" fill="#E85667" x="266" y="20" width="4" height="34" rx="2"></rect>
+                <rect id="Rectangle-Copy" fill="#E85667" transform="translate(253.000000, 52.000000) rotate(90.000000) translate(-253.000000, -52.000000) " x="251" y="35" width="4" height="34" rx="2"></rect>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -1,0 +1,126 @@
+$info__border: 1px solid $color-topbrand;
+
+.general__info {
+  margin: 1.5rem 0;
+
+  > :first-child {
+    border: $info__border;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+  }
+
+  > :last-child {
+    border: $info__border;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+  }
+
+  .info__block {
+    padding: 1rem 2rem;
+    font-family: $font-family;
+
+    p {
+      font-weight: 500;
+    }
+
+    &:not(:last-child) {
+      border-right: $info__border;
+    }
+
+    .info__title {
+      font-weight: 600;
+      color: $color-topbrand;
+    }
+
+    .info__value {
+      color: $color-orange;
+    }
+
+    .info__detail {
+      background: $color-topbrand;
+      border-radius: 5px;
+      height: 20px;
+      width: 50%;
+      text-align: center;
+      color: white;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .info__block {
+      &:not(:last-child) {
+        border-right: unset;
+        border-bottom: $info__border;
+      }
+    }
+  }
+}
+
+.legend__info {
+  width: 10rem;
+
+  .legend__block {
+    border: 1px solid $color-blue;
+    border-radius: 5px;
+    background: #DBEFF8;
+    padding: 1rem;
+  }
+}
+
+.nodata__info {
+  height: 400px;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  font-size: 20px;
+  font-weight: 400;
+}
+
+.chart__info {
+  margin: 0 0 1rem 0;
+  font-family: $font-family;
+
+  .chart__block {
+    border: $info__border;
+    border-radius: 5px;
+    width: 30%;
+    padding: 1rem 2rem;
+
+    .single-info__block {
+      border: 1px solid $color-topbrand;
+      border-radius: 5px;
+      padding: 20px;
+
+      &.legend {
+        background-color: $color-light-blue;
+      }
+    }
+
+    &:not(:last-child) {
+      margin-right: 3%;
+    }
+
+    p {
+      font-weight: 500;
+    }
+
+    .info__title {
+      font-weight: 600;
+      margin-bottom: 1rem;
+      color: $color-topbrand;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .chart__block {
+      flex: 0 0 100%;
+
+      &:not(:last-child) {
+        margin-right: 0;
+        margin-bottom: 1rem;
+      }
+    }
+  }
+}
