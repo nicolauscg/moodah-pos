@@ -1,0 +1,44 @@
+fragment menuFields on IrUiMenuType {
+  id
+  xmlid
+  name
+  sequence
+  parentId
+  action
+}
+
+query AvailableMenus {
+  availableMenus {
+    ...menuFields
+    children {
+      ...menuFields
+      children {
+        ...menuFields
+        children {
+          ...menuFields
+          children {
+            ...menuFields
+          }
+        }
+      }
+    }
+  }
+}
+
+query CompanyMenus {
+  availableMenus {
+    ...menuFields
+    children {
+      ...menuFields
+      children {
+        ...menuFields
+        children {
+          ...menuFields
+          children {
+            ...menuFields
+          }
+        }
+      }
+    }
+  }
+}

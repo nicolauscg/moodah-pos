@@ -1,0 +1,24 @@
+.chart-filter__container {
+  .chart-filter__ {
+    &control {
+      border-color: $color-topbrand;
+      background-color: $color-light-blue;
+      font-family: $font-family;
+      color: $color-greyish;
+    }
+
+    &dropdown-indicator {
+      color: $color-greyish;
+    }
+
+    &option {
+      color: $color-greyish;
+
+      &--is-focused,
+      &--is-selected {
+        background-color: $color-topbrand;
+        color: white;
+      }
+    }
+  }
+}
