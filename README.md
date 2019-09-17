@@ -15,8 +15,9 @@ The target is for business owner who wants to track their sales transaction easi
 
 # Technology Stack
 <blockquote>
-- Nodejs 
-- React (HOC, Hooks, Apolo)
+
+- Nodejs
+- React (HOC, Hooks, Apollo)
 - GraphQL
 </blockquote>
 
