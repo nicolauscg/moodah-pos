@@ -11,6 +11,7 @@ import {
   merge,
   dissocPath,
   pathOr,
+  map,
 } from 'ramda'
 import { Reducer } from 'redux'
 import { action } from 'typesafe-actions'
