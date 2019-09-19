@@ -1,7 +1,7 @@
-image: docker:stable
+image: docker:19.03.0
 
 services:
-  - docker:dind
+  - docker:19.03.0-dind
 
 stages:
   - build
@@ -10,6 +10,7 @@ stages:
 variables:
   DOCKER_HOST: tcp://docker:2375
   DOCKER_DRIVER: overlay2
+  DOCKER_TLS_CERTDIR: ""
   CONTAINER_TEST_IMAGE: $CI_REGISTRY_TEST_IMAGE:$CI_COMMIT_REF_SLUG
   DEV_CONTAINER_RELEASE_IMAGE: $CI_REGISTRY_DEV_IMAGE:latest
   STAG_CONTAINER_RELEASE_IMAGE: $CI_REGISTRY_STAG_IMAGE:latest
