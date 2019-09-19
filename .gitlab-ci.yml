@@ -29,6 +29,7 @@ docker build frontend:
   only:
     changes:
       - frontend/**/*
+      - .gitlab-ci.yml
 
 release dev frontend:
   stage: release
@@ -40,6 +41,7 @@ release dev frontend:
   only:
     changes:
       - frontend/**/*
+      - .gitlab-ci.yml
   except:
     - master
     - staging
@@ -55,6 +57,7 @@ release stag frontend:
       - staging
     changes:
       - frontend/**/*
+      - .gitlab-ci.yml
 
 release prod frontend:
   stage: release
@@ -67,3 +70,4 @@ release prod frontend:
       - master
     changes:
       - frontend/**/*
+      - .gitlab-ci.yml
