@@ -39,4 +39,4 @@ Briefly explain installation/setup steps if the product is mobile/desktop app.
 - Aufa Wiandra Moenzil (1706067512)
 
 # Further Information
-You can access our GitLab Wiki for more information regarding this project.
+You can access our [GitLab Wiki](https://gitlab.cs.ui.ac.id/it-project-kki/2019/rubyh-moodah-pos/wikis/home) for more information regarding this project.
