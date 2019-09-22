@@ -28,6 +28,9 @@ release dev frontend:
     DOCKER_HOST: tcp://docker:2375
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_CERTDIR: ""
+  before_script:
+    - sed -i 's#https://#http://#g' $HOME/.docker/config.json
+    - set | grep PROXY > ./env && set | grep proxy >> ./env
   script:
     - docker pull $CI_REGISTRY_IMAGE/dev/frontend:latest || true
     - docker build 
@@ -58,6 +61,9 @@ release stag frontend:
     DOCKER_HOST: tcp://docker:2375
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_CERTDIR: ""
+  before_script:
+    - sed -i 's#https://#http://#g' $HOME/.docker/config.json
+    - set | grep PROXY > ./env && set | grep proxy >> ./env
   script:
     - docker pull $CI_REGISTRY_IMAGE/stag/frontend:latest || true
     - docker build 
@@ -86,6 +92,9 @@ release prod frontend:
     DOCKER_HOST: tcp://docker:2375
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_CERTDIR: ""
+  before_script:
+    - sed -i 's#https://#http://#g' $HOME/.docker/config.json
+    - set | grep PROXY > ./env && set | grep proxy >> ./env
   script:
     - docker pull $CI_REGISTRY_IMAGE/prod/frontend:latest || true
     - docker build 
