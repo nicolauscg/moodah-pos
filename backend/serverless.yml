@@ -14,9 +14,25 @@ provider:
   runtime: nodejs10.x
 
 functions:
-  hello:
-    handler: handler.hello
+  graphql:
+    handler: handler.graphqlHandler
+    events:
+      - http:
+          method: post
+          path: graphql
+          cors: true
+  playground:
+    handler: handler.playgroundHandler
     events:
       - http:
           method: get
-          path: hello
+          path: playground
+          cors: true
+  graphql-introspect:
+    handler: handler.graphqlHandler
+    events:
+      - http:
+          method: post
+          path: graphql-introspect
+          cors: true
+
