@@ -9,6 +9,7 @@ build frontend:
   script:
     - cd frontend
     - npm install
+    - unset CI
     - npm run build
   artifacts:
     name: "frontend-$CI_COMMIT_REF_NAME"
