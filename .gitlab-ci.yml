@@ -1,32 +1,14 @@
 stages:
-  - build
   - test
   - release
-
-build frontend:
-  image: node:10.16.3-alpine
-  stage: build
-  script:
-    - cd frontend
-    - npm install
-    - unset CI
-    - npm run build
-  artifacts:
-    name: "frontend-$CI_COMMIT_REF_NAME"
-    paths:
-      - frontend/build
-      - frontend/node_modules
-      - frontend/src/generated-models.tsx
-  only:
-    changes:
-      - frontend/**/*
-      - .gitlab-ci.yml
 
 test frontend:
   image: node:10.16.3-alpine
   stage: test
   script:
     - cd frontend
+    - npm install
+    - npm run gql-gen
     - npm run test -- --coverage
   dependencies:
     - build frontend
