@@ -1,43 +1,60 @@
-image: docker:19.03.0
-
-services:
-  - docker:19.03.0-dind
-
 stages:
   - build
+  - test
   - release
 
-variables:
-  DOCKER_HOST: tcp://docker:2375
-  DOCKER_DRIVER: overlay2
-  DOCKER_TLS_CERTDIR: ""
-  CONTAINER_TEST_IMAGE: $CI_REGISTRY_TEST_IMAGE:$CI_COMMIT_REF_SLUG
-  DEV_CONTAINER_RELEASE_IMAGE: $CI_REGISTRY_DEV_IMAGE:latest
-  STAG_CONTAINER_RELEASE_IMAGE: $CI_REGISTRY_STAG_IMAGE:latest
-  PROD_CONTAINER_RELEASE_IMAGE: $CI_REGISTRY_PROD_IMAGE:latest
-
-before_script:
-  - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-
-docker build frontend:
+build frontend:
+  image: node:12.10.0-alpine
   stage: build
   script:
-    - docker pull $CONTAINER_TEST_IMAGE || true
-    - docker build 
-        --cache-from $CONTAINER_TEST_IMAGE 
-        --pull --tag $CONTAINER_TEST_IMAGE ./frontend
-    - docker push $CONTAINER_TEST_IMAGE
+    - cd frontend
+    - npm install
+    - npm build
+  artifacts:
+    name: "frontend-$CI_COMMIT_REF_NAME"
+    paths:
+      - frontend/build
+      - frontend/node_modules
+      - frontend/src/generated-models.tsx
+  only:
+    changes:
+      - frontend/**/*
+      - .gitlab-ci.yml
+
+test frontend:
+  image: node:12.10.0-alpine
+  stage: test
+  script:
+    - cd frontend
+    - npm run test -- --coverage
+  dependencies:
+    - build frontend
   only:
     changes:
       - frontend/**/*
       - .gitlab-ci.yml
 
 release dev frontend:
+  image: docker:19.03.0
   stage: release
+  tags:
+    - docker
+  services:
+    - name: docker:19.03.0-dind
+      entrypoint: ["env", "-u", "DOCKER_HOST"]
+      command: ["dockerd-entrypoint.sh"]
+  variables:
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: ""
   script:
-    - docker pull $CONTAINER_TEST_IMAGE
-    - docker tag $CONTAINER_TEST_IMAGE $DEV_CONTAINER_RELEASE_IMAGE
-    - docker push $DEV_CONTAINER_RELEASE_IMAGE
+    - docker pull $CI_REGISTRY_IMAGE/dev/frontend:latest || true
+    - docker build 
+        --cache-from $CI_REGISTRY_IMAGE/dev/frontend:latest 
+        --tag $CI_REGISTRY_IMAGE/dev/frontend:latest ./frontend
+    - docker push $CI_REGISTRY_IMAGE/dev/frontend:latest
+  environment:
+    name: development
   when: manual
   only:
     changes:
@@ -48,11 +65,26 @@ release dev frontend:
     - staging
 
 release stag frontend:
+  image: docker:19.03.0
   stage: release
+  tags:
+    - docker
+  services:
+    - name: docker:19.03.0-dind
+      entrypoint: ["env", "-u", "DOCKER_HOST"]
+      command: ["dockerd-entrypoint.sh"]
+  variables:
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: ""
   script:
-    - docker pull $CONTAINER_TEST_IMAGE
-    - docker tag $CONTAINER_TEST_IMAGE $STAG_CONTAINER_RELEASE_IMAGE
-    - docker push $STAG_CONTAINER_RELEASE_IMAGE
+    - docker pull $CI_REGISTRY_IMAGE/stag/frontend:latest || true
+    - docker build 
+        --cache-from $CI_REGISTRY_IMAGE/stag/frontend:latest 
+        --tag $CI_REGISTRY_IMAGE/stag/frontend:latest ./frontend
+    - docker push $CI_REGISTRY_IMAGE/stag/frontend:latest
+  environment:
+    name: staging
   only:
     refs:
       - staging
@@ -61,11 +93,26 @@ release stag frontend:
       - .gitlab-ci.yml
 
 release prod frontend:
+  image: docker:19.03.0
   stage: release
+  tags:
+    - docker
+  services:
+    - name: docker:19.03.0-dind
+      entrypoint: ["env", "-u", "DOCKER_HOST"]
+      command: ["dockerd-entrypoint.sh"]
+  variables:
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: ""
   script:
-    - docker pull $CONTAINER_TEST_IMAGE
-    - docker tag $CONTAINER_TEST_IMAGE $PROD_CONTAINER_RELEASE_IMAGE
-    - docker push $PROD_CONTAINER_RELEASE_IMAGE
+    - docker pull $CI_REGISTRY_IMAGE/prod/frontend:latest || true
+    - docker build 
+        --cache-from $CI_REGISTRY_IMAGE/prod/frontend:latest 
+        --tag $CI_REGISTRY_IMAGE/prod/frontend:latest ./frontend
+    - docker push $CI_REGISTRY_IMAGE/prod/frontend:latest
+  environment:
+    name: production
   only:
     refs:
       - master
