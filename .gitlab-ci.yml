@@ -10,8 +10,6 @@ test frontend:
     - npm install
     - npm run gql-gen
     - npm run test -- --coverage
-  dependencies:
-    - build frontend
   only:
     changes:
       - frontend/**/*
