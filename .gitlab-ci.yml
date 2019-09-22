@@ -4,7 +4,7 @@ stages:
   - release
 
 build frontend:
-  image: node:12.10.0-alpine
+  image: node:10.16.3-alpine
   stage: build
   script:
     - cd frontend
@@ -22,7 +22,7 @@ build frontend:
       - .gitlab-ci.yml
 
 test frontend:
-  image: node:12.10.0-alpine
+  image: node:10.16.3-alpine
   stage: test
   script:
     - cd frontend
