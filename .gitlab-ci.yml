@@ -127,10 +127,10 @@ release dev backend:
   stage: release
   variables:
     STAGE: dev
-  before_script:
-    - cd backend
-    - npm install -g serverless
   script:
+    - cd backend
+    - npm install
+    - npm install -g serverless
     - serverless deploy --stage $STAGE --verbose
   environment:
     name: development
@@ -148,10 +148,10 @@ release stag backend:
   stage: release
   variables:
     STAGE: stag
-  before_script:
-    - cd backend
-    - npm install -g serverless
   script:
+    - cd backend
+    - npm install
+    - npm install -g serverless
     - serverless deploy --stage $STAGE --verbose
   environment:
     name: staging
@@ -167,10 +167,10 @@ release prod backend:
   stage: release
   variables:
     STAGE: prod
-  before_script:
-    - cd backend
-    - npm install -g serverless
   script:
+    - cd backend
+    - npm install
+    - npm install -g serverless
     - serverless deploy --stage $STAGE --verbose
   environment:
     name: production
