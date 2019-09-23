@@ -3,8 +3,6 @@ import lambdaPlayground from 'graphql-playground-middleware-lambda';
 import { schema } from './src/graphql/schema';
 import 'source-map-support/register';
 
-require('dotenv').config();
-
 const server = new ApolloServer({
   schema,
   formatError: error => {
