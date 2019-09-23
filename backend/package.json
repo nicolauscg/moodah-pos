@@ -4,7 +4,7 @@
   "description": "Serverless webpack example using Typescript",
   "main": "handler.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "dependencies": {
     "apollo-server-lambda": "^2.3.1",
@@ -12,7 +12,6 @@
     "btoa": "^1.2.1",
     "dataloader": "^1.4.0",
     "date-fns": "^1.30.1",
-    "dotenv": "^8.1.0",
     "graphql": "^14.0.2",
     "graphql-fields-list": "^2.1.1",
     "graphql-playground-middleware-lambda": "^1.7.6",
@@ -24,13 +23,20 @@
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.17",
+    "@types/jest": "^24.0.18",
     "@types/node": "^10.12.18",
+    "apollo-server-testing": "^2.9.3",
+    "babel": "^6.23.0",
+    "babel-jest": "^24.9.0",
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
+    "fork-ts-checker-webpack-plugin": "^1.0.0",
+    "graphql-tag": "^2.10.1",
+    "jest": "^24.9.0",
+    "serverless-offline": "^4.9.2",
     "serverless-webpack": "^5.2.0",
     "ts-loader": "^5.3.3",
     "typescript": "^3.2.4",
-    "webpack": "^4.29.0",
-    "serverless-offline": "^4.9.2",
-    "fork-ts-checker-webpack-plugin": "^1.0.0"
+    "webpack": "^4.29.0"
   },
   "author": "The serverless webpack authors (https://github.com/elastic-coders/serverless-webpack)",
   "license": "MIT"
