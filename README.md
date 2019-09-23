@@ -1,34 +1,42 @@
 # Hello World!
-IT Project Fasilkom UI 2019 - Group xx
+IT Project Fasilkom UI 2019 - Group 2
 
 --------------------
 
 # About Project
 <blockquote>
-Insert project details here.
+The project is to create Moodah POS (Point of Sale). The product itself will be a Receipt-like Transaction. And the transaction will be stored in the database. 
 </blockquote>
 
 # Product Target
 <blockquote>
-Explain desired product target here.
+The target is for business owner who wants to track their sales transaction easily. The cashier will use the product to make sales transaction. 
 </blockquote>
 
 # Technology Stack
 <blockquote>
-Briefly explain technologies/frameworks/languages that are used to build this project.
+
+- Nodejs
+- React (HOC, Hooks, Apollo)
+- GraphQL
 </blockquote>
 
 # Brief Instructions
 <blockquote>
 Briefly explain installation/setup steps if the product is mobile/desktop app.
-Else, if it's a web site, write the link here.
-Remember to put links for deployed `dev`, `staging`, and `production` product.
+
+- [dev](https://itprojectkitwo-dev.cs.ui.ac.id)
+- [staging](https://itprojectkitwo-staging.cs.ui.ac.id)
+- [production](https://itprojectkitwo.cs.ui.ac.id)
 </blockquote>
 
 # Team Members
-- Student 1 (Student ID number / NPM)
-- Student 2 (Student ID number / NPM)
-- etc.
+- Muhamad Andhar Dezan (1506791775)
+- Nicolaus Christian Gozali (170602446)
+- Michael Sudirman (1706020300)
+- Kenia Visakha Zerlinda (1706020396)
+- Davin Iddo Irawan Alfian (1706020944)
+- Aufa Wiandra Moenzil (1706067512)
 
 # Further Information
-You can access our GitLab Wiki for more information regarding this project.
+You can access our [GitLab Wiki](https://gitlab.cs.ui.ac.id/it-project-kki/2019/rubyh-moodah-pos/wikis/home) for more information regarding this project.
