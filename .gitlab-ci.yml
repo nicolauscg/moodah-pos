@@ -15,6 +15,18 @@ test frontend:
       - frontend/**/*
       - .gitlab-ci.yml
 
+test backend:
+  image: node:10.16.3-alpine
+  stage: test
+  script:
+    - cd backend
+    - npm install
+    - npm run test
+  only:
+    changes:
+      - backend/**/*
+      - .gitlab-ci.yml
+
 release dev frontend:
   image: docker:19.03.0
   stage: release
@@ -108,4 +120,60 @@ release prod frontend:
       - master
     changes:
       - frontend/**/*
+      - .gitlab-ci.yml
+
+release dev backend:
+  image: node:10.16.3-alpine
+  stage: release
+  variables:
+    STAGE: dev
+  before_script:
+    - npm install -g serverless
+  script:
+    - serverless deploy --stage $STAGE --verbose
+  environment:
+    name: development
+  when: manual
+  only:
+    changes:
+      - backend/**/*
+      - .gitlab-ci.yml
+  except:
+    - master
+    - staging
+
+release stag backend:
+  image: node:10.16.3-alpine
+  stage: release
+  variables:
+    STAGE: stag
+  before_script:
+    - npm install -g serverless
+  script:
+    - serverless deploy --stage $STAGE --verbose
+  environment:
+    name: staging
+  only:
+    refs:
+      - staging
+    changes:
+      - backend/**/*
+      - .gitlab-ci.yml
+
+release prod backend:
+  image: node:10.16.3-alpine
+  stage: release
+  variables:
+    STAGE: prod
+  before_script:
+    - npm install -g serverless
+  script:
+    - serverless deploy --stage $STAGE --verbose
+  environment:
+    name: production
+  only:
+    refs:
+      - master
+    changes:
+      - backend/**/*
       - .gitlab-ci.yml
