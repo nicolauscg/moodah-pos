@@ -24,9 +24,9 @@ const GET_POS_CONFIGS = gql`
 const SIGN_IN = gql`
   mutation {
     signIn(input: {
-      db: "demo",
-      username:"arini@rubyh.co",
-      password: "password"
+      db: "${process.env.odoo_db}",
+      username: "${process.env.odoo_username}",
+      password: "${process.env.odoo_password}"
     }) {
       sessionToken
     }
