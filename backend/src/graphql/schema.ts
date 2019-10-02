@@ -7,8 +7,10 @@ import {
 } from "graphql";
 import { httpController, createService, createInsecureClientOptions } from "nodoo";
 import { ApolloError } from "apollo-server-lambda";
+import { camelizeKeys } from "humps";
 
 import { PosConfigType } from "./schemas/posConfig";
+import { SignInType } from "./schemas/signIn";
 
 const rootType = new GraphQLObjectType({
   name: 'Query',
@@ -63,14 +65,7 @@ const mutationType = new GraphQLObjectType({
   name: 'Mutation',
   fields: () => ({
     signIn: {
-      type: new GraphQLObjectType({
-        name: "SignInType",
-        fields: () => ({
-          sessionToken: {
-            type: GraphQLString
-          }
-        })
-      }),
+      type: SignInType,
       args: {
         input: {
           type: new GraphQLInputObjectType({
@@ -116,7 +111,18 @@ const mutationType = new GraphQLObjectType({
                   }))
                 },
                 (result) => {
-                  resolve({sessionToken: result.session_id})
+                  if (result.username) {
+                    const sessionToken = result.username !== false ? 
+                      result.session_id : null;
+                    const { username, is_superuser } = result;
+
+                    resolve(camelizeKeys({ 
+                      username, is_superuser, sessionToken
+                    }))
+                  } else {
+                    // mutation will return null values for invalid credentials
+                    resolve({})
+                  }
                 }
               )
             }
