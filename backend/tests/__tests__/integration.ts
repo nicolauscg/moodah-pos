@@ -32,6 +32,17 @@ const SIGN_IN = gql`
     }
   }
 `;
+const SIGN_IN_WITH_WRONG_CREDENTIALS = gql`
+mutation {
+  signIn(input: {
+    db: "${process.env.odoo_db}",
+    username: "test",
+    password: "test"
+  }) {
+    sessionToken
+  }
+}
+`;
 
 describe('Query', () => {
   it('return test query response', async () => {
@@ -59,13 +70,22 @@ describe('Query', () => {
 });
 
 describe('Mutations', () => {
-  it('returns login token', async () => {
+  it('correct credentials returns session token', async () => {
     const server = createTestServer();
     const { mutate } = createTestClient(server);
     const res = await mutate({
       mutation: SIGN_IN
     });
     expect(res.data.signIn.sessionToken).toEqual(expect.any(String));
+  });
+
+  it('incorrect credentials returns null', async () => {
+    const server = createTestServer();
+    const { mutate } = createTestClient(server);
+    const res = await mutate({
+      mutation: SIGN_IN_WITH_WRONG_CREDENTIALS
+    });
+    expect(res.data.signIn.sessionToken).toBeNull();
   });
 });
 
