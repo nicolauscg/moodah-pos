@@ -17,6 +17,10 @@ import AccountSettings from '../account_settings/index'
 import withTracker from '../../shared/components/withTracker'
 import withStandardPlanHandler from '../../shared/components/withStandardPlanHandler'
 
+/*Routing Configuration */
+import ConfigurationIndex from '../configuration/index'
+
+
 const RouteList = {
   Partners: {
     path: '/partners',
@@ -36,6 +40,26 @@ const RouteList = {
       },
     ],
   },
+
+   Configuration: {
+    path: '/configruration',
+    title: 'Configuration',
+    component: [
+      {
+        path: '/configuration/list',
+        component: ConfigurationIndex,
+      },
+      /*{
+        path: '/configuration/create',
+        component: CreatePartner,
+      },
+      /*{
+        path: '/configuration/details/:id',
+        component: EditPartner,
+      },*/
+    ],
+  }, 
+
   AccountSettings: {
     path: '/account_settings',
     component: [
