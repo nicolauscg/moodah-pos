@@ -50,13 +50,6 @@ const rootType = new GraphQLObjectType({
                   }))
                 },
                 (result) => {
-                  result.records.forEach(index_i => {
-                    let printed_var = index_i.stock_location_id;
-                    printed_var.forEach(index_j => {
-                      console.log(index_j);
-                    });
-                  });
-                  console.log(result)
                   resolve(result.records)
                 }
               )
