@@ -44,6 +44,19 @@ mutation {
 }
 `;
 
+const GET_POS_CONFIGS_LOCATION = gql`
+query {
+  posConfigs {
+    id
+    name
+    active
+    stock_location_id{
+      name
+      usage
+    }
+  }
+}`;
+
 describe('Query', () => {
   it('return test query response', async () => {
     const server = createTestServer();
@@ -89,3 +102,12 @@ describe('Mutations', () => {
   });
 });
 
+
+describe('Query', () => {
+  it('return test query response', async() =>{
+    const server = createTestServer();
+    const { query } = createTestClient(server);
+    const res = await query({ query: GET_POS_CONFIGS_LOCATION });
+    expect(res.data.posConfigs).not.toBeNull(); 
+  })
+})
