@@ -11,6 +11,12 @@ const server = new ApolloServer({
   formatResponse: response => {
     return response;
   },
+  context: ({ event }) => {
+    const sessionToken = event.headers.authorization || '';
+
+    // set sessionToken in context
+    return { sessionToken };
+  },
   introspection: true
 });
 
