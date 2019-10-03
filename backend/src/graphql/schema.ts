@@ -11,6 +11,7 @@ import { camelizeKeys } from "humps";
 
 import { PosConfigType } from "./schemas/posConfig";
 import { SignInType } from "./schemas/signIn";
+// import forEach from "ramda/es/forEach";
 
 const rootType = new GraphQLObjectType({
   name: 'Query',
@@ -50,6 +51,17 @@ const rootType = new GraphQLObjectType({
                   }))
                 },
                 (result) => {
+                  // console.log(result.records)
+                  // let resultRecords = result.records
+                  // resultRecords.forEach(element => {
+                  //   camelizeKeys({element.stock_location_id})
+                  // });
+                  // console.log(camelizeKeys({test2}))
+                  // resolve(humps.camelizeKeys({}))
+                  // let resultRecords = result.records
+                  // console.log(camelizeKeys({resultRecords}))
+                  // resolve(camelizeKeys({resultRecords}))
+                  // console.log(result)
                   resolve(result.records)
                 }
               )
