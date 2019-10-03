@@ -19,7 +19,6 @@ const PosConfigType = new GraphQLObjectType({
       type: StockLocationIdType,
       // Trying to use parent's resolve to force camelCase on the stock_location_id
       resolve:(parent)=>{
-        console.log(camelizeKeys(parent))
         return parent.stock_location_id
       }
     }

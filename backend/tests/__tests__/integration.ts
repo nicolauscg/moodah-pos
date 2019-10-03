@@ -73,7 +73,8 @@ describe('Query', () => {
     expect(res.data.posConfigs).toBeNull();
   });
 
-  
+  // test that still return the config location id
+  // assumes that the data will always be available and not null
   it('return test query response for nested query location', async() =>{
     const server = await createTestServerWithSessionToken({
       signInGql: SIGN_IN
@@ -81,24 +82,6 @@ describe('Query', () => {
     const { query } = createTestClient(server);
     const res = await query({ query: GET_POS_CONFIGS_LOCATION });
     expect(res.data.posConfigs[0].stock_location_id).not.toBeNull();
-    // const server = createTestServer();
-    // const { query } = createTestClient(server);
-    // const res = await query({ query: GET_POS_CONFIGS });
-    // // const res = await query({ query: GET_POS_CONFIGS_LOCATION });
-    // expect(res.data.posConfigs).not.toBeNull();
-    // console.log('res');
-    // console.log(res);
-    // console.log(res.data.records[0]);
-    // const dataRecords = 
-    // res.data.records.forEach(element => {
-    //   expect(element.name).not.toBeNull();
-    // });
-    // if(res.data.posConfigs != undefined){
-    //   expect(res.data.records).not.toBeNull(); 
-    // }
-    // else{
-    //   expect(res.data.records).not.toBeDefined(); 
-    // }
   });
 
   it('fetch pos configs with session token', async () => {
@@ -133,6 +116,3 @@ describe('Mutations', () => {
 
 // test that still return the config location id
 // assumes that the data will always be available and not null
-// describe('Query', () => {
-
-// })

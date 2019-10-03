@@ -34,36 +34,6 @@ const createTestServerWithSessionToken = async ({ signInGql }) =>  {
   })
 };
 
-// create test for fetching posConfig data
-// const createTestServerFetchposConfig = async ({ signInGql }) => {
-//   const sessionToken = await getSessionToken(signInGql);
-
-//   it('should be null when user is not logged in', async () => {
-//     //language=GraphQL
-//     const query = `
-//       query {
-//         posConfigs {
-//           id
-//           name
-//           active
-//           stock_location_id{
-//             name
-//             usage
-//           }
-//         }
-//       }
-//     `;
-    
-//   // const rootValue = {};
-//   // const context = getContext();
-
-//   // const result = await graphql(schema, query, rootValue, context);
-//   // const { data } = result;
-
-//   // expect(data.viewer.me).toBe(null);
-// });
-// }
-
 export {
   createTestServer,
   getSessionToken,

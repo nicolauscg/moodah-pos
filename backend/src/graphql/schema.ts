@@ -51,17 +51,7 @@ const rootType = new GraphQLObjectType({
                   }))
                 },
                 (result) => {
-                  // console.log(result.records)
-                  // let resultRecords = result.records
-                  // resultRecords.forEach(element => {
-                  //   camelizeKeys({element.stock_location_id})
-                  // });
-                  // console.log(camelizeKeys({test2}))
-                  // resolve(humps.camelizeKeys({}))
-                  // let resultRecords = result.records
-                  // console.log(camelizeKeys({resultRecords}))
-                  // resolve(camelizeKeys({resultRecords}))
-                  // console.log(result)
+                  // Might need to work with resolve issue so that the stock_location_id key can be camelCased
                   resolve(result.records)
                 }
               )
