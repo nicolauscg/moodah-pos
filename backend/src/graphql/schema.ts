@@ -15,6 +15,7 @@ import { PosConfigType } from "./schemas/posConfig";
 import { SignInType } from "./schemas/signIn";
 import { SignInInputType } from "./schemas/signInInput";
 import { DeletePosConfigType } from "./schemas/deletePosConfig";
+import { CreatePosConfigType } from "./schemas/createPosConfig";
 
 const POS_CONFIG_FIELDS = [
   "id",
@@ -185,6 +186,72 @@ const mutationType = new GraphQLObjectType({
               });
             })
         )
+    },
+    create: {
+      type: CreateType,
+      args: {
+        input: {
+          type: new GraphQLInputObjectType({
+            name: "CreateInput",
+            fields: () => ({
+              username: {
+                type: GraphQLString
+              },
+              parentname: {
+                type: GraphQLString
+              },
+              sequence: {
+                type: GraphQLString
+              }
+            })
+          })
+        }
+      },
+      resolve: (_parent, args, context, _info) => new Promise(
+        (resolve, reject) => {
+          const dataSet = httpController().operation.dataSet({
+            sessionToken: context.sessionToken
+          })
+
+          const clientOptions = createInsecureClientOptions({
+            host: "178.128.103.135",
+            port: 8069
+          })
+
+          const operation = dataSet.createCreate({
+
+          })
+
+          createService({
+            operation: operation,
+            clientOptions: clientOptions
+          }).addListener({
+            next: (result) => {
+              result.fold(
+                (error) => {
+                  reject(new ApolloError("Application Error", "APPLICATION_ERROR", {
+                    errorMessage: error.message
+                  }))
+                },
+                (result) => {
+                  if (result.username) {
+                    const sessionToken = result.username !== false ? 
+                      result.session_id : null;
+                    const { username, is_superuser } = result;
+
+                    resolve(camelizeKeys({ 
+                      username, is_superuser, sessionToken
+                    }))
+                  } else {
+                    // mutation will return null values for invalid credentials
+                    resolve({})
+                  }
+                }
+              )
+            }
+          })
+        }
+      )
     }
   })
 });
