@@ -41,8 +41,8 @@ const RouteList = {
     ],
   },
 
-   Configuration: {
-    path: '/configruration',
+  Configuration: {
+    path: '/configuration',
     title: 'Configuration',
     component: [
       {
@@ -51,11 +51,11 @@ const RouteList = {
       },
       /*{
         path: '/configuration/create',
-        component: CreatePartner,
+        component: CreateConfiguration,
       },
       /*{
         path: '/configuration/details/:id',
-        component: EditPartner,
+        component: EditConfiguration,
       },*/
     ],
   }, 

@@ -39,6 +39,7 @@ const enhance = compose(
       localStorage.setItem('accessToken', signIn.sessionToken)
       authorizeUser()
       history.push('/partners/list')
+      history.push('/configuration/list')
     },
     onSignInError: ({ triggerNotif }) => ({ networkError }) => {
       const message = networkError

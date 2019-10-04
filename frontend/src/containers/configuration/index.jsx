@@ -77,13 +77,18 @@ const ConfigurationIndex = ({
           md={8}
           className="header__item d-flex align-items-center justify-content-end"
         >
-           <FormikSearch
+          { <FormikSearch
             filters={filters}
             setFilters={setFilters}
             setOffset={setOffset}
             handleSetValue={handleSetValue}
-          />
-          Buat Baru
+          /> }
+          <Link
+            to={`/partners/list`}
+            className="btn btn-primary btn-sm"
+          >Buat Baru
+          
+          </Link>
           <Button size="sm" color="help" tag="a" href="mailto:support@rubyh.co">
           Bantuan
           </Button>
@@ -94,13 +99,12 @@ const ConfigurationIndex = ({
 }
 
 
-
 const defaultFilters = {
     name_contains: '',
     type: 'configuration',
   }
 
-/*const enhance = compose(
+const enhance = compose(
     withState('filters', 'setFilters', defaultFilters),
     withState('offset', 'setOffset', 0),
     withHandlers({
@@ -121,6 +125,6 @@ const defaultFilters = {
         },
       ],
     })
-  )*/
+  )
   
-  export default(ConfigurationIndex)
+  export default enhance(ConfigurationIndex)
