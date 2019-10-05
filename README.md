@@ -1,4 +1,4 @@
-x`x# Hello World!
+# Hello World!
 IT Project Fasilkom UI 2019 - Group 2
 
 --------------------
