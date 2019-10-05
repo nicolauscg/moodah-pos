@@ -1,7 +1,8 @@
 {
-  "name": "backend",
+  "name": "moodah-pos-backend",
   "version": "1.0.0",
-  "description": "Serverless webpack example using Typescript",
+  "private": true,
+  "description": "odoo middleware graphql apollo server",
   "main": "handler.js",
   "scripts": {
     "test": "jest",
@@ -51,6 +52,6 @@
     "typescript": "^3.2.4",
     "webpack": "^4.29.0"
   },
-  "author": "The serverless webpack authors (https://github.com/elastic-coders/serverless-webpack)",
+  "author": "moodah-pos",
   "license": "MIT"
 }
