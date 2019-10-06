@@ -39,7 +39,7 @@ const rootType = new GraphQLObjectType({
                 })
               );
             },
-            onResult: result => resolve(result)
+            onResult: result => resolve(result.records)
           });
         })
     }
