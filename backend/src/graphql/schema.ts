@@ -74,10 +74,7 @@ const mutationType = new GraphQLObjectType({
             onResult: result => {
               const camelizedResult: any = camelizeKeys(result);
               if (camelizedResult.username) {
-                const sessionToken =
-                  camelizedResult.username !== false
-                    ? camelizedResult.sessionId
-                    : null;
+                const sessionToken = camelizedResult.sessionId;
                 const { username, isSuperuser } = camelizedResult;
 
                 resolve({
@@ -86,8 +83,11 @@ const mutationType = new GraphQLObjectType({
                   sessionToken
                 });
               } else {
-                // mutation will return null values for invalid credentials
-                resolve({});
+                reject(
+                  new ApolloError("Application Error", "APPLICATION_ERROR", {
+                    errorMessage: result.message
+                  })
+                );
               }
             }
           });

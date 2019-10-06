@@ -82,6 +82,6 @@ describe("Mutations", () => {
     const res = await mutate({
       mutation: SIGN_IN_WITH_WRONG_CREDENTIALS
     });
-    expect(res.data.signIn.sessionToken).toBeNull();
+    expect(res.data.signIn).toBeNull();
   });
 });
