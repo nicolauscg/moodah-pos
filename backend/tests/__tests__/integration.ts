@@ -5,6 +5,7 @@ import {
   createTestServer,
   createTestServerWithSessionToken
 } from "../utils";
+import { fromGlobalId } from 'graphql-relay';
 
 // graphql payloads for testing
 const GET_TEST = gql`
@@ -29,6 +30,19 @@ const GET_POS_CONFIGS_SINGULAR = gql`
     }
   }
 `;
+
+// Function that returns the posConfig query based on the id given 
+function getPosConfigQuery(id)  {
+  return gql`
+    query {
+      posConfig(id:${id}) {
+        name
+        active
+      }
+    }
+  `;
+};
+
 const SIGN_IN = gql`
   mutation {
     signIn(input: {
@@ -76,13 +90,29 @@ describe('Query', () => {
     expect(res.data.posConfigs).not.toBeNull();
   });
 
-  it('fetch singular pos configs with session token', async () => {
+  it('fetch singular pos config with session token', async () => {
     const server = await createTestServerWithSessionToken({
       signInGql: SIGN_IN
     });
     const { query } = createTestClient(server);
     const res = await query({ query: GET_POS_CONFIGS_SINGULAR });
     expect(res.data.posConfigs).not.toBeNull();
+  });
+
+  it('fetch singular pos config with session token via id from multiple pos configs fetch', async () => {
+    const server = await createTestServerWithSessionToken({
+      signInGql: SIGN_IN
+    });
+    const { query } = createTestClient(server);
+    // posConfigRes will contain the id that will be used to check 
+    // if the singular posConfig is working
+    const posConfigRes = await query({ query: GET_POS_CONFIGS });
+    for(const index of posConfigRes.data.posConfigs){
+      const id = fromGlobalId(index.id).id;
+      const GET_SINGULAR_POS_CONFIG = getPosConfigQuery(id);
+      let res =  await query({ query: GET_SINGULAR_POS_CONFIG });
+      expect(res.data.posConfig).not.toBeNull();
+    }
   });
 });
 
