@@ -13,6 +13,6 @@ const SignInType = new GraphQLObjectType({
       type: GraphQLString
     }
   })
-})
+});
 
 export { SignInType };

@@ -1,0 +1,35 @@
+{
+  "name": "rubyh-moodah-pos",
+  "version": "1.0.0",
+  "private": true,
+  "description": "IT Project Fasilkom UI 2019 - Group 2",
+  "scripts": {
+    "lint:frontend": "",
+    "lint:backend": "npm run lint:all --prefix backend"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "frontend/**/*": [
+      "npm run --silent lint:frontend",
+      "git add"
+    ],
+    "backend/**/*.{js,jsx,ts,tsx}": [
+      "npm run --silent lint:backend",
+      "git add"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.cs.ui.ac.id/it-project-kki/2019/rubyh-moodah-pos.git"
+  },
+  "author": "moodah-pos",
+  "license": "ISC",
+  "devDependencies": {
+    "husky": "^3.0.8",
+    "lint-staged": "^9.4.1"
+  }
+}

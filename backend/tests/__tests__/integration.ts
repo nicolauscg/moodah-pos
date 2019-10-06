@@ -1,10 +1,7 @@
-import { createTestClient } from 'apollo-server-testing';
-import gql from 'graphql-tag';
+import { createTestClient } from "apollo-server-testing";
+import gql from "graphql-tag";
 
-import {
-  createTestServer,
-  createTestServerWithSessionToken
-} from "../utils";
+import { createTestServer, createTestServerWithSessionToken } from "../utils";
 
 // graphql payloads for testing
 const GET_TEST = gql`
@@ -44,22 +41,22 @@ mutation {
 }
 `;
 
-describe('Query', () => {
-  it('return test query response', async () => {
+describe("Query", () => {
+  it("return test query response", async () => {
     const server = createTestServer();
     const { query } = createTestClient(server);
     const res = await query({ query: GET_TEST });
     expect(res.data.test).toEqual("test");
   });
 
-  it('fetch pos configs without session token', async () => {
+  it("fetch pos configs without session token", async () => {
     const server = createTestServer();
     const { query } = createTestClient(server);
     const res = await query({ query: GET_POS_CONFIGS });
     expect(res.data.posConfigs).toBeNull();
   });
 
-  it('fetch pos configs with session token', async () => {
+  it("fetch pos configs with session token", async () => {
     const server = await createTestServerWithSessionToken({
       signInGql: SIGN_IN
     });
@@ -69,8 +66,8 @@ describe('Query', () => {
   });
 });
 
-describe('Mutations', () => {
-  it('correct credentials returns session token', async () => {
+describe("Mutations", () => {
+  it("correct credentials returns session token", async () => {
     const server = createTestServer();
     const { mutate } = createTestClient(server);
     const res = await mutate({
@@ -79,7 +76,7 @@ describe('Mutations', () => {
     expect(res.data.signIn.sessionToken).toEqual(expect.any(String));
   });
 
-  it('incorrect credentials returns null', async () => {
+  it("incorrect credentials returns null", async () => {
     const server = createTestServer();
     const { mutate } = createTestClient(server);
     const res = await mutate({
@@ -88,4 +85,3 @@ describe('Mutations', () => {
     expect(res.data.signIn.sessionToken).toBeNull();
   });
 });
-

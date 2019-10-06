@@ -1,11 +1,15 @@
-import { 
+import {
   GraphQLSchema,
   GraphQLObjectType,
   GraphQLString,
   GraphQLList,
   GraphQLInputObjectType
 } from "graphql";
-import { httpController, createService, createInsecureClientOptions } from "nodoo";
+import {
+  httpController,
+  createService,
+  createInsecureClientOptions
+} from "nodoo";
 import { ApolloError } from "apollo-server-lambda";
 import { camelizeKeys } from "humps";
 
@@ -13,7 +17,7 @@ import { PosConfigType } from "./schemas/posConfig";
 import { SignInType } from "./schemas/signIn";
 
 const rootType = new GraphQLObjectType({
-  name: 'Query',
+  name: "Query",
   fields: () => ({
     test: {
       type: GraphQLString,
@@ -21,48 +25,49 @@ const rootType = new GraphQLObjectType({
     },
     posConfigs: {
       type: GraphQLList(PosConfigType),
-      resolve: (_parent, _args, context, _info) => new Promise(
-        (resolve, reject) => {
+      resolve: (_0, _1, context) =>
+        new Promise((resolve, reject) => {
           const dataSet = httpController().operation.dataSet({
             sessionToken: context.sessionToken
-          })
+          });
 
           const clientOptions = createInsecureClientOptions({
             host: "178.128.103.135",
             port: 8069
-          })
+          });
 
           const operation = dataSet.createSearchRead({
             modelName: "pos.config",
             fields: ["name", "active"],
             domain: []
-          })
+          });
 
           createService({
-            operation: operation,
-            clientOptions: clientOptions
+            operation,
+            clientOptions
           }).addListener({
-            next: (result) => {
+            next: result => {
               result.fold(
-                (error) => {
-                  reject(new ApolloError("Application Error", "APPLICATION_ERROR", {
-                    errorMessage: error.message
-                  }))
+                onError => {
+                  reject(
+                    new ApolloError("Application Error", "APPLICATION_ERROR", {
+                      errorMessage: onError.message
+                    })
+                  );
                 },
-                (result) => {
-                  resolve(result.records)
+                onResult => {
+                  resolve(onResult.records);
                 }
-              )
+              );
             }
-          })
-        }
-      )
+          });
+        })
     }
   })
-})
+});
 
 const mutationType = new GraphQLObjectType({
-  name: 'Mutation',
+  name: "Mutation",
   fields: () => ({
     signIn: {
       type: SignInType,
@@ -79,17 +84,17 @@ const mutationType = new GraphQLObjectType({
               },
               password: {
                 type: GraphQLString
-              },
+              }
             })
           })
         }
       },
-      resolve: (_parent, args, _context, _info) => new Promise(
-        (resolve, reject) => {
+      resolve: (_0, args) =>
+        new Promise((resolve, reject) => {
           const clientOptions = createInsecureClientOptions({
             host: "178.128.103.135",
             port: 8069
-          })
+          });
 
           const sessionAuthNone = httpController().operation.session.authNone;
 
@@ -100,36 +105,43 @@ const mutationType = new GraphQLObjectType({
           });
 
           createService({
-            operation: operation,
-            clientOptions: clientOptions
+            operation,
+            clientOptions
           }).addListener({
-            next: (result) => {
+            next: result => {
               result.fold(
-                (error) => {
-                  reject(new ApolloError("Application Error", "APPLICATION_ERROR", {
-                    errorMessage: error.message
-                  }))
+                onError => {
+                  reject(
+                    new ApolloError("Application Error", "APPLICATION_ERROR", {
+                      errorMessage: onError.message
+                    })
+                  );
                 },
-                (result) => {
-                  if (result.username) {
-                    const sessionToken = result.username !== false ? 
-                      result.session_id : null;
-                    const { username, is_superuser } = result;
+                onResult => {
+                  const camelizedResult: any = camelizeKeys(onResult);
+                  if (camelizedResult.username) {
+                    const sessionToken =
+                      camelizedResult.username !== false
+                        ? camelizedResult.sessionId
+                        : null;
+                    const { username, isSuperuser } = camelizedResult;
 
-                    resolve(camelizeKeys({ 
-                      username, is_superuser, sessionToken
-                    }))
+                    resolve(
+                      camelizeKeys({
+                        username,
+                        isSuperuser,
+                        sessionToken
+                      })
+                    );
                   } else {
                     // mutation will return null values for invalid credentials
-                    resolve({})
+                    resolve({});
                   }
                 }
-              )
+              );
             }
-          })
-
-        }
-      )
+          });
+        })
     }
   })
 });
