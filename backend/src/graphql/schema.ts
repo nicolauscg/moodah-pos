@@ -2,8 +2,7 @@ import {
   GraphQLSchema,
   GraphQLObjectType,
   GraphQLString,
-  GraphQLList,
-  GraphQLInputObjectType
+  GraphQLList
 } from "graphql";
 import { ApolloError } from "apollo-server-lambda";
 import { camelizeKeys } from "humps";
@@ -12,6 +11,7 @@ import { getDataSet, getSessionAuthNone, configureService } from "./utils";
 
 import { PosConfigType } from "./schemas/posConfig";
 import { SignInType } from "./schemas/signIn";
+import { SignInInputType } from "./schemas/signInInput";
 
 const rootType = new GraphQLObjectType({
   name: "Query",
@@ -53,20 +53,7 @@ const mutationType = new GraphQLObjectType({
       type: SignInType,
       args: {
         input: {
-          type: new GraphQLInputObjectType({
-            name: "SignInInput",
-            fields: () => ({
-              db: {
-                type: GraphQLString
-              },
-              username: {
-                type: GraphQLString
-              },
-              password: {
-                type: GraphQLString
-              }
-            })
-          })
+          type: SignInInputType
         }
       },
       resolve: (_0, args) =>
