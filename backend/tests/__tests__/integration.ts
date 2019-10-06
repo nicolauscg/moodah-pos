@@ -21,6 +21,14 @@ const GET_POS_CONFIGS = gql`
     }
   }
 `;
+const GET_POS_CONFIGS_SINGULAR = gql`
+  query {
+    posConfig(id:1) {
+      name
+      active
+    }
+  }
+`;
 const SIGN_IN = gql`
   mutation {
     signIn(input: {
@@ -65,6 +73,15 @@ describe('Query', () => {
     });
     const { query } = createTestClient(server);
     const res = await query({ query: GET_POS_CONFIGS });
+    expect(res.data.posConfigs).not.toBeNull();
+  });
+
+  it('fetch singular pos configs with session token', async () => {
+    const server = await createTestServerWithSessionToken({
+      signInGql: SIGN_IN
+    });
+    const { query } = createTestClient(server);
+    const res = await query({ query: GET_POS_CONFIGS_SINGULAR });
     expect(res.data.posConfigs).not.toBeNull();
   });
 });
