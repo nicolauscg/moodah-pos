@@ -5,7 +5,6 @@ import {
   createTestServer,
   createTestServerWithSessionToken
 } from "../utils";
-// import { print } from 'graphql';
 
 // graphql payloads for testing
 const GET_TEST = gql`
@@ -51,9 +50,9 @@ query {
     id
     name
     active
-    stock_location_id {
+    stockLocationId {
+      id
       name
-      usage
     }
   }
 }`;
@@ -74,14 +73,15 @@ describe('Query', () => {
   });
 
   // test that still return the config location id
-  // assumes that the data will always be available and not null
   it('return test query response for nested query location', async() =>{
     const server = await createTestServerWithSessionToken({
       signInGql: SIGN_IN
     });
     const { query } = createTestClient(server);
     const res = await query({ query: GET_POS_CONFIGS_LOCATION });
-    expect(res.data.posConfigs[0].stock_location_id).not.toBeNull();
+    for(const index of res.data.posConfigs){
+      expect(index.stockLocationId).not.toBeNull();
+    }
   });
 
   it('fetch pos configs with session token', async () => {
