@@ -119,7 +119,6 @@ const mutationType = new GraphQLObjectType({
                 },
                 onResult => {
                   const camelizedResult: any = camelizeKeys(onResult);
-                  console.log(camelizedResult);
                   if (camelizedResult.username) {
                     const sessionToken =
                       camelizedResult.username !== false
