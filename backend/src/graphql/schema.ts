@@ -3,14 +3,16 @@ import {
   GraphQLObjectType,
   GraphQLString,
   GraphQLList,
-  GraphQLInputObjectType
+  GraphQLInputObjectType,
+  GraphQLInt
 } from "graphql";
 import { httpController, createService, createInsecureClientOptions } from "nodoo";
 import { ApolloError } from "apollo-server-lambda";
 import { camelizeKeys } from "humps";
 
-import { PosConfigType } from "./schemas/posConfig";
+import { PosConfigType, PosConfigSingularType } from "./schemas/posConfig";
 import { SignInType } from "./schemas/signIn";
+
 
 const rootType = new GraphQLObjectType({
   name: 'Query',
@@ -57,7 +59,58 @@ const rootType = new GraphQLObjectType({
           })
         }
       )
+    },
+
+    posConfig: {
+      type: GraphQLList(PosConfigSingularType),
+      args: {
+        id: { type: GraphQLInt },
+      },
+      resolve: (_parent, _args, context, _info) => new Promise(
+        (resolve, reject) => {
+          const dataSet = httpController().operation.dataSet({
+            sessionToken: context.sessionToken
+          })
+
+          const clientOptions = createInsecureClientOptions({
+            host: "178.128.103.135",
+            port: 8069
+          })
+
+          const operation = dataSet.createRead({
+            ids: [_args.id],
+            modelName: "pos.config",
+            fields: ["name", "active"]
+          })
+
+          createService({
+            operation: operation,
+            clientOptions: clientOptions
+          }).addListener({
+            next: (result) => {
+              result.fold(
+                (error) => {
+                  reject(new ApolloError("Application Error", "APPLICATION_ERROR", {
+                    errorMessage: error.message
+                  }))
+                  
+                },
+                (result) => {
+                  if (result.length == 0) {
+                    // array empty or doesnot have a matching id
+                    resolve(null)
+                  }
+                  else{
+                    resolve(result)
+                  }
+                }
+              )
+            }
+          })
+        }
+      )
     }
+
   })
 })
 

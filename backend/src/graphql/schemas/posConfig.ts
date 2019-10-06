@@ -10,8 +10,21 @@ const PosConfigType = new GraphQLObjectType({
     },
     active: {
       type: GraphQLBoolean
-    }
+      }
   })
 });
 
+const PosConfigSingularType = new GraphQLObjectType({
+  name: "PosConfigSingular",
+  fields: () => ({
+    name: {
+      type: GraphQLString
+    },
+    active: {
+      type: GraphQLBoolean
+    },
+  }),
+});
+
 export { PosConfigType };
+export { PosConfigSingularType };
