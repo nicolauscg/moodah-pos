@@ -1,5 +1,9 @@
 service:
-  name: moodah-pos-serverless
+  name: backend
+
+# app and org for use with dashboard.serverless.com
+app: moodah-pos-serverless
+org: moodahpos
 
 plugins:
   - serverless-webpack
