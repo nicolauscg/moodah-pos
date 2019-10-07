@@ -1,9 +1,5 @@
-// import { GraphQLObjectType, GraphQLBoolean, GraphQLString, GraphQLList} from "graphql";
-import { GraphQLObjectType, GraphQLBoolean, GraphQLString, GraphQLInt} from "graphql";
+import { GraphQLObjectType, GraphQLBoolean, GraphQLString, GraphQLInt, GraphQLList} from "graphql";
 import { globalIdField } from "graphql-relay";
-import { resolve } from "dns";
-
-import { camelizeKeys } from "humps";
 
 const PosConfigType = new GraphQLObjectType({
   name: "PosConfig",
@@ -15,32 +11,33 @@ const PosConfigType = new GraphQLObjectType({
     active: {
       type: GraphQLBoolean
     },
-    stock_location_id: {
+    stockLocationId: {
       type: StockLocationIdType,
       // Trying to use parent's resolve to force camelCase on the stock_location_id
       resolve:(parent)=>{
-        return parent.stock_location_id
+        return parent.stockLocationId
       }
     }
   })
 });
 
 const StockLocationIdType = new GraphQLObjectType({
-  name: "StockLocationId",
+  name: "stockLocationId",
   fields: () => ({
+    id: {
+      type: GraphQLInt,
+      resolve:(parent) =>{
+        return parent[0]
+      }
+    },
     name: {
       type: GraphQLString,
       resolve:(parent) =>{
         return parent[1]
       }
-    },
-    usage: {
-      type: GraphQLInt,
-      resolve:(parent) =>{
-        return parent[0]
-      }
     }
   })
 })
+
 
 export { PosConfigType };

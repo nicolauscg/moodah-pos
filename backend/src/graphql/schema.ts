@@ -11,7 +11,6 @@ import { camelizeKeys } from "humps";
 
 import { PosConfigType } from "./schemas/posConfig";
 import { SignInType } from "./schemas/signIn";
-// import forEach from "ramda/es/forEach";
 
 const rootType = new GraphQLObjectType({
   name: 'Query',
@@ -51,8 +50,7 @@ const rootType = new GraphQLObjectType({
                   }))
                 },
                 (result) => {
-                  // Might need to work with resolve issue so that the stock_location_id key can be camelCased
-                  resolve(result.records)
+                  resolve(camelizeKeys(result.records))
                 }
               )
             }
