@@ -19,6 +19,7 @@ import { DeletePosConfigType } from "./schemas/deletePosConfig";
 const POS_CONFIG_FIELDS = [
   "id",
   "name",
+  "active",
   "iface_tax_included",
   "module_pos_discount",
   "discount_product_id",
@@ -51,7 +52,7 @@ const rootType = new GraphQLObjectType({
               context
             }).createSearchRead({
               modelName: "pos.config",
-              fields: ["name", "active"],
+              fields: POS_CONFIG_FIELDS,
               domain: []
             }),
             onError: error => {
@@ -61,7 +62,7 @@ const rootType = new GraphQLObjectType({
                 })
               );
             },
-            onResult: result => res(result.records)
+            onResult: result => res(camelizeKeys(result.records))
           });
         })
     }
