@@ -2,19 +2,16 @@ import {
   GraphQLSchema,
   GraphQLObjectType,
   GraphQLString,
-  GraphQLList,
-  GraphQLInputObjectType
+  GraphQLList
 } from "graphql";
-import {
-  httpController,
-  createService,
-  createInsecureClientOptions
-} from "nodoo";
 import { ApolloError } from "apollo-server-lambda";
 import { camelizeKeys } from "humps";
 
+import { getDataSet, getSessionAuthNone, configureService } from "./utils";
+
 import { PosConfigType } from "./schemas/posConfig";
 import { SignInType } from "./schemas/signIn";
+import { SignInInputType } from "./schemas/signInInput";
 
 const rootType = new GraphQLObjectType({
   name: "Query",
@@ -27,39 +24,22 @@ const rootType = new GraphQLObjectType({
       type: GraphQLList(PosConfigType),
       resolve: (_0, _1, context) =>
         new Promise((resolve, reject) => {
-          const dataSet = httpController().operation.dataSet({
-            sessionToken: context.sessionToken
-          });
-
-          const clientOptions = createInsecureClientOptions({
-            host: "178.128.103.135",
-            port: 8069
-          });
-
-          const operation = dataSet.createSearchRead({
-            modelName: "pos.config",
-            fields: ["name", "active"],
-            domain: []
-          });
-
-          createService({
-            operation,
-            clientOptions
-          }).addListener({
-            next: result => {
-              result.fold(
-                onError => {
-                  reject(
-                    new ApolloError("Application Error", "APPLICATION_ERROR", {
-                      errorMessage: onError.message
-                    })
-                  );
-                },
-                onResult => {
-                  resolve(onResult.records);
-                }
+          configureService({
+            operation: getDataSet({
+              context
+            }).createSearchRead({
+              modelName: "pos.config",
+              fields: ["name", "active"],
+              domain: []
+            }),
+            onError: error => {
+              reject(
+                new ApolloError("Application Error", "APPLICATION_ERROR", {
+                  errorMessage: error.message
+                })
               );
-            }
+            },
+            onResult: result => resolve(result.records)
           });
         })
     }
@@ -73,72 +53,42 @@ const mutationType = new GraphQLObjectType({
       type: SignInType,
       args: {
         input: {
-          type: new GraphQLInputObjectType({
-            name: "SignInInput",
-            fields: () => ({
-              db: {
-                type: GraphQLString
-              },
-              username: {
-                type: GraphQLString
-              },
-              password: {
-                type: GraphQLString
-              }
-            })
-          })
+          type: SignInInputType
         }
       },
       resolve: (_0, args) =>
         new Promise((resolve, reject) => {
-          const clientOptions = createInsecureClientOptions({
-            host: "178.128.103.135",
-            port: 8069
-          });
-
-          const sessionAuthNone = httpController().operation.session.authNone;
-
-          const operation = sessionAuthNone.createAuthenticate({
-            db: args.input.db,
-            login: args.input.username,
-            password: args.input.password
-          });
-
-          createService({
-            operation,
-            clientOptions
-          }).addListener({
-            next: result => {
-              result.fold(
-                onError => {
-                  reject(
-                    new ApolloError("Application Error", "APPLICATION_ERROR", {
-                      errorMessage: onError.message
-                    })
-                  );
-                },
-                onResult => {
-                  const camelizedResult: any = camelizeKeys(onResult);
-                  if (camelizedResult.username) {
-                    const sessionToken =
-                      camelizedResult.username !== false
-                        ? camelizedResult.sessionId
-                        : null;
-                    const { username, isSuperuser } = camelizedResult;
-
-                    resolve(
-                      camelizeKeys({
-                        username,
-                        isSuperuser,
-                        sessionToken
-                      })
-                    );
-                  } else {
-                    // mutation will return null values for invalid credentials
-                    resolve({});
-                  }
-                }
+          configureService({
+            operation: getSessionAuthNone().createAuthenticate({
+              db: args.input.db,
+              login: args.input.username,
+              password: args.input.password
+            }),
+            onError: error => {
+              reject(
+                new ApolloError("Application Error", "APPLICATION_ERROR", {
+                  errorMessage: error.message
+                })
               );
+            },
+            onResult: result => {
+              const camelizedResult: any = camelizeKeys(result);
+              if (camelizedResult.username) {
+                const sessionToken = camelizedResult.sessionId;
+                const { username, isSuperuser } = camelizedResult;
+
+                resolve({
+                  username,
+                  isSuperuser,
+                  sessionToken
+                });
+              } else {
+                reject(
+                  new ApolloError("Application Error", "APPLICATION_ERROR", {
+                    errorMessage: result.message
+                  })
+                );
+              }
             }
           });
         })
