@@ -6,6 +6,7 @@ import {
   GraphQLInt,
   GraphQLInputObjectType
 } from "graphql";
+
 import { ApolloError } from "apollo-server-lambda";
 import { camelizeKeys } from "humps";
 
@@ -187,8 +188,8 @@ const mutationType = new GraphQLObjectType({
             })
         )
     },
-    create: {
-      type: CreateType,
+    createPosConfig: {
+      type: CreatePosConfigType,
       args: {
         input: {
           type: new GraphQLInputObjectType({
@@ -197,61 +198,60 @@ const mutationType = new GraphQLObjectType({
               username: {
                 type: GraphQLString
               },
-              parentname: {
-                type: GraphQLString
-              },
-              sequence: {
-                type: GraphQLString
+              pickingTypeId: {
+                type: GraphQLInt
               }
             })
           })
         }
       },
-      resolve: (_parent, args, context, _info) => new Promise(
-        (resolve, reject) => {
-          const dataSet = httpController().operation.dataSet({
-            sessionToken: context.sessionToken
-          })
-
-          const clientOptions = createInsecureClientOptions({
-            host: "178.128.103.135",
-            port: 8069
-          })
-
-          const operation = dataSet.createCreate({
-
-          })
-
-          createService({
-            operation: operation,
-            clientOptions: clientOptions
-          }).addListener({
-            next: (result) => {
-              result.fold(
-                (error) => {
-                  reject(new ApolloError("Application Error", "APPLICATION_ERROR", {
-                    errorMessage: error.message
-                  }))
-                },
-                (result) => {
-                  if (result.username) {
-                    const sessionToken = result.username !== false ? 
-                      result.session_id : null;
-                    const { username, is_superuser } = result;
-
-                    resolve(camelizeKeys({ 
-                      username, is_superuser, sessionToken
-                    }))
-                  } else {
-                    // mutation will return null values for invalid credentials
-                    resolve({})
-                  }
-                }
-              )
+      resolve: (_0, args, context) =>
+        new Promise((res, rej) => {
+          configureService({
+            operation: getDataSet({ context }).createCreate({
+              modelName: "pos.config",
+              fieldsValues: {
+                name: args.input.username,
+                pickingTypeId: args.input.picking_type_id
+              },
+              kwargs: {}
+            }),
+            onError: error => {
+              rej(
+                new ApolloError("Application Error", "APPLICATION_ERROR", {
+                  errorMessage: error.message
+                })
+              );
+            },
+            onResult: result => {
+              res({ id: result });
             }
-          })
-        }
-      )
+          });
+        }).then(
+          (createResult: any) =>
+            new Promise((res, rej) => {
+              configureService({
+                operation: getDataSet({ context }).createRead({
+                  modelName: "pos.config",
+                  ids: [createResult.id],
+                  fields: POS_CONFIG_FIELDS,
+                  kwargs: {}
+                }),
+                onError: error => {
+                  rej(
+                    new ApolloError("Application Error", "APPLICATION_ERROR", {
+                      errorMessage: error.message
+                    })
+                  );
+                },
+                onResult: result2 => {
+                  const camelizedResult = camelizeKeys(result2[0]);
+                  createResult.posConfig = camelizedResult;
+                  res(createResult);
+                }
+              });
+            })
+        )
     }
   })
 });

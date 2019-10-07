@@ -41,24 +41,21 @@ mutation {
 }
 `;
 
-const CREATE_WITH_MISSING_INPUT = gql`
-mutation {
-  createPosConfig(input: {
-    username: "missing input",
-    picking_type_id: 12
-  }) {
-    posConfig {
+const CREATE_WITH_CORRECT_INPUT = gql`
+  mutation {
+    createPosConfig(input: { username: "test", pickingTypeId: 12 }) {
+      posConfig {
+        id
+        name
+        active
+      }
       id
-      name
-      active
     }
-    id
   }
-}
 `;
 
-describe('Query', () => {
-  it('return test query response', async () => {
+describe("Query", () => {
+  it("return test query response", async () => {
     const server = createTestServer();
     const { query } = createTestClient(server);
     const res = await query({ query: GET_TEST });
@@ -101,13 +98,14 @@ describe("Mutations", () => {
     expect(res.data.signIn).toBeNull();
   });
 
-  it('correct create returns correct output', async () => {
-    const server = createTestServer();
+  it("correct create returns correct output", async () => {
+    const server = await createTestServerWithSessionToken({
+      signInGql: SIGN_IN
+    });
     const { mutate } = createTestClient(server);
     const res = await mutate({
-      mutation: CREATE_WITH_MISSING_INPUT
+      mutation: CREATE_WITH_CORRECT_INPUT
     });
     expect(res.data.createPosConfig).not.toBeNull();
   });
-
 });
