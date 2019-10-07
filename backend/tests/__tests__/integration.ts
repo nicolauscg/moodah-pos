@@ -1,10 +1,7 @@
-import { createTestClient } from 'apollo-server-testing';
-import gql from 'graphql-tag';
+import { createTestClient } from "apollo-server-testing";
+import gql from "graphql-tag";
 
-import {
-  createTestServer,
-  createTestServerWithSessionToken
-} from "../utils";
+import { createTestServer, createTestServerWithSessionToken } from "../utils";
 
 // graphql payloads for testing
 const GET_TEST = gql`
@@ -45,27 +42,28 @@ mutation {
 `;
 
 const GET_POS_CONFIGS_LOCATION = gql`
-query {
-  posConfigs {
-    id
-    name
-    active
-    stockLocationId {
+  query {
+    posConfigs {
       id
       name
+      active
+      stockLocation {
+        id
+        name
+      }
     }
   }
-}`;
+`;
 
-describe('Query', () => {
-  it('return test query response', async () => {
+describe("Query", () => {
+  it("return test query response", async () => {
     const server = createTestServer();
     const { query } = createTestClient(server);
     const res = await query({ query: GET_TEST });
     expect(res.data.test).toEqual("test");
   });
 
-  it('fetch pos configs without session token', async () => {
+  it("fetch pos configs without session token", async () => {
     const server = createTestServer();
     const { query } = createTestClient(server);
     const res = await query({ query: GET_POS_CONFIGS });
@@ -73,18 +71,18 @@ describe('Query', () => {
   });
 
   // test that still return the config location id
-  it('return test query response for nested query location', async() =>{
+  it("return test query response for nested query location", async () => {
     const server = await createTestServerWithSessionToken({
       signInGql: SIGN_IN
     });
     const { query } = createTestClient(server);
     const res = await query({ query: GET_POS_CONFIGS_LOCATION });
-    for(const index of res.data.posConfigs){
+    for (const index of res.data.posConfigs) {
       expect(index.stockLocationId).not.toBeNull();
     }
   });
 
-  it('fetch pos configs with session token', async () => {
+  it("fetch pos configs with session token", async () => {
     const server = await createTestServerWithSessionToken({
       signInGql: SIGN_IN
     });
@@ -94,8 +92,8 @@ describe('Query', () => {
   });
 });
 
-describe('Mutations', () => {
-  it('correct credentials returns session token', async () => {
+describe("Mutations", () => {
+  it("correct credentials returns session token", async () => {
     const server = createTestServer();
     const { mutate } = createTestClient(server);
     const res = await mutate({
@@ -104,15 +102,12 @@ describe('Mutations', () => {
     expect(res.data.signIn.sessionToken).toEqual(expect.any(String));
   });
 
-  it('incorrect credentials returns null', async () => {
+  it("incorrect credentials returns null", async () => {
     const server = createTestServer();
     const { mutate } = createTestClient(server);
     const res = await mutate({
       mutation: SIGN_IN_WITH_WRONG_CREDENTIALS
     });
-    expect(res.data.signIn.sessionToken).toBeNull();
+    expect(res.data.signIn).toBeNull();
   });
 });
-
-// test that still return the config location id
-// assumes that the data will always be available and not null
