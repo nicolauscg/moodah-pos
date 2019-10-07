@@ -11,7 +11,7 @@ import { camelizeKeys } from "humps";
 
 import { getDataSet, getSessionAuthNone, configureService } from "./utils";
 
-import { PosConfigType, PosConfigSingularType } from "./schemas/posConfig";
+import { PosConfigType } from "./schemas/posConfig";
 import { SignInType } from "./schemas/signIn";
 import { SignInInputType } from "./schemas/signInInput";
 import { DeletePosConfigType } from "./schemas/deletePosConfig";
@@ -67,9 +67,18 @@ const rootType = new GraphQLObjectType({
         })
     },
     posConfig: {
-      type: GraphQLList(PosConfigSingularType),
+      type: PosConfigType,
       args: {
-        id: { type: GraphQLInt }
+        input: {
+          type: new GraphQLInputObjectType({
+            name: "PosConfigInput",
+            fields: () => ({
+              id: {
+                type: GraphQLInt
+              }
+            })
+          })
+        }
       },
       resolve: (_0, args, context) =>
         new Promise((res, rej) => {
@@ -77,9 +86,9 @@ const rootType = new GraphQLObjectType({
             operation: getDataSet({
               context
             }).createRead({
-              ids: [args.id],
+              ids: [args.input.id],
               modelName: "pos.config",
-              fields: ["name", "active"]
+              fields: POS_CONFIG_FIELDS
             }),
             onError: error => {
               rej(
@@ -95,9 +104,9 @@ const rootType = new GraphQLObjectType({
                     errorMessage: result.message
                   })
                 );
-                // array empty or doesnot have a matching id
+                // array empty or does not have a matching id
               } else {
-                res(result);
+                res(camelizeKeys(result[0]));
               }
             }
           });

@@ -21,12 +21,19 @@ const GET_POS_CONFIGS = gql`
 `;
 
 // Function that returns the posConfig query based on the id given
-function getPosConfigQuery(id) {
+function getPosConfigQuery(id: number) {
   return gql`
     query {
-      posConfig(id:${id}) {
+      posConfig(input: {
+        id:${id}
+      }) {
+        id
         name
         active
+        stockLocation {
+          id
+          name
+        }
       }
     }
   `;
@@ -91,7 +98,9 @@ describe("Query", () => {
     expect(res.data.posConfig).toBeNull();
   });
 
-  it("fetch singular pos config with session token via id from multiple pos configs fetch", async () => {
+  it(`fetch singular pos config with session token via id from multiple 
+      pos configs fetch`, async () => {
+    const amountOfIdsToRead = 3;
     const server = await createTestServerWithSessionToken({
       signInGql: SIGN_IN
     });
@@ -99,13 +108,20 @@ describe("Query", () => {
     // posConfigRes will contain the id that will be used to check
     // if the singular posConfig is working
     const posConfigRes = await query({ query: GET_POS_CONFIGS });
-    for (const index of posConfigRes.data.posConfigs) {
-      const id = fromGlobalId(index.id).id;
-      const GET_SINGULAR_POS_CONFIG = getPosConfigQuery(id);
-      // eslint-disable-next-line no-await-in-loop
-      const res = await query({ query: GET_SINGULAR_POS_CONFIG });
-      expect(res.data.posConfig).not.toBeNull();
-    }
+    const idsToRead = posConfigRes.data.posConfigs
+      .slice(0, amountOfIdsToRead)
+      .map(posConfig => parseInt(fromGlobalId(posConfig.id).id, 10));
+    // concurrently read posConfig
+    Promise.all(
+      idsToRead.map(id => query({ query: getPosConfigQuery(id) }))
+    ).then(posConfigResults =>
+      posConfigResults.forEach(
+        (posConfigResult: any) =>
+          expect(posConfigResult.data.posConfig).not.toBeNull() &&
+          expect(posConfigResult.data.posConfig.name).not.toBeNull() &&
+          expect(posConfigResult.data.posConfig.stockLocation).not.toBeNull()
+      )
+    );
   });
 });
 
