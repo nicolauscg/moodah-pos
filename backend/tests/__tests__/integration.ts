@@ -1,11 +1,8 @@
-import { createTestClient } from 'apollo-server-testing';
-import gql from 'graphql-tag';
+import { createTestClient } from "apollo-server-testing";
+import gql from "graphql-tag";
 
-import {
-  createTestServer,
-  createTestServerWithSessionToken
-} from "../utils";
-import { fromGlobalId } from 'graphql-relay';
+import { createTestServer, createTestServerWithSessionToken } from "../utils";
+import { fromGlobalId } from "graphql-relay";
 
 // graphql payloads for testing
 const GET_TEST = gql`
@@ -22,17 +19,9 @@ const GET_POS_CONFIGS = gql`
     }
   }
 `;
-const GET_POS_CONFIGS_SINGULAR = gql`
-  query {
-    posConfig(id:1) {
-      name
-      active
-    }
-  }
-`;
 
-// Function that returns the posConfig query based on the id given 
-function getPosConfigQuery(id)  {
+// Function that returns the posConfig query based on the id given
+function getPosConfigQuery(id) {
   return gql`
     query {
       posConfig(id:${id}) {
@@ -41,7 +30,7 @@ function getPosConfigQuery(id)  {
       }
     }
   `;
-};
+}
 
 const SIGN_IN = gql`
   mutation {
@@ -66,22 +55,22 @@ mutation {
 }
 `;
 
-describe('Query', () => {
-  it('return test query response', async () => {
+describe("Query", () => {
+  it("return test query response", async () => {
     const server = createTestServer();
     const { query } = createTestClient(server);
     const res = await query({ query: GET_TEST });
     expect(res.data.test).toEqual("test");
   });
 
-  it('fetch pos configs without session token', async () => {
+  it("fetch pos configs without session token", async () => {
     const server = createTestServer();
     const { query } = createTestClient(server);
     const res = await query({ query: GET_POS_CONFIGS });
     expect(res.data.posConfigs).toBeNull();
   });
 
-  it('fetch pos configs with session token', async () => {
+  it("fetch pos configs with session token", async () => {
     const server = await createTestServerWithSessionToken({
       signInGql: SIGN_IN
     });
@@ -90,34 +79,26 @@ describe('Query', () => {
     expect(res.data.posConfigs).not.toBeNull();
   });
 
-  it('fetch singular pos config with session token', async () => {
+  it("fetch singular pos config with session token via id from multiple pos configs fetch", async () => {
     const server = await createTestServerWithSessionToken({
       signInGql: SIGN_IN
     });
     const { query } = createTestClient(server);
-    const res = await query({ query: GET_POS_CONFIGS_SINGULAR });
-    expect(res.data.posConfigs).not.toBeNull();
-  });
-
-  it('fetch singular pos config with session token via id from multiple pos configs fetch', async () => {
-    const server = await createTestServerWithSessionToken({
-      signInGql: SIGN_IN
-    });
-    const { query } = createTestClient(server);
-    // posConfigRes will contain the id that will be used to check 
+    // posConfigRes will contain the id that will be used to check
     // if the singular posConfig is working
     const posConfigRes = await query({ query: GET_POS_CONFIGS });
-    for(const index of posConfigRes.data.posConfigs){
+    for (const index of posConfigRes.data.posConfigs) {
       const id = fromGlobalId(index.id).id;
       const GET_SINGULAR_POS_CONFIG = getPosConfigQuery(id);
-      let res =  await query({ query: GET_SINGULAR_POS_CONFIG });
+      // eslint-disable-next-line no-await-in-loop
+      const res = await query({ query: GET_SINGULAR_POS_CONFIG });
       expect(res.data.posConfig).not.toBeNull();
     }
   });
 });
 
-describe('Mutations', () => {
-  it('correct credentials returns session token', async () => {
+describe("Mutations", () => {
+  it("correct credentials returns session token", async () => {
     const server = createTestServer();
     const { mutate } = createTestClient(server);
     const res = await mutate({
@@ -126,13 +107,12 @@ describe('Mutations', () => {
     expect(res.data.signIn.sessionToken).toEqual(expect.any(String));
   });
 
-  it('incorrect credentials returns null', async () => {
+  it("incorrect credentials returns null", async () => {
     const server = createTestServer();
     const { mutate } = createTestClient(server);
     const res = await mutate({
       mutation: SIGN_IN_WITH_WRONG_CREDENTIALS
     });
-    expect(res.data.signIn.sessionToken).toBeNull();
+    expect(res.data.signIn).toBeNull();
   });
 });
-
