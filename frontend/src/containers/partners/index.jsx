@@ -37,7 +37,7 @@ const SearchForm = ({ handleSetValue }) => {
       <Field
         name="keyword"
         className="search-field"
-        placeholder="Nama kontak"
+        placeholder="Nama Kontak"
         handleSetValue={handleSetValue}
         component={SearchInput}
       />

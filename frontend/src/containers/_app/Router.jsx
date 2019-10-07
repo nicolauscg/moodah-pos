@@ -52,7 +52,7 @@ const RouteList = {
       /*{
         path: '/configuration/create',
         component: CreateConfiguration,
-      },
+      },*/
       /*{
         path: '/configuration/details/:id',
         component: EditConfiguration,

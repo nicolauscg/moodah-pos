@@ -36,7 +36,7 @@ const SearchForm = ({ handleSetValue }) => {
       <Field
         name="keyword"
         className="search-field"
-        placeholder=" "
+        placeholder="Search..."
         handleSetValue={handleSetValue}
         component={SearchInput}
       />
@@ -77,21 +77,24 @@ const ConfigurationIndex = ({
           md={8}
           className="header__item d-flex align-items-center justify-content-end"
         >
-          { <FormikSearch
+           <FormikSearch
             filters={filters}
             setFilters={setFilters}
             setOffset={setOffset}
             handleSetValue={handleSetValue}
-          /> }
+           />
+
           <Link
-            to={`/partners/list`}
-            className="btn btn-primary btn-sm"
-          >Buat Baru
-          
+          to={`/partners/list`}
+          className="btn btn-primary btn-sm"
+          >
+          Buat Baru
           </Link>
+
           <Button size="sm" color="help" tag="a" href="mailto:support@rubyh.co">
           Bantuan
           </Button>
+
         </Col>
       </Row>
     </Container>
