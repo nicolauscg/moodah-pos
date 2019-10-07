@@ -11,6 +11,7 @@ test frontend:
     - npm install
     - npm run gql-gen
     - npm run test -- --coverage
+  coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/
   only:
     changes:
       - frontend/**/*
@@ -23,7 +24,8 @@ test backend:
     - cd backend
     - npm install
     - npm run lint
-    - npm run test
+    - npm run test -- --coverage
+  coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/
   only:
     changes:
       - backend/**/*
