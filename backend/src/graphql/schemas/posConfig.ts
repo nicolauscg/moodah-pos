@@ -2,12 +2,12 @@ import {
   GraphQLObjectType,
   GraphQLBoolean,
   GraphQLString,
-  GraphQLEnumType,
   GraphQLInt,
   GraphQLFloat,
   GraphQLList
 } from "graphql";
 import { globalIdField } from "graphql-relay";
+import { IfaceTaxIncludedType } from "./ifaceTaxIncluded";
 
 const DiscountProductType = new GraphQLObjectType({
   name: "DiscountProduct",
@@ -73,13 +73,7 @@ const PosConfigType = new GraphQLObjectType({
       type: GraphQLBoolean
     },
     ifaceTaxIncluded: {
-      type: new GraphQLEnumType({
-        name: "IfaceTaxIncluded",
-        values: {
-          total: { value: "total" },
-          subtotal: { value: "subtotal" }
-        }
-      })
+      type: IfaceTaxIncludedType
     },
     globalDiscount: {
       type: GraphQLBoolean
