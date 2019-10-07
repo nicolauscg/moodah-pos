@@ -79,6 +79,18 @@ describe("Query", () => {
     expect(res.data.posConfigs).not.toBeNull();
   });
 
+  it("fetch singular pos config with session token via wrong id", async () => {
+    const server = await createTestServerWithSessionToken({
+      signInGql: SIGN_IN
+    });
+    // Id is set as natural number, -1 will always be wrong id
+    const WRONG_ID = -1;
+    const { query } = createTestClient(server);
+    const GET_POS_CONFIG = getPosConfigQuery(WRONG_ID);
+    const res = await query({ query: GET_POS_CONFIG });
+    expect(res.data.posConfig).toBeNull();
+  });
+
   it("fetch singular pos config with session token via id from multiple pos configs fetch", async () => {
     const server = await createTestServerWithSessionToken({
       signInGql: SIGN_IN
