@@ -89,7 +89,16 @@ const rootType = new GraphQLObjectType({
               );
             },
             onResult: result => {
-              res(result);
+              if (result.length === 0) {
+                rej(
+                  new ApolloError("Application Error", "APPLICATION_ERROR", {
+                    errorMessage: result.message
+                  })
+                );
+                // array empty or doesnot have a matching id
+              } else {
+                res(result);
+              }
             }
           });
         })
