@@ -8,7 +8,7 @@ const server = new ApolloServer({
   formatError: error => error,
   formatResponse: response => response,
   context: ({ event }) => {
-    const sessionToken = event.headers.authorization || "";
+    const sessionToken = event.headers.Authorization || "";
 
     // set sessionToken in context
     return { sessionToken };
