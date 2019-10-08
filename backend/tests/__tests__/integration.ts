@@ -41,6 +41,20 @@ mutation {
 }
 `;
 
+const GET_POS_CONFIGS_LOCATION = gql`
+  query {
+    posConfigs {
+      id
+      name
+      active
+      stockLocation {
+        id
+        name
+      }
+    }
+  }
+`;
+
 describe("Query", () => {
   it("return test query response", async () => {
     const server = createTestServer();
@@ -54,6 +68,18 @@ describe("Query", () => {
     const { query } = createTestClient(server);
     const res = await query({ query: GET_POS_CONFIGS });
     expect(res.data.posConfigs).toBeNull();
+  });
+
+  // test that still return the config location id
+  it("return test query response for nested query location", async () => {
+    const server = await createTestServerWithSessionToken({
+      signInGql: SIGN_IN
+    });
+    const { query } = createTestClient(server);
+    const res = await query({ query: GET_POS_CONFIGS_LOCATION });
+    for (const index of res.data.posConfigs) {
+      expect(index.stockLocationId).not.toBeNull();
+    }
   });
 
   it("fetch pos configs with session token", async () => {
