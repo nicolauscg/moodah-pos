@@ -1,8 +1,8 @@
 import { GraphQLBoolean, GraphQLObjectType } from "graphql";
 import { PosConfigType } from "./posConfig";
 
-const DeletePosConfigType = new GraphQLObjectType({
-  name: "DeletePosConfigType",
+const UpdateOrDeletePosConfigType = new GraphQLObjectType({
+  name: "UpdateOrDeletePosConfigType",
   fields: () => ({
     posConfig: {
       type: PosConfigType
@@ -13,4 +13,4 @@ const DeletePosConfigType = new GraphQLObjectType({
   })
 });
 
-export { DeletePosConfigType };
+export { UpdateOrDeletePosConfigType };
