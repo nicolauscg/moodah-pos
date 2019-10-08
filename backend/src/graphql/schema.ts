@@ -8,15 +8,16 @@ import {
 } from "graphql";
 
 import { ApolloError } from "apollo-server-lambda";
-import { camelizeKeys } from "humps";
+import { camelizeKeys, decamelizeKeys } from "humps";
 
 import { getDataSet, getSessionAuthNone, configureService } from "./utils";
 
 import { PosConfigType } from "./schemas/posConfig";
 import { SignInType } from "./schemas/signIn";
 import { SignInInputType } from "./schemas/signInInput";
-import { DeletePosConfigType } from "./schemas/deletePosConfig";
 import { CreatePosConfigType } from "./schemas/createPosConfig";
+import { UpdateOrDeletePosConfigType } from "./schemas/updateOrDeletePosConfig";
+import { CreateOrUpdatePosConfigInputType } from "./schemas/createOrUpdatePosConfigInput";
 
 const POS_CONFIG_FIELDS = [
   "id",
@@ -65,6 +66,52 @@ const rootType = new GraphQLObjectType({
               );
             },
             onResult: result => res(camelizeKeys(result.records))
+          });
+        })
+    },
+    posConfig: {
+      type: PosConfigType,
+      args: {
+        input: {
+          type: new GraphQLInputObjectType({
+            name: "PosConfigInput",
+            fields: () => ({
+              id: {
+                type: GraphQLInt
+              }
+            })
+          })
+        }
+      },
+      resolve: (_0, args, context) =>
+        new Promise((res, rej) => {
+          configureService({
+            operation: getDataSet({
+              context
+            }).createRead({
+              ids: [args.input.id],
+              modelName: "pos.config",
+              fields: POS_CONFIG_FIELDS
+            }),
+            onError: error => {
+              rej(
+                new ApolloError("Application Error", "APPLICATION_ERROR", {
+                  errorMessage: error.message
+                })
+              );
+            },
+            onResult: result => {
+              if (result.length === 0) {
+                rej(
+                  new ApolloError("Application Error", "APPLICATION_ERROR", {
+                    errorMessage: result.message
+                  })
+                );
+                // array empty or does not have a matching id
+              } else {
+                res(camelizeKeys(result[0]));
+              }
+            }
           });
         })
     }
@@ -118,8 +165,91 @@ const mutationType = new GraphQLObjectType({
           });
         })
     },
+    updatePosConfig: {
+      type: UpdateOrDeletePosConfigType,
+      args: {
+        input: {
+          type: CreateOrUpdatePosConfigInputType
+        }
+      },
+      resolve: (_0, args, context) =>
+        new Promise((res, rej) => {
+          // read pos config with id specified
+          const fieldsValues = args.input;
+          ["availablePricelistIds", "journalIds"].forEach(fieldName => {
+            if (fieldsValues[fieldName] !== null) {
+              fieldsValues[fieldName] = [6, false, fieldsValues[fieldName]];
+            }
+          });
+          const decamelizedFieldValues: any = decamelizeKeys(fieldsValues);
+          configureService({
+            operation: getDataSet({ context }).createUpdate({
+              modelName: "pos.config",
+              ids: [decamelizedFieldValues.id],
+              fieldsValues: decamelizedFieldValues,
+              kwargs: {}
+            }),
+            onError: error => {
+              rej(
+                new ApolloError("Application Error", "APPLICATION_ERROR", {
+                  errorMessage: error.message
+                })
+              );
+            },
+            onResult: result => {
+              if (result) {
+                res({
+                  success: result,
+                  posConfig: {
+                    id: decamelizedFieldValues.id
+                  }
+                });
+              }
+
+              rej(
+                new ApolloError("Application Error", "APPLICATION_ERROR", {
+                  errorMessage: result.message
+                })
+              );
+            }
+          });
+        }).then(
+          (updateResult: any) =>
+            new Promise((res, rej) => {
+              // read pos config with id specified
+              configureService({
+                operation: getDataSet({ context }).createRead({
+                  modelName: "pos.config",
+                  ids: [updateResult.posConfig.id],
+                  fields: POS_CONFIG_FIELDS,
+                  kwargs: {}
+                }),
+                onError: error => {
+                  rej(
+                    new ApolloError("Application Error", "APPLICATION_ERROR", {
+                      errorMessage: error.message
+                    })
+                  );
+                },
+                onResult: result => {
+                  if (result.length) {
+                    const camelizedReadResult = camelizeKeys(result[0]);
+                    updateResult.posConfig = camelizedReadResult;
+                    res(updateResult);
+                  }
+
+                  rej(
+                    new ApolloError("Application Error", "APPLICATION_ERROR", {
+                      errorMessage: result.message
+                    })
+                  );
+                }
+              });
+            })
+        )
+    },
     deletePosConfig: {
-      type: DeletePosConfigType,
+      type: UpdateOrDeletePosConfigType,
       args: {
         input: {
           type: new GraphQLInputObjectType({
