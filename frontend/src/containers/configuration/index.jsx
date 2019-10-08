@@ -12,6 +12,8 @@ import offsetToCursor from '../../utils/offsetToCursor'
 
 import Breadcrumb from '../../shared/components/Breadcrumb'
 
+// import ConfigurationTabs from './components/ConfigurationTabs'
+
 const SearchInput = ({ field, form, handleSetValue, ...props }) => {
   const { onChange, ...restField } = field
   return (

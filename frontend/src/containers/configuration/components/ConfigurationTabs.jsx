@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react'
+/*import React, { Fragment } from 'react'
 import classnames from 'classnames'
 import { compose, withHandlers, withStateHandlers, withState } from 'recompose'
 import { withRouter } from 'react-router-dom'
@@ -32,7 +32,7 @@ import {
 import offsetToCursor from '../../../utils/offsetToCursor'
 
 import DataTable from '../../../shared/components/DataTable'
-
+*/
 
 /* 
 
@@ -151,3 +151,115 @@ const PartnerTabs = ({
       </Col>
     )
   }*/
+
+  import React, { Fragment } from 'react'
+  import classnames from 'classnames'
+  import { compose, withHandlers, withStateHandlers, withState } from 'recompose'
+  import { withRouter } from 'react-router-dom'
+
+  import Skeleton from 'react-loading-skeleton'
+  import NumberFormat from 'react-number-format'
+
+  import { ConfigurationColumns } from '../../../utils/transformers/configuration'
+  import {
+    Col,
+    Card,
+    CardBody,
+    Nav,
+    NavItem,
+    NavLink,
+    Row,
+    TabContent,
+    TabPane,
+  } from 'reactstrap'
+
+  import DataTable from '../../../shared/components/DataTable'
+
+/*   const Table = ({
+    data,
+    offset,
+    limit,
+    location,
+    handlePageChange,
+    onClickRow,
+  }) => {
+
+    const tableColumnExtensions = ConfigurationColumns.map(col => ({
+      columnName: col.name,
+      wordWrapEnabled: true,
+    }))
+    return (
+      <Fragment>
+        <Col className="general__info">
+          <Row>
+          </Row>
+        </Col>
+        <DataTable
+          // rows={rows}
+          //columns={PartnerColumns}
+          // totalCount={totalCount}
+          //rows={rows}
+          columns={ConfigurationColumns}
+          defaultSorting={[{ columnName: 'name', direction: 'asc' }]}
+          offset={offset}
+          limit={limit}
+          handlePageChange={handlePageChange}
+          // tableColumnExtensions={tableColumnExtensions}
+          tableColumnExtensions={tableColumnExtensions}
+          clickableRow
+          onClickRow={onClickRow}
+          // loading={loading}
+          //loading={loading}
+        />
+      </Fragment>
+    )
+  }
+
+
+  const ConfigurationTable = compose(
+    withRouter,
+    withHandlers({
+      onClickRow: ({ history }) => row => {
+        history.push(`/configuration/details/${row.id}`)
+      },
+    })
+  )(Table)*/
+
+/*  const ConfigurationTabs = ({
+      filters,
+      offset,
+      toggle,
+      activeTab,
+      handlePageChange,
+      data,
+    }) => {
+      const tableProps = {
+        filters,
+        offset,
+        limit: 10,
+        handlePageChange,
+        data,
+      }
+
+      return (
+        <Col xs={12}>
+          <div className="main-tabs">
+            <TabContent activeTab={activeTab}>
+              <TabPane tabId="#all">
+                <Card>
+                  <CardBody>
+                    <ConfigurationTable {...tableProps} />
+                  </CardBody>
+                </Card>
+              </TabPane>
+            </TabContent>
+          </div>
+        </Col>
+      )
+    }
+*/
+
+
+  // export default enhance(ConfigurationTabs)
+
+// export default(ConfigurationTable)
