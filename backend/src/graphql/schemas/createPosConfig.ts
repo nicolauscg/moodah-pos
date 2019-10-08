@@ -1,5 +1,5 @@
 import { GraphQLObjectType, GraphQLInt } from "graphql";
-import { PosConfigType } from "./posConfig"
+import { PosConfigType } from "./posConfig";
 
 const CreatePosConfigType = new GraphQLObjectType({
   name: "CreateType",
@@ -11,6 +11,6 @@ const CreatePosConfigType = new GraphQLObjectType({
       type: GraphQLInt
     }
   })
-})
+});
 
 export { CreatePosConfigType };
