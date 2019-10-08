@@ -48,7 +48,25 @@ const rootType = new GraphQLObjectType({
     },
     posConfigs: {
       type: GraphQLList(PosConfigType),
-      resolve: (_0, _1, context) =>
+      args: {
+        input: {
+          type: new GraphQLInputObjectType({
+            name: "PosConfigsInput",
+            fields: () => ({
+              first: {
+                type: GraphQLInt
+              },
+              offset: {
+                type: GraphQLInt
+              }
+            })
+          })
+        },
+        test: {
+          type: GraphQLInt
+        }
+      },
+      resolve: (_0, args, context) =>
         new Promise((res, rej) => {
           configureService({
             operation: getDataSet({
@@ -56,7 +74,9 @@ const rootType = new GraphQLObjectType({
             }).createSearchRead({
               modelName: "pos.config",
               fields: POS_CONFIG_FIELDS,
-              domain: []
+              domain: [],
+              limit: args.input.first,
+              offset: args.input.offset
             }),
             onError: error => {
               rej(
