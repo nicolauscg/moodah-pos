@@ -1,5 +1,6 @@
 stages:
   - test
+  - deploy backend
   - release
 
 test frontend:
@@ -10,6 +11,7 @@ test frontend:
     - npm install
     - npm run gql-gen
     - npm run test -- --coverage
+  coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/
   only:
     changes:
       - frontend/**/*
@@ -21,7 +23,9 @@ test backend:
   script:
     - cd backend
     - npm install
-    - npm run test
+    - npm run lint
+    - npm run test -- --coverage
+  coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/
   only:
     changes:
       - backend/**/*
@@ -122,7 +126,7 @@ release prod frontend:
       - frontend/**/*
       - .gitlab-ci.yml
 
-release dev backend:
+deploy dev backend:
   image: node:10.16.3-alpine
   stage: release
   variables:
@@ -134,16 +138,14 @@ release dev backend:
     - serverless deploy --stage $STAGE --verbose
   environment:
     name: development
-  when: manual
   only:
     changes:
-      - backend/**/*
-      - .gitlab-ci.yml
+      - serverless.yml
   except:
     - master
     - staging
 
-release stag backend:
+deploy stag backend:
   image: node:10.16.3-alpine
   stage: release
   variables:
@@ -159,10 +161,9 @@ release stag backend:
     refs:
       - staging
     changes:
-      - backend/**/*
-      - .gitlab-ci.yml
+      - serverless.yml
 
-release prod backend:
+deploy prod backend:
   image: node:10.16.3-alpine
   stage: release
   variables:
@@ -172,6 +173,70 @@ release prod backend:
     - npm install
     - npm install -g serverless
     - serverless deploy --stage $STAGE --verbose
+  environment:
+    name: production
+  only:
+    refs:
+      - master
+    changes:
+      - serverless.yml
+
+update dev backend functions:
+  image: node:10.16.3-alpine
+  stage: release
+  variables:
+    STAGE: dev
+  script:
+    - cd backend
+    - npm install
+    - npm install -g serverless
+    - serverless deploy function --function graphql --stage $STAGE --verbose
+    - serverless deploy function --function playground --stage $STAGE --verbose
+    - serverless deploy function --function graphql-introspect --stage $STAGE --verbose
+  environment:
+    name: development
+  when: manual
+  only:
+    changes:
+      - backend/**/*
+      - .gitlab-ci.yml
+  except:
+    - master
+    - staging
+
+update stag backend functions:
+  image: node:10.16.3-alpine
+  stage: release
+  variables:
+    STAGE: stag
+  script:
+    - cd backend
+    - npm install
+    - npm install -g serverless
+    - serverless deploy function --function graphql --stage $STAGE --verbose
+    - serverless deploy function --function playground --stage $STAGE --verbose
+    - serverless deploy function --function graphql-introspect --stage $STAGE --verbose
+  environment:
+    name: staging
+  only:
+    refs:
+      - staging
+    changes:
+      - backend/**/*
+      - .gitlab-ci.yml
+
+update prod backend functions:
+  image: node:10.16.3-alpine
+  stage: release
+  variables:
+    STAGE: prod
+  script:
+    - cd backend
+    - npm install
+    - npm install -g serverless
+    - serverless deploy function --function graphql --stage $STAGE --verbose
+    - serverless deploy function --function playground --stage $STAGE --verbose
+    - serverless deploy function --function graphql-introspect --stage $STAGE --verbose
   environment:
     name: production
   only:
