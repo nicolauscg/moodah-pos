@@ -65,6 +65,52 @@ const rootType = new GraphQLObjectType({
             onResult: result => res(camelizeKeys(result.records))
           });
         })
+    },
+    posConfig: {
+      type: PosConfigType,
+      args: {
+        input: {
+          type: new GraphQLInputObjectType({
+            name: "PosConfigInput",
+            fields: () => ({
+              id: {
+                type: GraphQLInt
+              }
+            })
+          })
+        }
+      },
+      resolve: (_0, args, context) =>
+        new Promise((res, rej) => {
+          configureService({
+            operation: getDataSet({
+              context
+            }).createRead({
+              ids: [args.input.id],
+              modelName: "pos.config",
+              fields: POS_CONFIG_FIELDS
+            }),
+            onError: error => {
+              rej(
+                new ApolloError("Application Error", "APPLICATION_ERROR", {
+                  errorMessage: error.message
+                })
+              );
+            },
+            onResult: result => {
+              if (result.length === 0) {
+                rej(
+                  new ApolloError("Application Error", "APPLICATION_ERROR", {
+                    errorMessage: result.message
+                  })
+                );
+                // array empty or does not have a matching id
+              } else {
+                res(camelizeKeys(result[0]));
+              }
+            }
+          });
+        })
     }
   })
 });
