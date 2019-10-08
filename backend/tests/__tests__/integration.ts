@@ -19,7 +19,6 @@ const GET_POS_CONFIGS = gql`
     }
   }
 `;
-
 // Function that returns the posConfig query based on the id given
 function getPosConfigQuery(id: number) {
   return gql`
@@ -38,7 +37,6 @@ function getPosConfigQuery(id: number) {
     }
   `;
 }
-
 const SIGN_IN = gql`
   mutation {
     signIn(input: {
@@ -61,7 +59,18 @@ mutation {
   }
 }
 `;
-
+const CREATE_WITH_CORRECT_INPUT = gql`
+  mutation {
+    createPosConfig(input: { name: "createdFromTest", pickingTypeId: 12 }) {
+      posConfig {
+        id
+        name
+        active
+      }
+      id
+    }
+  }
+`;
 const GET_POS_CONFIGS_LOCATION = gql`
   query {
     posConfigs {
@@ -69,6 +78,29 @@ const GET_POS_CONFIGS_LOCATION = gql`
       name
       active
       stockLocation {
+        id
+        name
+      }
+    }
+  }
+`;
+const getDeletePosConfigQuery = (id: number) => gql`
+  mutation {
+    deletePosConfig(input: {
+      id: ${id}
+    }) {
+      success
+      posConfig {
+        id
+        name
+      }
+    }
+  }`;
+const getUpdatePostConfigQuery = (fieldsToUpate: string) => gql`
+  mutation {
+    updatePosConfig(input: ${fieldsToUpate}) {
+      success
+      posConfig {
         id
         name
       }
@@ -168,5 +200,46 @@ describe("Mutations", () => {
       mutation: SIGN_IN_WITH_WRONG_CREDENTIALS
     });
     expect(res.data.signIn).toBeNull();
+  });
+
+  it("correct create returns correct output then delete", async () => {
+    const server = await createTestServerWithSessionToken({
+      signInGql: SIGN_IN
+    });
+    const { mutate } = createTestClient(server);
+    const createResult: any = await mutate({
+      mutation: CREATE_WITH_CORRECT_INPUT
+    });
+    const deleteResult: any = await mutate({
+      mutation: getDeletePosConfigQuery(createResult.data.createPosConfig.id)
+    });
+    expect(createResult.data.createPosConfig.id).not.toBeNull();
+    expect(deleteResult.data.deletePosConfig.success).toEqual(true);
+  });
+
+  it("create pos cofig, update, then delete", async () => {
+    const UPDATED_POS_CONFIG_NAME = "updatedFromTest";
+    const server = await createTestServerWithSessionToken({
+      signInGql: SIGN_IN
+    });
+    const { mutate } = createTestClient(server);
+    const createResult: any = await mutate({
+      mutation: CREATE_WITH_CORRECT_INPUT
+    });
+    const createdPosConfigId = createResult.data.createPosConfig.id;
+    const updateResult: any = await mutate({
+      mutation: getUpdatePostConfigQuery(`{
+        id: ${createdPosConfigId},
+        name: "${UPDATED_POS_CONFIG_NAME}"
+      }`)
+    });
+    const deleteResult: any = await mutate({
+      mutation: getDeletePosConfigQuery(createdPosConfigId)
+    });
+    expect(createResult.data.createPosConfig).not.toBeNull();
+    expect(updateResult.data.updatePosConfig.posConfig.name).toEqual(
+      UPDATED_POS_CONFIG_NAME
+    );
+    expect(deleteResult.data.deletePosConfig.success).toEqual(true);
   });
 });
