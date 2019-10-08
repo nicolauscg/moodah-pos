@@ -3,5 +3,6 @@ module.exports = {
   moduleDirectories: ["node_modules", "src"],
   transform: {
     "^.+\\.[t|j]sx?$": "babel-jest"
-  }
+  },
+  setupFilesAfterEnv: ["./jest.setup.js"]
 };
