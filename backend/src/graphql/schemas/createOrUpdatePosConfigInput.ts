@@ -56,10 +56,10 @@ const CreateOrUpdatePosConfigInputType = new GraphQLInputObjectType({
     receiptFooter: {
       type: GraphQLString
     },
-    stockLocation: {
+    stockLocationId: {
       type: GraphQLInt
     },
-    pickingType: {
+    pickingTypeId: {
       type: GraphQLInt
     }
   })

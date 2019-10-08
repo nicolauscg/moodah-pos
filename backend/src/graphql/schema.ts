@@ -174,10 +174,10 @@ const mutationType = new GraphQLObjectType({
       },
       resolve: (_0, args, context) =>
         new Promise((res, rej) => {
-          // read pos config with id specified
+          // update pos config with id specified
           const fieldsValues = args.input;
           ["availablePricelistIds", "journalIds"].forEach(fieldName => {
-            if (fieldsValues[fieldName] !== null) {
+            if (fieldsValues[fieldName] !== undefined) {
               fieldsValues[fieldName] = [6, false, fieldsValues[fieldName]];
             }
           });
@@ -322,28 +322,22 @@ const mutationType = new GraphQLObjectType({
       type: CreatePosConfigType,
       args: {
         input: {
-          type: new GraphQLInputObjectType({
-            name: "CreateInput",
-            fields: () => ({
-              username: {
-                type: GraphQLString
-              },
-              pickingTypeId: {
-                type: GraphQLInt
-              }
-            })
-          })
+          type: CreateOrUpdatePosConfigInputType
         }
       },
       resolve: (_0, args, context) =>
         new Promise((res, rej) => {
+          const fieldsValues = args.input;
+          ["availablePricelistIds", "journalIds"].forEach(fieldName => {
+            if (fieldsValues[fieldName] !== undefined) {
+              fieldsValues[fieldName] = [6, false, fieldsValues[fieldName]];
+            }
+          });
+          const decamelizedFieldValues: any = decamelizeKeys(fieldsValues);
           configureService({
             operation: getDataSet({ context }).createCreate({
               modelName: "pos.config",
-              fieldsValues: {
-                name: args.input.username,
-                pickingTypeId: args.input.picking_type_id
-              },
+              fieldsValues: decamelizedFieldValues,
               kwargs: {}
             }),
             onError: error => {
