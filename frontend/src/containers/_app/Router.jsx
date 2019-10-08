@@ -20,6 +20,8 @@ import withStandardPlanHandler from '../../shared/components/withStandardPlanHan
 /*Routing Configuration */
 import ConfigurationIndex from '../configuration/index'
 
+// Routing Product Category
+import ProductCategoryIndex from '../product_category/index'
 
 const RouteList = {
   Partners: {
@@ -58,7 +60,28 @@ const RouteList = {
         component: EditConfiguration,
       },*/
     ],
-  }, 
+  },
+
+  ProductCategory: {
+    path: '/product_category',
+    title: 'Product Category',
+    component: [
+      {
+        path: '/product_category/list',
+        component: ProductCategoryIndex,
+      },
+    /*{
+      path: '/configuration/create',
+      component: CreateConfiguration,
+      },*/
+    /*{
+      path: '/configuration/details/:id',
+      component: EditConfiguration,
+      },*/
+    ]
+
+
+  },
 
   AccountSettings: {
     path: '/account_settings',

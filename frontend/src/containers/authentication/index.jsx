@@ -40,6 +40,7 @@ const enhance = compose(
       authorizeUser()
       history.push('/partners/list')
       history.push('/configuration/list')
+      history.push('/product_category/list')
     },
     onSignInError: ({ triggerNotif }) => ({ networkError }) => {
       const message = networkError
