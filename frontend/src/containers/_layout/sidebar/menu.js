@@ -6,7 +6,7 @@ export default {
   },
   'moodah_general_menu.menu_configuration': {
     name: 'Configuration',
-    route: '/partners/list',
+    route: '/configuration/list',
      icon: 'setting',
   },
 }
