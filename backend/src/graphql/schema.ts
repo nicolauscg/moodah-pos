@@ -2,7 +2,6 @@ import {
   GraphQLSchema,
   GraphQLObjectType,
   GraphQLString,
-  GraphQLList,
   GraphQLInt,
   GraphQLInputObjectType
 } from "graphql";
@@ -12,6 +11,7 @@ import { camelizeKeys, decamelizeKeys } from "humps";
 
 import { getDataSet, getSessionAuthNone, configureService } from "./utils";
 
+import { getPaginatedItemType } from "./schemas/paginatedItem";
 import { PosConfigType } from "./schemas/posConfig";
 import { SignInType } from "./schemas/signIn";
 import { SignInInputType } from "./schemas/signInInput";
@@ -47,36 +47,30 @@ const rootType = new GraphQLObjectType({
       resolve: () => "test"
     },
     posConfigs: {
-      type: GraphQLList(PosConfigType),
+      type: getPaginatedItemType(PosConfigType),
       args: {
-        input: {
-          type: new GraphQLInputObjectType({
-            name: "PosConfigsInput",
-            fields: () => ({
-              first: {
-                type: GraphQLInt
-              },
-              offset: {
-                type: GraphQLInt
-              }
-            })
-          })
-        },
-        test: {
+        first: {
           type: GraphQLInt
+        },
+        after: {
+          type: GraphQLString
         }
       },
       resolve: (_0, args, context) =>
         new Promise((res, rej) => {
+          const domain = [];
+          if (args.after) {
+            domain.push(["id", ">", parseInt(args.after, 10)]);
+          }
+
           configureService({
             operation: getDataSet({
               context
             }).createSearchRead({
               modelName: "pos.config",
               fields: POS_CONFIG_FIELDS,
-              domain: [],
-              limit: args.input.first,
-              offset: args.input.offset
+              domain,
+              limit: args.first + 1
             }),
             onError: error => {
               rej(
@@ -85,7 +79,24 @@ const rootType = new GraphQLObjectType({
                 })
               );
             },
-            onResult: result => res(camelizeKeys(result.records))
+            onResult: result => {
+              const hasNextPage = result.records.length === args.first + 1;
+              const queriedResult = hasNextPage
+                ? result.records.slice(0, result.records.length - 1)
+                : result.records;
+
+              res({
+                totalCount: result.length,
+                edges: queriedResult.map(record => ({
+                  node: camelizeKeys(record),
+                  cursor: record.id
+                })),
+                pageInfo: {
+                  endCursor: queriedResult[queriedResult.length - 1].id,
+                  hasNextPage
+                }
+              });
+            }
           });
         })
     },
