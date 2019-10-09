@@ -19,6 +19,27 @@ const GET_POS_CONFIGS = gql`
     }
   }
 `;
+
+// Function that returns the filtered pos config query based on args given
+function filterPosConfigQuery(name: string, stockLocationName: string) {
+  return gql`
+    query {
+      posConfig(where: {
+        name:${name},
+        stockLocationName:${stockLocationName}
+      }) {
+        id
+        name
+        active
+        stockLocation {
+          id
+          name
+        }
+      }
+    }
+  `;
+}
+
 // Function that returns the posConfig query based on the id given
 function getPosConfigQuery(id: number) {
   return gql`
