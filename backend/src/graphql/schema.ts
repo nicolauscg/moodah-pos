@@ -18,6 +18,7 @@ import { SignInInputType } from "./schemas/signInInput";
 import { CreatePosConfigType } from "./schemas/createPosConfig";
 import { UpdateOrDeletePosConfigType } from "./schemas/updateOrDeletePosConfig";
 import { CreateOrUpdatePosConfigInputType } from "./schemas/createOrUpdatePosConfigInput";
+import { DiscountProductType } from "./schemas/discountProduct";
 
 const POS_CONFIG_FIELDS = [
   "id",
@@ -111,6 +112,47 @@ const rootType = new GraphQLObjectType({
               } else {
                 res(camelizeKeys(result[0]));
               }
+            }
+          });
+        })
+    },
+    discountProducts: {
+      type: GraphQLList(DiscountProductType),
+      // offset based pagination, will be converted to cursor based later
+      args: {
+        first: {
+          type: GraphQLInt,
+          defaultValue: 10
+        },
+        offset: {
+          type: GraphQLInt,
+          defaultValue: 0
+        }
+      },
+      resolve: (_0, args, context) =>
+        new Promise((res, rej) => {
+          configureService({
+            operation: getDataSet({
+              context
+            }).createNameSearch({
+              modelName: "product.product",
+              nameToSearch: "",
+              limit: args.first,
+              searchDomain: [
+                ["available_in_pos", "=", true],
+                ["sale_ok", "=", true]
+              ],
+              kwargs: {}
+            }),
+            onError: error => {
+              rej(
+                new ApolloError("Application Error", "APPLICATION_ERROR", {
+                  errorMessage: error.message
+                })
+              );
+            },
+            onResult: result => {
+              res(camelizeKeys(result));
             }
           });
         })
