@@ -207,6 +207,7 @@ describe("Query", () => {
     );
   });
 
+  // fetch created graphQL posConfig by comparing it with the normal javascript filter function
   it("fetch filtered pos config", async () => {
     const server = await createTestServerWithSessionToken({
       signInGql: SIGN_IN

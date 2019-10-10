@@ -41,6 +41,9 @@ const POS_CONFIG_FIELDS = [
 ];
 
 function createDomainFilter(args) {
+  if (args.where === undefined) {
+    return [];
+  }
   const result = [];
   const data = args.where;
 
@@ -63,22 +66,7 @@ const rootType = new GraphQLObjectType({
     },
     posConfigs: {
       type: GraphQLList(PosConfigType),
-      args: {
-        where: {
-          type: new GraphQLInputObjectType({
-            name: "PosConfigsInput",
-            fields: () => ({
-              name: {
-                type: GraphQLString
-              },
-              stockLocationName: {
-                type: GraphQLString
-              }
-            })
-          })
-        }
-      },
-      resolve: (_0, args, context) =>
+      resolve: (_0, _1, context) =>
         new Promise((res, rej) => {
           configureService({
             operation: getDataSet({
@@ -86,7 +74,7 @@ const rootType = new GraphQLObjectType({
             }).createSearchRead({
               modelName: "pos.config",
               fields: POS_CONFIG_FIELDS,
-              domain: createDomainFilter(args)
+              domain: []
             }),
             onError: error => {
               rej(
