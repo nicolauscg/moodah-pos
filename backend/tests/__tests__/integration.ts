@@ -84,6 +84,14 @@ const GET_POS_CONFIGS_LOCATION = gql`
     }
   }
 `;
+const GET_INVENTORY_OPERATION = gql`
+  query {
+    inventoryOperation {
+      name
+      id
+    }
+  }
+`;
 const getDeletePosConfigQuery = (id: number) => gql`
   mutation {
     deletePosConfig(input: {
@@ -180,6 +188,16 @@ describe("Query", () => {
           expect(posConfigResult.data.posConfig.stockLocation).not.toBeNull()
       )
     );
+  });
+
+  it("fetch all inventory operation type", async () => {
+    const server = await createTestServerWithSessionToken({
+      signInGql: SIGN_IN
+    });
+    const { query } = createTestClient(server);
+    const res = await query({ query: GET_INVENTORY_OPERATION });
+    expect(res.data.inventoryOperation.id).not.toBeNull();
+    expect(res.data.inventoryOperation.name).not.toBeNull();
   });
 });
 
