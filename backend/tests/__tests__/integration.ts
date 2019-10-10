@@ -16,6 +16,10 @@ const GET_POS_CONFIGS = gql`
       id
       name
       active
+      stockLocation {
+        id
+        name
+      }
     }
   }
 `;
@@ -24,9 +28,9 @@ const GET_POS_CONFIGS = gql`
 function filterPosConfigQuery(name: string, stockLocationName: string) {
   return gql`
     query {
-      posConfig(where: {
-        name:${name},
-        stockLocationName:${stockLocationName}
+      posConfigs(where: {
+        name:"${name}",
+        stockLocationName:"${stockLocationName}"
       }) {
         id
         name
@@ -177,7 +181,7 @@ describe("Query", () => {
     expect(res.data.posConfig).toBeNull();
   });
 
-  it(`fetch singular pos config with session token via id from multiple 
+  it(`fetch singular pos config with session token via id from multiple
       pos configs fetch`, async () => {
     const amountOfIdsToRead = 3;
     const server = await createTestServerWithSessionToken({
@@ -201,6 +205,33 @@ describe("Query", () => {
           expect(posConfigResult.data.posConfig.stockLocation).not.toBeNull()
       )
     );
+  });
+
+  it("fetch filtered pos config", async () => {
+    const server = await createTestServerWithSessionToken({
+      signInGql: SIGN_IN
+    });
+    const { query } = createTestClient(server);
+    const posConfigResults = await query({ query: GET_POS_CONFIGS });
+    const unfilteredData = posConfigResults.data.posConfigs;
+    // The database should have at least one posConfigs data for the test to work
+    expect(unfilteredData[0]).toBeDefined();
+
+    const name = unfilteredData[0].name;
+    const stockLocationName = unfilteredData[0].stockLocation.name;
+    const filteredQuery = filterPosConfigQuery(name, stockLocationName);
+
+    // Testing the created graphQL filter function
+    const filteredResult1 = await query({ query: filteredQuery });
+    // Manual javascript filter function
+    const filteredResult2 = unfilteredData.filter(
+      (data: { name: any; stockLocation: { name: any } }) =>
+        data.name === unfilteredData[0].name &&
+        data.stockLocation.name === unfilteredData[0].stockLocation.name
+    );
+
+    // Checks whether the graphQL filter function actually "filters" the data
+    expect(filteredResult1.data.posConfigs).toStrictEqual(filteredResult2);
   });
 });
 
