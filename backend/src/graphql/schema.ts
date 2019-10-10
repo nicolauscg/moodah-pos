@@ -40,23 +40,6 @@ const POS_CONFIG_FIELDS = [
   "picking_type_id"
 ];
 
-function createDomainFilter(args) {
-  if (args.where === undefined) {
-    return [];
-  }
-  const result = [];
-  const data = args.where;
-
-  if (data.name !== undefined) {
-    result.push(["name", "ilike", data.name]);
-  }
-  if (data.stockLocationName !== undefined) {
-    result.push(["stock_location_id", "ilike", data.stockLocationName]);
-  }
-
-  return result;
-}
-
 const rootType = new GraphQLObjectType({
   name: "Query",
   fields: () => ({
