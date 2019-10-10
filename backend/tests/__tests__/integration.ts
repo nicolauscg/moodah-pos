@@ -86,6 +86,14 @@ const GET_POS_CONFIGS_LOCATION = gql`
 `;
 const GET_INVENTORY_OPERATION = gql`
   query {
+    stockLocationOperation {
+      name
+      id
+    }
+  }
+`;
+const GET_STOCK_LOCATION_OPERATION = gql`
+  query {
     inventoryOperation {
       name
       id
@@ -198,6 +206,16 @@ describe("Query", () => {
     const res = await query({ query: GET_INVENTORY_OPERATION });
     expect(res.data.inventoryOperation.id).not.toBeNull();
     expect(res.data.inventoryOperation.name).not.toBeNull();
+  });
+
+  it("fetch all inventory stock location", async () => {
+    const server = await createTestServerWithSessionToken({
+      signInGql: SIGN_IN
+    });
+    const { query } = createTestClient(server);
+    const res = await query({ query: GET_STOCK_LOCATION_OPERATION });
+    expect(res.data.stockLocationOperation.id).not.toBeNull();
+    expect(res.data.stockLocationOperation.name).not.toBeNull();
   });
 });
 
