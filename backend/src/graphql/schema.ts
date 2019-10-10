@@ -18,6 +18,7 @@ import { SignInInputType } from "./schemas/signInInput";
 import { CreatePosConfigType } from "./schemas/createPosConfig";
 import { UpdateOrDeletePosConfigType } from "./schemas/updateOrDeletePosConfig";
 import { CreateOrUpdatePosConfigInputType } from "./schemas/createOrUpdatePosConfigInput";
+import { InventoryOperationType } from "./schemas/inventoryOperation";
 
 const POS_CONFIG_FIELDS = [
   "id",
@@ -112,6 +113,31 @@ const rootType = new GraphQLObjectType({
                 res(camelizeKeys(result[0]));
               }
             }
+          });
+        })
+    },
+    inventoryOperation: {
+      type: GraphQLList(InventoryOperationType),
+      resolve: (_0, _1, context) =>
+        new Promise((res, rej) => {
+          configureService({
+            operation: getDataSet({
+              context
+            }).createNameSearch({
+              modelName: "stock.picking.type",
+              nameToSearch: "",
+              limit: 8,
+              operator: "ilike",
+              kwargs: {}
+            }),
+            onError: error => {
+              rej(
+                new ApolloError("Application Error", "APPLICATION_ERROR", {
+                  errorMessage: error.message
+                })
+              );
+            },
+            onResult: result => res(result)
           });
         })
     }
