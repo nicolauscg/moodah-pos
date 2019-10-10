@@ -86,17 +86,17 @@ const GET_POS_CONFIGS_LOCATION = gql`
 `;
 const GET_INVENTORY_OPERATION = gql`
   query {
-    stockLocationOperation {
-      name
+    inventoryOperation {
       id
+      name
     }
   }
 `;
 const GET_STOCK_LOCATION_OPERATION = gql`
   query {
-    inventoryOperation {
-      name
+    stockLocationOperation {
       id
+      name
     }
   }
 `;

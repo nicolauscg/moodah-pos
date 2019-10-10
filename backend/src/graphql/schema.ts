@@ -140,6 +140,32 @@ const rootType = new GraphQLObjectType({
             onResult: result => res(result)
           });
         })
+    },
+    stockLocationOperation: {
+      type: GraphQLList(InventoryOperationType),
+      resolve: (_0, _1, context) =>
+        new Promise((res, rej) => {
+          configureService({
+            operation: getDataSet({
+              context
+            }).createNameSearch({
+              modelName: "stock.location",
+              nameToSearch: "",
+              limit: 8,
+              operator: "ilike",
+              searchDomain: [["usage", "=", "internal"]],
+              kwargs: {}
+            }),
+            onError: error => {
+              rej(
+                new ApolloError("Application Error", "APPLICATION_ERROR", {
+                  errorMessage: error.message
+                })
+              );
+            },
+            onResult: result => res(result)
+          });
+        })
     }
   })
 });
