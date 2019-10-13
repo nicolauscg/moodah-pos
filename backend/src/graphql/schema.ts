@@ -9,7 +9,13 @@ import {
 import { ApolloError } from "apollo-server-lambda";
 import { camelizeKeys, decamelizeKeys } from "humps";
 
-import { getDataSet, getSessionAuthNone, configureService } from "./utils";
+import {
+  getDataSet,
+  getSessionAuthNone,
+  configureService,
+  getTotalCountPromise,
+  TotalCountObject
+} from "./utils";
 
 import { getPaginatedItemType } from "./schemas/paginatedItem";
 import { PosConfigType } from "./schemas/posConfig";
@@ -57,48 +63,54 @@ const rootType = new GraphQLObjectType({
         }
       },
       resolve: (_0, args, context) =>
-        new Promise((res, rej) => {
-          const domain = [];
-          if (args.after) {
-            domain.push(["id", ">", parseInt(args.after, 10)]);
-          }
+        getTotalCountPromise({
+          context,
+          modelName: "pos.config"
+        }).then(
+          (searchReadLengthResult: TotalCountObject) =>
+            new Promise((res, rej) => {
+              const domain = [];
+              if (args.after) {
+                domain.push(["id", ">", parseInt(args.after, 10)]);
+              }
 
-          configureService({
-            operation: getDataSet({
-              context
-            }).createSearchRead({
-              modelName: "pos.config",
-              fields: POS_CONFIG_FIELDS,
-              domain,
-              limit: args.first + 1
-            }),
-            onError: error => {
-              rej(
-                new ApolloError("Application Error", "APPLICATION_ERROR", {
-                  errorMessage: error.message
-                })
-              );
-            },
-            onResult: result => {
-              const hasNextPage = result.records.length === args.first + 1;
-              const queriedResult = hasNextPage
-                ? result.records.slice(0, result.records.length - 1)
-                : result.records;
+              configureService({
+                operation: getDataSet({
+                  context
+                }).createSearchRead({
+                  modelName: "pos.config",
+                  fields: POS_CONFIG_FIELDS,
+                  domain,
+                  limit: args.first + 1
+                }),
+                onError: error => {
+                  rej(
+                    new ApolloError("Application Error", "APPLICATION_ERROR", {
+                      errorMessage: error.message
+                    })
+                  );
+                },
+                onResult: result => {
+                  const hasNextPage = result.records.length === args.first + 1;
+                  const queriedResult = hasNextPage
+                    ? result.records.slice(0, result.records.length - 1)
+                    : result.records;
 
-              res({
-                totalCount: result.length,
-                edges: queriedResult.map(record => ({
-                  node: camelizeKeys(record),
-                  cursor: record.id
-                })),
-                pageInfo: {
-                  endCursor: queriedResult[queriedResult.length - 1].id,
-                  hasNextPage
+                  res({
+                    totalCount: searchReadLengthResult.totalCount,
+                    edges: queriedResult.map(record => ({
+                      node: camelizeKeys(record),
+                      cursor: record.id
+                    })),
+                    pageInfo: {
+                      endCursor: queriedResult[queriedResult.length - 1].id,
+                      hasNextPage
+                    }
+                  });
                 }
               });
-            }
-          });
-        })
+            })
+        )
     },
     posConfig: {
       type: PosConfigType,

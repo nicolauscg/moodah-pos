@@ -4,6 +4,7 @@ import {
   createInsecureClientOptions,
   ServiceOperation
 } from "nodoo";
+import { ApolloError } from "apollo-server-lambda";
 
 interface GetDataSetParam {
   context: {
@@ -16,11 +17,22 @@ interface GetServiceParam {
   onError: (error: any) => void;
 }
 
-// apply createAuthenticate to return operation
+interface GetTotalCountPromiseParam {
+  context: {
+    sessionToken?: string;
+  };
+  modelName: string;
+}
+
+export interface TotalCountObject {
+  totalCount: number;
+}
+
+// get operation for configureService that does not need auth
 export const getSessionAuthNone = () =>
   httpController().operation.session.authNone;
 
-// apply createSearchRead, createRead ... to return operation
+// get operation for configureService that needs auth
 export const getDataSet = ({ context }: GetDataSetParam) =>
   httpController().operation.dataSet({
     sessionToken: context.sessionToken
@@ -46,3 +58,29 @@ export const configureService = ({
     }
   });
 };
+
+// returns a promise to get length of total count of model `modelName`
+// with searchRead method
+export const getTotalCountPromise = ({
+  context,
+  modelName
+}: GetTotalCountPromiseParam): Promise<TotalCountObject> =>
+  new Promise((res, rej) => {
+    configureService({
+      operation: getDataSet({
+        context
+      }).createSearchRead({
+        modelName,
+        fields: [],
+        domain: []
+      }),
+      onError: error => {
+        rej(
+          new ApolloError("Application Error", "APPLICATION_ERROR", {
+            errorMessage: error.message
+          })
+        );
+      },
+      onResult: result => res({ totalCount: result.length })
+    });
+  });
