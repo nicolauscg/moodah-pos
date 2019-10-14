@@ -17,6 +17,22 @@ const GET_POS_CONFIGS = gql`
         id
         name
         active
+        pricelist {
+          id
+          name
+        }
+        discountProduct {
+          id
+          name
+        }
+        stockLocation {
+          id
+          name
+        }
+        pickingType {
+          id
+          name
+        }
       }
     }
   }
@@ -73,9 +89,18 @@ mutation {
   }
 }
 `;
+const SIGN_IN_WITH_INVALID_DB = gql`
+  mutation {
+    signIn(input: { db: "", username: "", password: "" }) {
+      sessionToken
+    }
+  }
+`;
 const CREATE_WITH_CORRECT_INPUT = gql`
   mutation {
-    createPosConfig(input: { name: "createdFromTest", pickingTypeId: 12 }) {
+    createPosConfig(
+      input: { name: "createdFromTest", pickingTypeId: 12, journalIds: [36] }
+    ) {
       posConfig {
         id
         name
@@ -149,6 +174,13 @@ describe("Query", () => {
     for (const index of res.data.posConfigs.records) {
       expect(index.stockLocationId).not.toBeNull();
     }
+  });
+
+  it("fetch pos config without session token give error", async () => {
+    const server = createTestServer();
+    const { query } = createTestClient(server);
+    const res = await query({ query: getPosConfigQuery(1) });
+    expect(res.errors).toEqual(expect.anything());
   });
 
   it("fetch pos configs with session token", async () => {
@@ -259,6 +291,15 @@ describe("Mutations", () => {
     expect(res.data.signIn).toBeNull();
   });
 
+  it("invalid database on sign in give error", async () => {
+    const server = createTestServer();
+    const { mutate } = createTestClient(server);
+    const res = await mutate({
+      mutation: SIGN_IN_WITH_INVALID_DB
+    });
+    expect(res.errors).toEqual(expect.anything());
+  });
+
   it("correct create returns correct output then delete", async () => {
     const server = await createTestServerWithSessionToken({
       signInGql: SIGN_IN
@@ -287,7 +328,8 @@ describe("Mutations", () => {
     const updateResult: any = await mutate({
       mutation: getUpdatePostConfigQuery(`{
         id: ${createdPosConfigId},
-        name: "${UPDATED_POS_CONFIG_NAME}"
+        name: "${UPDATED_POS_CONFIG_NAME}",
+        journalIds : [36]
       }`)
     });
     const deleteResult: any = await mutate({
@@ -298,5 +340,38 @@ describe("Mutations", () => {
       UPDATED_POS_CONFIG_NAME
     );
     expect(deleteResult.data.deletePosConfig.success).toEqual(true);
+  });
+
+  it("create pos cofig without session token give error", async () => {
+    const server = createTestServer();
+    const { mutate } = createTestClient(server);
+    const result: any = await mutate({
+      mutation: CREATE_WITH_CORRECT_INPUT
+    });
+
+    expect(result.errors).toEqual(expect.anything());
+  });
+
+  it("update pos cofig without session token give error", async () => {
+    const server = createTestServer();
+    const { mutate } = createTestClient(server);
+    const result: any = await mutate({
+      mutation: getUpdatePostConfigQuery(`{
+          id: -1,
+          name: "new name"
+        }`)
+    });
+
+    expect(result.errors).toEqual(expect.anything());
+  });
+
+  it("delete pos cofig without session token give error", async () => {
+    const server = createTestServer();
+    const { mutate } = createTestClient(server);
+    const result: any = await mutate({
+      mutation: getDeletePosConfigQuery(-1)
+    });
+
+    expect(result.errors).toEqual(expect.anything());
   });
 });
