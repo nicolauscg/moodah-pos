@@ -13,9 +13,23 @@ const GET_TEST = gql`
 const GET_POS_CONFIGS = gql`
   query {
     posConfigs {
-      id
-      name
-      active
+      records {
+        id
+        name
+        active
+      }
+    }
+  }
+`;
+const getPaginatedPosConfigQuery = (first = 0, offset = 0) => gql`
+  query {
+    posConfigs(input: { first: ${first}, offset: ${offset} }) {
+      length
+      records {
+        id
+        name
+        active
+      }
     }
   }
 `;
@@ -74,12 +88,14 @@ const CREATE_WITH_CORRECT_INPUT = gql`
 const GET_POS_CONFIGS_LOCATION = gql`
   query {
     posConfigs {
-      id
-      name
-      active
-      stockLocation {
+      records {
         id
         name
+        active
+        stockLocation {
+          id
+          name
+        }
       }
     }
   }
@@ -130,7 +146,7 @@ describe("Query", () => {
     });
     const { query } = createTestClient(server);
     const res = await query({ query: GET_POS_CONFIGS_LOCATION });
-    for (const index of res.data.posConfigs) {
+    for (const index of res.data.posConfigs.records) {
       expect(index.stockLocationId).not.toBeNull();
     }
   });
@@ -166,7 +182,7 @@ describe("Query", () => {
     // posConfigRes will contain the id that will be used to check
     // if the singular posConfig is working
     const posConfigRes = await query({ query: GET_POS_CONFIGS });
-    const idsToRead = posConfigRes.data.posConfigs
+    const idsToRead = posConfigRes.data.posConfigs.records
       .slice(0, amountOfIdsToRead)
       .map(posConfig => parseInt(fromGlobalId(posConfig.id).id, 10));
     // concurrently read posConfig
@@ -178,6 +194,47 @@ describe("Query", () => {
           expect(posConfigResult.data.posConfig).not.toBeNull() &&
           expect(posConfigResult.data.posConfig.name).not.toBeNull() &&
           expect(posConfigResult.data.posConfig.stockLocation).not.toBeNull()
+      )
+    );
+  });
+
+  it("fetch paginated pos configs returns correct record length", async () => {
+    const server = await createTestServerWithSessionToken({
+      signInGql: SIGN_IN
+    });
+    const AMOUNT_TO_FETCH = 5;
+    const { query } = createTestClient(server);
+    const result = (await query({
+      query: getPaginatedPosConfigQuery(AMOUNT_TO_FETCH)
+    })).data.posConfigs;
+    expect(result.length).not.toBeNull();
+    if (result.length >= AMOUNT_TO_FETCH) {
+      expect(result.records.length).toEqual(AMOUNT_TO_FETCH);
+    } else {
+      expect(result.records.length).toEqual(result.length);
+    }
+  });
+
+  it("fetch paginated pos configs check offset", async () => {
+    const server = await createTestServerWithSessionToken({
+      signInGql: SIGN_IN
+    });
+    const { query } = createTestClient(server);
+    const GET_ONE_RECORD = 1;
+    const OFFSETS_TO_TEST = 3;
+    const { length, records } = (await query({
+      query: getPaginatedPosConfigQuery(OFFSETS_TO_TEST)
+    })).data.posConfigs;
+    const recordIds = records.map(record => record.id);
+    Promise.all(
+      [...Array(Math.min(OFFSETS_TO_TEST, length)).keys()].map(offset =>
+        query({ query: getPaginatedPosConfigQuery(GET_ONE_RECORD, offset) })
+      )
+    ).then(paginatedResults =>
+      paginatedResults.forEach((paginatedResult: any, index: number) =>
+        expect(paginatedResult.data.posConfigs.records[0].id).toEqual(
+          recordIds[index]
+        )
       )
     );
   });
