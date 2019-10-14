@@ -17,6 +17,21 @@ const GET_POS_CONFIGS = gql`
         id
         name
         active
+        stockLocation {
+          id
+          name
+        }
+      }
+    }
+  }
+`;
+const GET_POS_CONFIGS_ALL_FIELDS = gql`
+  query {
+    posConfigs {
+      records {
+        id
+        name
+        active
         pricelist {
           id
           name
@@ -58,12 +73,14 @@ function filterPosConfigQuery(name: string, stockLocationName: string) {
         name:"${name}",
         stockLocationName:"${stockLocationName}"
       }) {
-        id
-        name
-        active
-        stockLocation {
+        records {
           id
           name
+          active
+          stockLocation {
+            id
+            name
+          }
         }
       }
     }
@@ -209,7 +226,7 @@ describe("Query", () => {
       signInGql: SIGN_IN
     });
     const { query } = createTestClient(server);
-    const res = await query({ query: GET_POS_CONFIGS });
+    const res = await query({ query: GET_POS_CONFIGS_ALL_FIELDS });
     expect(res.data.posConfigs).not.toBeNull();
   });
 
@@ -299,7 +316,7 @@ describe("Query", () => {
     });
     const { query } = createTestClient(server);
     const posConfigResults = await query({ query: GET_POS_CONFIGS });
-    const unfilteredData = posConfigResults.data.posConfigs;
+    const unfilteredData = posConfigResults.data.posConfigs.records;
     // The database should have at least one posConfigs data for the test to work
     expect(unfilteredData[0]).toBeDefined();
 
@@ -317,7 +334,9 @@ describe("Query", () => {
     );
 
     // Checks whether the graphQL filter function actually "filters" the data
-    expect(filteredResult1.data.posConfigs).toStrictEqual(filteredResult2);
+    expect(filteredResult1.data.posConfigs.records).toStrictEqual(
+      filteredResult2
+    );
   });
 });
 
