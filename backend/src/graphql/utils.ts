@@ -4,7 +4,6 @@ import {
   createInsecureClientOptions,
   ServiceOperation
 } from "nodoo";
-import { ApolloError } from "apollo-server-lambda";
 
 interface GetDataSetParam {
   context: {
@@ -15,17 +14,6 @@ interface GetServiceParam {
   operation: ServiceOperation;
   onResult: (result: any) => any;
   onError: (error: any) => void;
-}
-
-interface GetTotalCountPromiseParam {
-  context: {
-    sessionToken?: string;
-  };
-  modelName: string;
-}
-
-export interface TotalCountObject {
-  totalCount: number;
 }
 
 // get operation for configureService that does not need auth
