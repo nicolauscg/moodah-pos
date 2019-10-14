@@ -45,6 +45,23 @@ const POS_CONFIG_FIELDS = [
   "picking_type_id"
 ];
 
+function createDomainFilter(args) {
+  if (args.where === undefined) {
+    return [];
+  }
+  const result = [];
+  const data = args.where;
+
+  if (data.name !== undefined) {
+    result.push(["name", "ilike", data.name]);
+  }
+  if (data.stockLocationName !== undefined) {
+    result.push(["stock_location_id", "ilike", data.stockLocationName]);
+  }
+
+  return result;
+}
+
 const rootType = new GraphQLObjectType({
   name: "Query",
   fields: () => ({
@@ -55,6 +72,19 @@ const rootType = new GraphQLObjectType({
     posConfigs: {
       type: PaginateType(PosConfigType),
       args: {
+        where: {
+          type: new GraphQLInputObjectType({
+            name: "PosConfigsInput",
+            fields: () => ({
+              name: {
+                type: GraphQLString
+              },
+              stockLocationName: {
+                type: GraphQLString
+              }
+            })
+          })
+        },
         input: {
           type: PagableInputType,
           defaultValue: {
@@ -73,7 +103,7 @@ const rootType = new GraphQLObjectType({
                 {
                   modelName: "pos.config",
                   fields: POS_CONFIG_FIELDS,
-                  domain: []
+                  domain: createDomainFilter(args)
                 },
                 args
               )
