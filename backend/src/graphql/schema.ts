@@ -4,7 +4,8 @@ import {
   GraphQLString,
   GraphQLList,
   GraphQLInt,
-  GraphQLInputObjectType
+  GraphQLInputObjectType,
+  GraphQLBoolean
 } from "graphql";
 
 import { ApolloError } from "apollo-server-lambda";
@@ -39,6 +40,23 @@ const POS_CONFIG_FIELDS = [
   "picking_type_id"
 ];
 
+function createDomainFilter(args) {
+  if (args.where === undefined) {
+    return [];
+  }
+  const result = [];
+  const data = args.where;
+
+  if (data.name !== undefined) {
+    result.push(["name", "ilike", data.name]);
+  }
+  if (data.stockLocationName !== undefined) {
+    result.push(["stock_location_id", "ilike", data.stockLocationName]);
+  }
+
+  return result;
+}
+
 const rootType = new GraphQLObjectType({
   name: "Query",
   fields: () => ({
@@ -48,7 +66,22 @@ const rootType = new GraphQLObjectType({
     },
     posConfigs: {
       type: GraphQLList(PosConfigType),
-      resolve: (_0, _1, context) =>
+      args: {
+        where: {
+          type: new GraphQLInputObjectType({
+            name: "PosConfigsInput",
+            fields: () => ({
+              name: {
+                type: GraphQLString
+              },
+              stockLocationName: {
+                type: GraphQLString
+              }
+            })
+          })
+        }
+      },
+      resolve: (_0, args, context) =>
         new Promise((res, rej) => {
           configureService({
             operation: getDataSet({
@@ -56,7 +89,7 @@ const rootType = new GraphQLObjectType({
             }).createSearchRead({
               modelName: "pos.config",
               fields: POS_CONFIG_FIELDS,
-              domain: []
+              domain: createDomainFilter(args)
             }),
             onError: error => {
               rej(
@@ -65,7 +98,9 @@ const rootType = new GraphQLObjectType({
                 })
               );
             },
-            onResult: result => res(camelizeKeys(result.records))
+            onResult: result => {
+              res(camelizeKeys(result.records));
+            }
           });
         })
     },
