@@ -13,17 +13,17 @@ import {
   getDataSet,
   getSessionAuthNone,
   configureService,
-  getTotalCountPromise,
-  TotalCountObject
+  paginateOperationParam
 } from "./utils";
 
-import { getPaginatedItemType } from "./schemas/paginatedItem";
+import { PaginateType } from "./schemas/paginateType";
 import { PosConfigType } from "./schemas/posConfig";
 import { SignInType } from "./schemas/signIn";
 import { SignInInputType } from "./schemas/signInInput";
 import { CreatePosConfigType } from "./schemas/createPosConfig";
 import { UpdateOrDeletePosConfigType } from "./schemas/updateOrDeletePosConfig";
 import { CreateOrUpdatePosConfigInputType } from "./schemas/createOrUpdatePosConfigInput";
+import { PagableInputType } from "./schemas/pagableInput";
 
 const POS_CONFIG_FIELDS = [
   "id",
@@ -53,64 +53,46 @@ const rootType = new GraphQLObjectType({
       resolve: () => "test"
     },
     posConfigs: {
-      type: getPaginatedItemType(PosConfigType),
+      type: PaginateType(PosConfigType),
       args: {
-        first: {
-          type: GraphQLInt
-        },
-        after: {
-          type: GraphQLString
+        input: {
+          type: PagableInputType,
+          defaultValue: {
+            first: 10,
+            offset: 0
+          }
         }
       },
       resolve: (_0, args, context) =>
-        getTotalCountPromise({
-          context,
-          modelName: "pos.config"
-        }).then(
-          (searchReadLengthResult: TotalCountObject) =>
-            new Promise((res, rej) => {
-              const domain = [];
-              if (args.after) {
-                domain.push(["id", ">", parseInt(args.after, 10)]);
-              }
-
-              configureService({
-                operation: getDataSet({
-                  context
-                }).createSearchRead({
+        new Promise((res, rej) => {
+          configureService({
+            operation: getDataSet({
+              context
+            }).createSearchRead(
+              paginateOperationParam(
+                {
                   modelName: "pos.config",
                   fields: POS_CONFIG_FIELDS,
-                  domain,
-                  limit: args.first + 1
-                }),
-                onError: error => {
-                  rej(
-                    new ApolloError("Application Error", "APPLICATION_ERROR", {
-                      errorMessage: error.message
-                    })
-                  );
+                  domain: []
                 },
-                onResult: result => {
-                  const hasNextPage = result.records.length === args.first + 1;
-                  const queriedResult = hasNextPage
-                    ? result.records.slice(0, result.records.length - 1)
-                    : result.records;
-
-                  res({
-                    totalCount: searchReadLengthResult.totalCount,
-                    edges: queriedResult.map(record => ({
-                      node: camelizeKeys(record),
-                      cursor: record.id
-                    })),
-                    pageInfo: {
-                      endCursor: queriedResult[queriedResult.length - 1].id,
-                      hasNextPage
-                    }
-                  });
-                }
+                args
+              )
+            ),
+            onError: error => {
+              rej(
+                new ApolloError("Application Error", "APPLICATION_ERROR", {
+                  errorMessage: error.message
+                })
+              );
+            },
+            onResult: result => {
+              res({
+                length: result.length,
+                records: camelizeKeys(result.records)
               });
-            })
-        )
+            }
+          });
+        })
     },
     posConfig: {
       type: PosConfigType,

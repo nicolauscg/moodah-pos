@@ -47,28 +47,8 @@ export const configureService = ({
   });
 };
 
-// returns a promise to get length of total count of model `modelName`
-// with searchRead method
-export const getTotalCountPromise = ({
-  context,
-  modelName
-}: GetTotalCountPromiseParam): Promise<TotalCountObject> =>
-  new Promise((res, rej) => {
-    configureService({
-      operation: getDataSet({
-        context
-      }).createSearchRead({
-        modelName,
-        fields: [],
-        domain: []
-      }),
-      onError: error => {
-        rej(
-          new ApolloError("Application Error", "APPLICATION_ERROR", {
-            errorMessage: error.message
-          })
-        );
-      },
-      onResult: result => res({ totalCount: result.length })
-    });
-  });
+export const paginateOperationParam = (params, args) => ({
+  ...params,
+  limit: args.input.first,
+  offset: args.input.offset
+});
