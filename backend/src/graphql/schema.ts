@@ -35,7 +35,7 @@ const POS_CONFIG_FIELDS = [
   "discount_pc",
   "use_pricelist",
   "available_pricelist_ids",
-  "price_list_id",
+  "pricelist_id",
   "restrict_price_control",
   "journal_ids",
   "is_header_or_footer",
