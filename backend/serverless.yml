@@ -13,7 +13,8 @@ provider:
   name: aws
   runtime: nodejs10.x
   environment:
-    STAGE: ${opt:stage || dev}
+    STAGE: ${opt:stage, dev}
+    PORT: ${opt:port, 3001}
 
 functions:
   graphql:
