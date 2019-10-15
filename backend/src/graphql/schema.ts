@@ -2,23 +2,28 @@ import {
   GraphQLSchema,
   GraphQLObjectType,
   GraphQLString,
-  GraphQLList,
   GraphQLInt,
-  GraphQLInputObjectType,
-  GraphQLBoolean
+  GraphQLInputObjectType
 } from "graphql";
 
 import { ApolloError } from "apollo-server-lambda";
 import { camelizeKeys, decamelizeKeys } from "humps";
 
-import { getDataSet, getSessionAuthNone, configureService } from "./utils";
+import {
+  getDataSet,
+  getSessionAuthNone,
+  configureService,
+  paginateOperationParam
+} from "./utils";
 
+import { PaginateType } from "./schemas/paginateType";
 import { PosConfigType } from "./schemas/posConfig";
 import { SignInType } from "./schemas/signIn";
 import { SignInInputType } from "./schemas/signInInput";
 import { CreatePosConfigType } from "./schemas/createPosConfig";
 import { UpdateOrDeletePosConfigType } from "./schemas/updateOrDeletePosConfig";
 import { CreateOrUpdatePosConfigInputType } from "./schemas/createOrUpdatePosConfigInput";
+import { PagableInputType } from "./schemas/pagableInput";
 
 const POS_CONFIG_FIELDS = [
   "id",
@@ -30,7 +35,7 @@ const POS_CONFIG_FIELDS = [
   "discount_pc",
   "use_pricelist",
   "available_pricelist_ids",
-  "price_list_id",
+  "pricelist_id",
   "restrict_price_control",
   "journal_ids",
   "is_header_or_footer",
@@ -65,7 +70,7 @@ const rootType = new GraphQLObjectType({
       resolve: () => "test"
     },
     posConfigs: {
-      type: GraphQLList(PosConfigType),
+      type: PaginateType(PosConfigType),
       args: {
         where: {
           type: new GraphQLInputObjectType({
@@ -79,6 +84,13 @@ const rootType = new GraphQLObjectType({
               }
             })
           })
+        },
+        input: {
+          type: PagableInputType,
+          defaultValue: {
+            first: 10,
+            offset: 0
+          }
         }
       },
       resolve: (_0, args, context) =>
@@ -86,11 +98,16 @@ const rootType = new GraphQLObjectType({
           configureService({
             operation: getDataSet({
               context
-            }).createSearchRead({
-              modelName: "pos.config",
-              fields: POS_CONFIG_FIELDS,
-              domain: createDomainFilter(args)
-            }),
+            }).createSearchRead(
+              paginateOperationParam(
+                {
+                  modelName: "pos.config",
+                  fields: POS_CONFIG_FIELDS,
+                  domain: createDomainFilter(args)
+                },
+                args
+              )
+            ),
             onError: error => {
               rej(
                 new ApolloError("Application Error", "APPLICATION_ERROR", {
@@ -99,7 +116,10 @@ const rootType = new GraphQLObjectType({
               );
             },
             onResult: result => {
-              res(camelizeKeys(result.records));
+              res({
+                length: result.length,
+                records: camelizeKeys(result.records)
+              });
             }
           });
         })

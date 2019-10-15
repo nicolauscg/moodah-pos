@@ -13,12 +13,53 @@ const GET_TEST = gql`
 const GET_POS_CONFIGS = gql`
   query {
     posConfigs {
-      id
-      name
-      active
-      stockLocation {
+      records {
         id
         name
+        active
+        stockLocation {
+          id
+          name
+        }
+      }
+    }
+  }
+`;
+const GET_POS_CONFIGS_ALL_FIELDS = gql`
+  query {
+    posConfigs {
+      records {
+        id
+        name
+        active
+        pricelist {
+          id
+          name
+        }
+        discountProduct {
+          id
+          name
+        }
+        stockLocation {
+          id
+          name
+        }
+        pickingType {
+          id
+          name
+        }
+      }
+    }
+  }
+`;
+const getPaginatedPosConfigQuery = (first = 0, offset = 0) => gql`
+  query {
+    posConfigs(input: { first: ${first}, offset: ${offset} }) {
+      length
+      records {
+        id
+        name
+        active
       }
     }
   }
@@ -32,12 +73,14 @@ function filterPosConfigQuery(name: string, stockLocationName: string) {
         name:"${name}",
         stockLocationName:"${stockLocationName}"
       }) {
-        id
-        name
-        active
-        stockLocation {
+        records {
           id
           name
+          active
+          stockLocation {
+            id
+            name
+          }
         }
       }
     }
@@ -84,9 +127,18 @@ mutation {
   }
 }
 `;
+const SIGN_IN_WITH_INVALID_DB = gql`
+  mutation {
+    signIn(input: { db: "", username: "", password: "" }) {
+      sessionToken
+    }
+  }
+`;
 const CREATE_WITH_CORRECT_INPUT = gql`
   mutation {
-    createPosConfig(input: { name: "createdFromTest", pickingTypeId: 12 }) {
+    createPosConfig(
+      input: { name: "createdFromTest", pickingTypeId: 12, journalIds: [36] }
+    ) {
       posConfig {
         id
         name
@@ -99,12 +151,14 @@ const CREATE_WITH_CORRECT_INPUT = gql`
 const GET_POS_CONFIGS_LOCATION = gql`
   query {
     posConfigs {
-      id
-      name
-      active
-      stockLocation {
+      records {
         id
         name
+        active
+        stockLocation {
+          id
+          name
+        }
       }
     }
   }
@@ -155,9 +209,16 @@ describe("Query", () => {
     });
     const { query } = createTestClient(server);
     const res = await query({ query: GET_POS_CONFIGS_LOCATION });
-    for (const index of res.data.posConfigs) {
+    for (const index of res.data.posConfigs.records) {
       expect(index.stockLocationId).not.toBeNull();
     }
+  });
+
+  it("fetch pos config without session token give error", async () => {
+    const server = createTestServer();
+    const { query } = createTestClient(server);
+    const res = await query({ query: getPosConfigQuery(1) });
+    expect(res.errors).toEqual(expect.anything());
   });
 
   it("fetch pos configs with session token", async () => {
@@ -165,7 +226,7 @@ describe("Query", () => {
       signInGql: SIGN_IN
     });
     const { query } = createTestClient(server);
-    const res = await query({ query: GET_POS_CONFIGS });
+    const res = await query({ query: GET_POS_CONFIGS_ALL_FIELDS });
     expect(res.data.posConfigs).not.toBeNull();
   });
 
@@ -191,7 +252,7 @@ describe("Query", () => {
     // posConfigRes will contain the id that will be used to check
     // if the singular posConfig is working
     const posConfigRes = await query({ query: GET_POS_CONFIGS });
-    const idsToRead = posConfigRes.data.posConfigs
+    const idsToRead = posConfigRes.data.posConfigs.records
       .slice(0, amountOfIdsToRead)
       .map(posConfig => parseInt(fromGlobalId(posConfig.id).id, 10));
     // concurrently read posConfig
@@ -207,6 +268,47 @@ describe("Query", () => {
     );
   });
 
+  it("fetch paginated pos configs returns correct record length", async () => {
+    const server = await createTestServerWithSessionToken({
+      signInGql: SIGN_IN
+    });
+    const AMOUNT_TO_FETCH = 5;
+    const { query } = createTestClient(server);
+    const result = (await query({
+      query: getPaginatedPosConfigQuery(AMOUNT_TO_FETCH)
+    })).data.posConfigs;
+    expect(result.length).not.toBeNull();
+    if (result.length >= AMOUNT_TO_FETCH) {
+      expect(result.records.length).toEqual(AMOUNT_TO_FETCH);
+    } else {
+      expect(result.records.length).toEqual(result.length);
+    }
+  });
+
+  it("fetch paginated pos configs check offset", async () => {
+    const server = await createTestServerWithSessionToken({
+      signInGql: SIGN_IN
+    });
+    const { query } = createTestClient(server);
+    const GET_ONE_RECORD = 1;
+    const OFFSETS_TO_TEST = 3;
+    const { length, records } = (await query({
+      query: getPaginatedPosConfigQuery(OFFSETS_TO_TEST)
+    })).data.posConfigs;
+    const recordIds = records.map(record => record.id);
+    Promise.all(
+      [...Array(Math.min(OFFSETS_TO_TEST, length)).keys()].map(offset =>
+        query({ query: getPaginatedPosConfigQuery(GET_ONE_RECORD, offset) })
+      )
+    ).then(paginatedResults =>
+      paginatedResults.forEach((paginatedResult: any, index: number) =>
+        expect(paginatedResult.data.posConfigs.records[0].id).toEqual(
+          recordIds[index]
+        )
+      )
+    );
+  });
+
   // fetch created graphQL posConfig by comparing it with the normal javascript filter function
   it("fetch filtered pos config", async () => {
     const server = await createTestServerWithSessionToken({
@@ -214,7 +316,7 @@ describe("Query", () => {
     });
     const { query } = createTestClient(server);
     const posConfigResults = await query({ query: GET_POS_CONFIGS });
-    const unfilteredData = posConfigResults.data.posConfigs;
+    const unfilteredData = posConfigResults.data.posConfigs.records;
     // The database should have at least one posConfigs data for the test to work
     expect(unfilteredData[0]).toBeDefined();
 
@@ -232,7 +334,9 @@ describe("Query", () => {
     );
 
     // Checks whether the graphQL filter function actually "filters" the data
-    expect(filteredResult1.data.posConfigs).toStrictEqual(filteredResult2);
+    expect(filteredResult1.data.posConfigs.records).toStrictEqual(
+      filteredResult2
+    );
   });
 });
 
@@ -253,6 +357,15 @@ describe("Mutations", () => {
       mutation: SIGN_IN_WITH_WRONG_CREDENTIALS
     });
     expect(res.data.signIn).toBeNull();
+  });
+
+  it("invalid database on sign in give error", async () => {
+    const server = createTestServer();
+    const { mutate } = createTestClient(server);
+    const res = await mutate({
+      mutation: SIGN_IN_WITH_INVALID_DB
+    });
+    expect(res.errors).toEqual(expect.anything());
   });
 
   it("correct create returns correct output then delete", async () => {
@@ -283,7 +396,8 @@ describe("Mutations", () => {
     const updateResult: any = await mutate({
       mutation: getUpdatePostConfigQuery(`{
         id: ${createdPosConfigId},
-        name: "${UPDATED_POS_CONFIG_NAME}"
+        name: "${UPDATED_POS_CONFIG_NAME}",
+        journalIds : [36]
       }`)
     });
     const deleteResult: any = await mutate({
@@ -294,5 +408,38 @@ describe("Mutations", () => {
       UPDATED_POS_CONFIG_NAME
     );
     expect(deleteResult.data.deletePosConfig.success).toEqual(true);
+  });
+
+  it("create pos cofig without session token give error", async () => {
+    const server = createTestServer();
+    const { mutate } = createTestClient(server);
+    const result: any = await mutate({
+      mutation: CREATE_WITH_CORRECT_INPUT
+    });
+
+    expect(result.errors).toEqual(expect.anything());
+  });
+
+  it("update pos cofig without session token give error", async () => {
+    const server = createTestServer();
+    const { mutate } = createTestClient(server);
+    const result: any = await mutate({
+      mutation: getUpdatePostConfigQuery(`{
+          id: -1,
+          name: "new name"
+        }`)
+    });
+
+    expect(result.errors).toEqual(expect.anything());
+  });
+
+  it("delete pos cofig without session token give error", async () => {
+    const server = createTestServer();
+    const { mutate } = createTestClient(server);
+    const result: any = await mutate({
+      mutation: getDeletePosConfigQuery(-1)
+    });
+
+    expect(result.errors).toEqual(expect.anything());
   });
 });

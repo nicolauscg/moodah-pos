@@ -16,11 +16,11 @@ interface GetServiceParam {
   onError: (error: any) => void;
 }
 
-// apply createAuthenticate to return operation
+// get operation for configureService that does not need auth
 export const getSessionAuthNone = () =>
   httpController().operation.session.authNone;
 
-// apply createSearchRead, createRead ... to return operation
+// get operation for configureService that needs auth
 export const getDataSet = ({ context }: GetDataSetParam) =>
   httpController().operation.dataSet({
     sessionToken: context.sessionToken
@@ -46,3 +46,9 @@ export const configureService = ({
     }
   });
 };
+
+export const paginateOperationParam = (params, args) => ({
+  ...params,
+  limit: args.input.first,
+  offset: args.input.offset
+});
