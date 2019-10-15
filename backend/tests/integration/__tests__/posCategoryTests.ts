@@ -34,6 +34,25 @@ const GET_POS_CATEGORIES_WITH_ALL_FIELDS = gql`
     }
   }
 `;
+const CREATE_POS_CATEGORY = gql`
+  mutation {
+    createPosCategory(
+      input: { name: "createdFromTest", parentId: 2, sequence: 0 }
+    ) {
+      id
+      posCategory {
+        id
+        name
+        parent {
+          id
+          name
+        }
+        image
+        sequence
+      }
+    }
+  }
+`;
 
 describe("Query", () => {
   it("query pos categories without session token give error", async () => {
@@ -54,5 +73,26 @@ describe("Query", () => {
       .data.posCategories;
     expect(result.length).not.toBeNull();
     expect(result.records).not.toBeNull();
+  });
+});
+
+describe("Mutation", () => {
+  it("create pos category without session token give error", async () => {
+    const server = createTestServer();
+    const { query } = createTestClient(server);
+    const { errors } = await query({
+      query: GET_POS_CATEGORIES_WITH_ALL_FIELDS
+    });
+    expect(errors).toEqual(expect.anything());
+  });
+
+  it("query pos categories with session token", async () => {
+    const server = await createTestServerWithSessionToken({
+      signInGql: SIGN_IN
+    });
+    const { query } = createTestClient(server);
+    const result = (await query({ query: CREATE_POS_CATEGORY })).data
+      .createPosCategory;
+    expect(result.id).not.toBeNull();
   });
 });
