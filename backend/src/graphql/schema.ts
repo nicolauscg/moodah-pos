@@ -25,6 +25,8 @@ import { UpdateOrDeletePosConfigType } from "./schemas/updateOrDeletePosConfig";
 import { CreateOrUpdatePosConfigInputType } from "./schemas/createOrUpdatePosConfigInput";
 import { PagableInputType } from "./schemas/pagableInput";
 import { PosCategoryType } from "./schemas/posCategory";
+import { CreateOrUpdatePosCategoryInputType } from "./schemas/createOrUpdatePosCategoryInput";
+import { CreatePosCategoryType } from "./schemas/CreatePosCategory";
 
 const POS_CONFIG_FIELDS = [
   "id",
@@ -478,6 +480,35 @@ const mutationType = new GraphQLObjectType({
               });
             })
         )
+    },
+    createPosCategory: {
+      type: CreatePosCategoryType,
+      args: {
+        input: {
+          type: CreateOrUpdatePosCategoryInputType
+        }
+      },
+      resolve: (_0, args, context) =>
+        new Promise((res, rej) => {
+          configureService({
+            operation: getDataSet({ context }).createCreate({
+              modelName: "pos.category",
+              fieldsValues: decamelizeKeys(args.input),
+              kwargs: {}
+            }),
+            onError: error => {
+              rej(
+                new ApolloError("Application Error", "APPLICATION_ERROR", {
+                  errorMessage: error.message
+                })
+              );
+            },
+            onResult: result => {
+              res({ id: result });
+            }
+          });
+          // add read created pos category
+        })
     }
   })
 });
