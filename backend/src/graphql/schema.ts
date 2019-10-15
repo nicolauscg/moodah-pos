@@ -24,6 +24,7 @@ import { CreatePosConfigType } from "./schemas/createPosConfig";
 import { UpdateOrDeletePosConfigType } from "./schemas/updateOrDeletePosConfig";
 import { CreateOrUpdatePosConfigInputType } from "./schemas/createOrUpdatePosConfigInput";
 import { PagableInputType } from "./schemas/pagableInput";
+import { PosCategoryType } from "./schemas/posCategory";
 
 const POS_CONFIG_FIELDS = [
   "id",
@@ -44,6 +45,7 @@ const POS_CONFIG_FIELDS = [
   "stock_location_id",
   "picking_type_id"
 ];
+const POS_CATEGORY_FIELDS = ["image", "name", "parent_id", "sequence"];
 
 function createDomainFilter(args) {
   if (args.where === undefined) {
@@ -166,6 +168,51 @@ const rootType = new GraphQLObjectType({
               } else {
                 res(camelizeKeys(result[0]));
               }
+            }
+          });
+        })
+    },
+    posCategories: {
+      type: PaginateType(PosCategoryType),
+      args: {
+        input: {
+          type: PagableInputType,
+          defaultValue: {
+            first: 10,
+            offset: 0
+          }
+        }
+      },
+      resolve: (_0, args, context) =>
+        new Promise((res, rej) => {
+          configureService({
+            operation: getDataSet({
+              context
+            }).createSearchRead(
+              paginateOperationParam(
+                {
+                  modelName: "pos.category",
+                  fields: POS_CATEGORY_FIELDS,
+                  domain: []
+                },
+                args
+              )
+            ),
+            onError: error => {
+              rej(
+                new ApolloError("Application Error", "APPLICATION_ERROR", {
+                  errorMessage: error.message
+                })
+              );
+            },
+            onResult: result => {
+              result.records.forEach(
+                record => record.image || (record.image = null)
+              );
+              res({
+                length: result.length,
+                records: camelizeKeys(result.records)
+              });
             }
           });
         })
