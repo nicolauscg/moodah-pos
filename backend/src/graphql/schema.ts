@@ -3,8 +3,7 @@ import {
   GraphQLObjectType,
   GraphQLString,
   GraphQLInt,
-  GraphQLInputObjectType,
-  GraphQLList
+  GraphQLInputObjectType
 } from "graphql";
 
 import { ApolloError } from "apollo-server-lambda";
@@ -173,16 +172,14 @@ const rootType = new GraphQLObjectType({
         })
     },
     discountProducts: {
-      type: GraphQLList(DiscountProductType),
-      // offset based pagination, will be converted to cursor based later
+      type: PaginateType(DiscountProductType),
       args: {
-        first: {
-          type: GraphQLInt,
-          defaultValue: 10
-        },
-        offset: {
-          type: GraphQLInt,
-          defaultValue: 0
+        input: {
+          type: PagableInputType,
+          defaultValue: {
+            first: 10,
+            offset: 0
+          }
         }
       },
       resolve: (_0, args, context) =>
@@ -190,16 +187,19 @@ const rootType = new GraphQLObjectType({
           configureService({
             operation: getDataSet({
               context
-            }).createNameSearch({
-              modelName: "product.product",
-              nameToSearch: "",
-              limit: args.first,
-              searchDomain: [
-                ["available_in_pos", "=", true],
-                ["sale_ok", "=", true]
-              ],
-              kwargs: {}
-            }),
+            }).createSearchRead(
+              paginateOperationParam(
+                {
+                  modelName: "product.product",
+                  fields: ["id", "name"],
+                  domain: [
+                    ["available_in_pos", "=", true],
+                    ["sale_ok", "=", true]
+                  ]
+                },
+                args
+              )
+            ),
             onError: error => {
               rej(
                 new ApolloError("Application Error", "APPLICATION_ERROR", {
@@ -208,7 +208,12 @@ const rootType = new GraphQLObjectType({
               );
             },
             onResult: result => {
-              res(camelizeKeys(result));
+              res(
+                camelizeKeys({
+                  length: result.length,
+                  records: result.records
+                })
+              );
             }
           });
         })

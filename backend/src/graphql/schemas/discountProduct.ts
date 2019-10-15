@@ -4,12 +4,10 @@ const DiscountProductType = new GraphQLObjectType({
   name: "DiscountProductType",
   fields: () => ({
     id: {
-      type: GraphQLInt,
-      resolve: parent => parent[0]
+      type: GraphQLInt
     },
     name: {
-      type: GraphQLString,
-      resolve: parent => parent[1]
+      type: GraphQLString
     }
   })
 });
