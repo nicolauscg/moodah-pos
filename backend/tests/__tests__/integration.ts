@@ -189,8 +189,11 @@ const getUpdatePostConfigQuery = (fieldsToUpate: string) => gql`
 const GET_DISCOUNT_PRODUCTS = gql`
   query {
     discountProducts {
-      id
-      name
+      length
+      records {
+        id
+        name
+      }
     }
   }
 `;
@@ -281,11 +284,12 @@ describe("Query", () => {
       signInGql: SIGN_IN
     });
     const { query } = createTestClient(server);
-    const res = await query({ query: GET_DISCOUNT_PRODUCTS });
-    expect(res.data.discountProducts).not.toBeNull();
-    if (res.data.discountProducts.length) {
-      expect(res.data.discountProducts[0].id).toEqual(expect.any(Number));
-      expect(res.data.discountProducts[0].name).toEqual(expect.any(String));
+    const result = (await query({ query: GET_DISCOUNT_PRODUCTS })).data
+      .discountProducts;
+    expect(result).not.toBeNull();
+    if (result.records.length) {
+      expect(result.records[0].id).toEqual(expect.any(Number));
+      expect(result.records[0].name).toEqual(expect.any(String));
     }
   });
 
