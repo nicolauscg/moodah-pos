@@ -204,8 +204,7 @@ describe("Query", () => {
     });
     const { query } = createTestClient(server);
     const res = await query({ query: GET_INVENTORY_OPERATION });
-    expect(res.data.inventoryOperation.id).not.toBeNull();
-    expect(res.data.inventoryOperation.name).not.toBeNull();
+    expect(res.data.inventoryOperation).not.toBeNull();
   });
 
   it("fetch all inventory stock location", async () => {
@@ -214,8 +213,7 @@ describe("Query", () => {
     });
     const { query } = createTestClient(server);
     const res = await query({ query: GET_STOCK_LOCATION_OPERATION });
-    expect(res.data.stockLocationOperation.id).not.toBeNull();
-    expect(res.data.stockLocationOperation.name).not.toBeNull();
+    expect(res.data.stockLocationOperation).not.toBeNull();
   });
 });
 
