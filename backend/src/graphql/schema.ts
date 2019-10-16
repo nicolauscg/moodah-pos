@@ -2,7 +2,6 @@ import {
   GraphQLSchema,
   GraphQLObjectType,
   GraphQLString,
-  GraphQLList,
   GraphQLInt,
   GraphQLInputObjectType
 } from "graphql";
@@ -10,15 +9,23 @@ import {
 import { ApolloError } from "apollo-server-lambda";
 import { camelizeKeys, decamelizeKeys } from "humps";
 
-import { getDataSet, getSessionAuthNone, configureService } from "./utils";
+import {
+  getDataSet,
+  getSessionAuthNone,
+  configureService,
+  paginateOperationParam
+} from "./utils";
 
+import { PaginateType } from "./schemas/paginateType";
 import { PosConfigType } from "./schemas/posConfig";
 import { SignInType } from "./schemas/signIn";
 import { SignInInputType } from "./schemas/signInInput";
 import { CreatePosConfigType } from "./schemas/createPosConfig";
 import { UpdateOrDeletePosConfigType } from "./schemas/updateOrDeletePosConfig";
 import { CreateOrUpdatePosConfigInputType } from "./schemas/createOrUpdatePosConfigInput";
-import { InventoryOperationType } from "./schemas/inventoryOperation";
+import { OperationTypesType } from "./schemas/operationType";
+import { PagableInputType } from "./schemas/pagableInput";
+import { StockLocationType } from "./schemas/stockLocation";
 
 const POS_CONFIG_FIELDS = [
   "id",
@@ -30,7 +37,7 @@ const POS_CONFIG_FIELDS = [
   "discount_pc",
   "use_pricelist",
   "available_pricelist_ids",
-  "price_list_id",
+  "pricelist_id",
   "restrict_price_control",
   "journal_ids",
   "is_header_or_footer",
@@ -40,6 +47,23 @@ const POS_CONFIG_FIELDS = [
   "picking_type_id"
 ];
 
+function createDomainFilter(args) {
+  if (args.where === undefined) {
+    return [];
+  }
+  const result = [];
+  const data = args.where;
+
+  if (data.name !== undefined) {
+    result.push(["name", "ilike", data.name]);
+  }
+  if (data.stockLocationName !== undefined) {
+    result.push(["stock_location_id", "ilike", data.stockLocationName]);
+  }
+
+  return result;
+}
+
 const rootType = new GraphQLObjectType({
   name: "Query",
   fields: () => ({
@@ -48,17 +72,44 @@ const rootType = new GraphQLObjectType({
       resolve: () => "test"
     },
     posConfigs: {
-      type: GraphQLList(PosConfigType),
-      resolve: (_0, _1, context) =>
+      type: PaginateType(PosConfigType),
+      args: {
+        where: {
+          type: new GraphQLInputObjectType({
+            name: "PosConfigsInput",
+            fields: () => ({
+              name: {
+                type: GraphQLString
+              },
+              stockLocationName: {
+                type: GraphQLString
+              }
+            })
+          })
+        },
+        input: {
+          type: PagableInputType,
+          defaultValue: {
+            first: 10,
+            offset: 0
+          }
+        }
+      },
+      resolve: (_0, args, context) =>
         new Promise((res, rej) => {
           configureService({
             operation: getDataSet({
               context
-            }).createSearchRead({
-              modelName: "pos.config",
-              fields: POS_CONFIG_FIELDS,
-              domain: []
-            }),
+            }).createSearchRead(
+              paginateOperationParam(
+                {
+                  modelName: "pos.config",
+                  fields: POS_CONFIG_FIELDS,
+                  domain: createDomainFilter(args)
+                },
+                args
+              )
+            ),
             onError: error => {
               rej(
                 new ApolloError("Application Error", "APPLICATION_ERROR", {
@@ -66,7 +117,12 @@ const rootType = new GraphQLObjectType({
                 })
               );
             },
-            onResult: result => res(camelizeKeys(result.records))
+            onResult: result => {
+              res({
+                length: result.length,
+                records: camelizeKeys(result.records)
+              });
+            }
           });
         })
     },
@@ -116,20 +172,45 @@ const rootType = new GraphQLObjectType({
           });
         })
     },
-    inventoryOperation: {
-      type: GraphQLList(InventoryOperationType),
-      resolve: (_0, _1, context) =>
+    operationTypes: {
+      type: PaginateType(OperationTypesType),
+      args: {
+        where: {
+          type: new GraphQLInputObjectType({
+            name: "OperationTypesInput",
+            fields: () => ({
+              name: {
+                type: GraphQLString
+              },
+              stockLocationName: {
+                type: GraphQLString
+              }
+            })
+          })
+        },
+        input: {
+          type: PagableInputType,
+          defaultValue: {
+            first: 10,
+            offset: 0
+          }
+        }
+      },
+      resolve: (_0, args, context) =>
         new Promise((res, rej) => {
           configureService({
             operation: getDataSet({
               context
-            }).createNameSearch({
-              modelName: "stock.picking.type",
-              nameToSearch: "",
-              limit: 8,
-              operator: "ilike",
-              kwargs: {}
-            }),
+            }).createSearchRead(
+              paginateOperationParam(
+                {
+                  modelName: "stock.picking.type",
+                  fields: POS_CONFIG_FIELDS,
+                  domain: createDomainFilter(args)
+                },
+                args
+              )
+            ),
             onError: error => {
               rej(
                 new ApolloError("Application Error", "APPLICATION_ERROR", {
@@ -137,25 +218,54 @@ const rootType = new GraphQLObjectType({
                 })
               );
             },
-            onResult: result => res(result)
+            onResult: result => {
+              res({
+                length: result.length,
+                records: camelizeKeys(result.records)
+              });
+            }
           });
         })
     },
-    stockLocationOperation: {
-      type: GraphQLList(InventoryOperationType),
-      resolve: (_0, _1, context) =>
+    stockLocations: {
+      type: PaginateType(StockLocationType),
+      args: {
+        where: {
+          type: new GraphQLInputObjectType({
+            name: "StockLocationInput",
+            fields: () => ({
+              name: {
+                type: GraphQLString
+              },
+              stockLocationName: {
+                type: GraphQLString
+              }
+            })
+          })
+        },
+        input: {
+          type: PagableInputType,
+          defaultValue: {
+            first: 10,
+            offset: 0
+          }
+        }
+      },
+      resolve: (_0, args, context) =>
         new Promise((res, rej) => {
           configureService({
             operation: getDataSet({
               context
-            }).createNameSearch({
-              modelName: "stock.location",
-              nameToSearch: "",
-              limit: 8,
-              operator: "ilike",
-              searchDomain: [["usage", "=", "internal"]],
-              kwargs: {}
-            }),
+            }).createSearchRead(
+              paginateOperationParam(
+                {
+                  modelName: "stock.location",
+                  fields: POS_CONFIG_FIELDS,
+                  domain: createDomainFilter(args)
+                },
+                args
+              )
+            ),
             onError: error => {
               rej(
                 new ApolloError("Application Error", "APPLICATION_ERROR", {
@@ -163,7 +273,12 @@ const rootType = new GraphQLObjectType({
                 })
               );
             },
-            onResult: result => res(result)
+            onResult: result => {
+              res({
+                length: result.length,
+                records: camelizeKeys(result.records)
+              });
+            }
           });
         })
     }
