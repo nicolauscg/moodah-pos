@@ -26,6 +26,7 @@ import { CreateOrUpdatePosConfigInputType } from "./schemas/createOrUpdatePosCon
 import { OperationTypesType } from "./schemas/operationType";
 import { PagableInputType } from "./schemas/pagableInput";
 import { StockLocationType } from "./schemas/stockLocation";
+import { DiscountProductType } from "./schemas/discountProduct";
 
 const POS_CONFIG_FIELDS = [
   "id",
@@ -252,6 +253,53 @@ const rootType = new GraphQLObjectType({
                 length: result.length,
                 records: camelizeKeys(result.records)
               });
+            }
+          });
+        })
+    },
+    discountProducts: {
+      type: PaginateType(DiscountProductType),
+      args: {
+        input: {
+          type: PagableInputType,
+          defaultValue: {
+            first: 10,
+            offset: 0
+          }
+        }
+      },
+      resolve: (_0, args, context) =>
+        new Promise((res, rej) => {
+          configureService({
+            operation: getDataSet({
+              context
+            }).createSearchRead(
+              paginateOperationParam(
+                {
+                  modelName: "product.product",
+                  fields: ["id", "name"],
+                  domain: [
+                    ["available_in_pos", "=", true],
+                    ["sale_ok", "=", true]
+                  ]
+                },
+                args
+              )
+            ),
+            onError: error => {
+              rej(
+                new ApolloError("Application Error", "APPLICATION_ERROR", {
+                  errorMessage: error.message
+                })
+              );
+            },
+            onResult: result => {
+              res(
+                camelizeKeys({
+                  length: result.length,
+                  records: result.records
+                })
+              );
             }
           });
         })

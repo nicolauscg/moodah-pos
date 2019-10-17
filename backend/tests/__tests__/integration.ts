@@ -208,6 +208,17 @@ const getUpdatePostConfigQuery = (fieldsToUpate: string) => gql`
     }
   }
 `;
+const GET_DISCOUNT_PRODUCTS = gql`
+  query {
+    discountProducts {
+      length
+      records {
+        id
+        name
+      }
+    }
+  }
+`;
 
 describe("Query", () => {
   it("return test query response", async () => {
@@ -306,6 +317,20 @@ describe("Query", () => {
     const { query } = createTestClient(server);
     const res = await query({ query: GET_STOCK_LOCATIONS });
     expect(res.data.stockLocations).not.toBeNull();
+  });
+
+  it("fetch discount products", async () => {
+    const server = await createTestServerWithSessionToken({
+      signInGql: SIGN_IN
+    });
+    const { query } = createTestClient(server);
+    const result = (await query({ query: GET_DISCOUNT_PRODUCTS })).data
+      .discountProducts;
+    expect(result).not.toBeNull();
+    if (result.records.length) {
+      expect(result.records[0].id).toEqual(expect.any(Number));
+      expect(result.records[0].name).toEqual(expect.any(String));
+    }
   });
 
   it("fetch paginated pos configs returns correct record length", async () => {
