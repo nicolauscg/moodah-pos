@@ -154,9 +154,6 @@ const rootType = new GraphQLObjectType({
               );
             },
             onResult: result => {
-              console.log("yeet number zero", result);
-              console.log("yeet number one ", result[0]);
-              console.log("yeet number two ", result[1]);
               res(camelizeKeys(result));
             }
           });

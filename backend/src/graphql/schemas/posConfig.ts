@@ -120,5 +120,4 @@ const PosConfigType = new GraphQLObjectType({
   })
 });
 
-
 export { PosConfigType };
