@@ -107,6 +107,14 @@ const getUpdatePostConfigQuery = (fieldsToUpate: string) => gql`
     }
   }
 `;
+const getPaymentMethod = gql`
+  query {
+    paymentMethod {
+      name
+      id
+    }
+  }
+`;
 
 describe("Query", () => {
   it("return test query response", async () => {
@@ -180,6 +188,16 @@ describe("Query", () => {
           expect(posConfigResult.data.posConfig.stockLocation).not.toBeNull()
       )
     );
+  });
+
+  // test that returns the payment method
+  it("get payment method", async () => {
+    const server = await createTestServerWithSessionToken({
+      signInGql: SIGN_IN
+    });
+    const { query } = createTestClient(server);
+    const res = await query({ query: getPaymentMethod });
+    expect(res.data.paymentMethod).not.toBeNull();
   });
 });
 
