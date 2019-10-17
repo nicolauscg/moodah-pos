@@ -13,7 +13,8 @@ import {
   getDataSet,
   getSessionAuthNone,
   configureService,
-  paginateOperationParam
+  isFilterArgsValid,
+  paginateAndFilterOperationParam
 } from "./utils";
 
 import { PaginateType } from "./schemas/paginateType";
@@ -23,7 +24,7 @@ import { SignInInputType } from "./schemas/signInInput";
 import { CreatePosConfigType } from "./schemas/createPosConfig";
 import { UpdateOrDeletePosConfigType } from "./schemas/updateOrDeletePosConfig";
 import { CreateOrUpdatePosConfigInputType } from "./schemas/createOrUpdatePosConfigInput";
-import { PagableInputType } from "./schemas/pagableInput";
+import { FilterableAndPagableInputType } from "./schemas/FilterableAndPageableInputType";
 
 const POS_CONFIG_FIELDS = [
   "id",
@@ -45,23 +46,6 @@ const POS_CONFIG_FIELDS = [
   "picking_type_id"
 ];
 
-function createDomainFilter(args) {
-  if (args.where === undefined) {
-    return [];
-  }
-  const result = [];
-  const data = args.where;
-
-  if (data.name !== undefined) {
-    result.push(["name", "ilike", data.name]);
-  }
-  if (data.stockLocationName !== undefined) {
-    result.push(["stock_location_id", "ilike", data.stockLocationName]);
-  }
-
-  return result;
-}
-
 const rootType = new GraphQLObjectType({
   name: "Query",
   fields: () => ({
@@ -72,21 +56,20 @@ const rootType = new GraphQLObjectType({
     posConfigs: {
       type: PaginateType(PosConfigType),
       args: {
-        where: {
-          type: new GraphQLInputObjectType({
-            name: "PosConfigsInput",
-            fields: () => ({
-              name: {
-                type: GraphQLString
-              },
-              stockLocationName: {
-                type: GraphQLString
-              }
-            })
-          })
-        },
         input: {
-          type: PagableInputType,
+          type: FilterableAndPagableInputType(
+            new GraphQLInputObjectType({
+              name: "PosConfigsInput",
+              fields: () => ({
+                name: {
+                  type: GraphQLString
+                },
+                stockLocationName: {
+                  type: GraphQLString
+                }
+              })
+            })
+          ),
           defaultValue: {
             first: 10,
             offset: 0
@@ -95,15 +78,23 @@ const rootType = new GraphQLObjectType({
       },
       resolve: (_0, args, context) =>
         new Promise((res, rej) => {
+          if (!isFilterArgsValid(args)) {
+            rej(
+              new ApolloError("Application Error", "APPLICATION_ERROR", {
+                errorMessage:
+                  "invalid filter-related input, ensure each field object " +
+                  "has only 1 key and OR and AND are mutually exclusive"
+              })
+            );
+          }
           configureService({
             operation: getDataSet({
               context
             }).createSearchRead(
-              paginateOperationParam(
+              paginateAndFilterOperationParam(
                 {
                   modelName: "pos.config",
-                  fields: POS_CONFIG_FIELDS,
-                  domain: createDomainFilter(args)
+                  fields: POS_CONFIG_FIELDS
                 },
                 args
               )
