@@ -18,6 +18,7 @@ import { SignInInputType } from "./schemas/signInInput";
 import { CreatePosConfigType } from "./schemas/createPosConfig";
 import { UpdateOrDeletePosConfigType } from "./schemas/updateOrDeletePosConfig";
 import { CreateOrUpdatePosConfigInputType } from "./schemas/createOrUpdatePosConfigInput";
+import { PaymentMethodType } from "./schemas/paymentMethod";
 
 const POS_CONFIG_FIELDS = [
   "id",
@@ -36,7 +37,8 @@ const POS_CONFIG_FIELDS = [
   "receipt_header",
   "receipt_footer",
   "stock_location_id",
-  "picking_type_id"
+  "picking_type_id",
+  "payment_method_id"
 ];
 
 const rootType = new GraphQLObjectType({
@@ -111,6 +113,51 @@ const rootType = new GraphQLObjectType({
               } else {
                 res(camelizeKeys(result[0]));
               }
+            }
+          });
+        })
+    },
+
+    paymentMethod: {
+      type: GraphQLList(PaymentMethodType),
+      args: {
+        input: {
+          type: new GraphQLInputObjectType({
+            name: "PaymentMethodInput",
+            fields: () => ({
+              id: {
+                type: GraphQLInt
+              },
+              name: {
+                type: GraphQLString
+              }
+            })
+          })
+        }
+      },
+      resolve: (_0, _1, context) =>
+        new Promise((res, rej) => {
+          configureService({
+            operation: getDataSet({
+              context
+            }).createNameSearch({
+              modelName: "account.journal",
+              nameToSearch: "",
+              limit: 8,
+              searchDomain: [["journal_user", "=", true]]
+            }),
+            onError: error => {
+              rej(
+                new ApolloError("Application Error", "APPLICATION_ERROR", {
+                  errorMessage: error.message
+                })
+              );
+            },
+            onResult: result => {
+              console.log("yeet number zero", result);
+              console.log("yeet number one ", result[0]);
+              console.log("yeet number two ", result[1]);
+              res(camelizeKeys(result));
             }
           });
         })
