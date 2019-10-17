@@ -175,19 +175,6 @@ const rootType = new GraphQLObjectType({
     operationTypes: {
       type: PaginateType(OperationTypesType),
       args: {
-        where: {
-          type: new GraphQLInputObjectType({
-            name: "OperationTypesInput",
-            fields: () => ({
-              name: {
-                type: GraphQLString
-              },
-              stockLocationName: {
-                type: GraphQLString
-              }
-            })
-          })
-        },
         input: {
           type: PagableInputType,
           defaultValue: {
@@ -206,7 +193,7 @@ const rootType = new GraphQLObjectType({
                 {
                   modelName: "stock.picking.type",
                   fields: POS_CONFIG_FIELDS,
-                  domain: createDomainFilter(args)
+                  domain: []
                 },
                 args
               )
@@ -230,19 +217,6 @@ const rootType = new GraphQLObjectType({
     stockLocations: {
       type: PaginateType(StockLocationType),
       args: {
-        where: {
-          type: new GraphQLInputObjectType({
-            name: "StockLocationInput",
-            fields: () => ({
-              name: {
-                type: GraphQLString
-              },
-              stockLocationName: {
-                type: GraphQLString
-              }
-            })
-          })
-        },
         input: {
           type: PagableInputType,
           defaultValue: {
@@ -261,7 +235,7 @@ const rootType = new GraphQLObjectType({
                 {
                   modelName: "stock.location",
                   fields: POS_CONFIG_FIELDS,
-                  domain: createDomainFilter(args)
+                  domain: []
                 },
                 args
               )
