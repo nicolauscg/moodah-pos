@@ -9,4 +9,9 @@ export default {
     route: '/configuration/list',
      icon: 'setting',
   },
+  'moodah_general_menu.menu_productcategory': {
+    name: 'Product Category',
+    route: '/configuration/list',
+    icon: 'accounting',
+  },
 }

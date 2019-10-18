@@ -11,8 +11,8 @@
   transform: translateX(calc(-100% - 20px));
 
   @include themify($themes) {
-    background: themed('colorTopbarSidebar');
-    //background: #393e46;
+    // background: themed('colorBackground');
+    background: #393e46;
   }
 
   a {
