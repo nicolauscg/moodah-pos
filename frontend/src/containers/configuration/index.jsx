@@ -7,12 +7,11 @@ import { Link } from 'react-router-dom'
 import SearchIcon from 'mdi-react/SearchIcon'
 import { withFormik, Form, Field } from 'formik'
 
-import { ResPartners } from '../../generated-models'
 import offsetToCursor from '../../utils/offsetToCursor'
 
 import Breadcrumb from '../../shared/components/Breadcrumb'
 
-// import ConfigurationTabs from './components/ConfigurationTabs'
+import ConfigurationTable from './components/ConfigurationTable'
 
 const SearchInput = ({ field, form, handleSetValue, ...props }) => {
   const { onChange, ...restField } = field
@@ -87,7 +86,7 @@ const ConfigurationIndex = ({
            />
 
           <Link
-          to={`/partners/list`}
+          to={`/configuration/list`}
           className="btn btn-primary btn-sm"
           >
           Buat Baru
@@ -98,6 +97,14 @@ const ConfigurationIndex = ({
           </Button>
 
         </Col>
+      </Row>
+      <Row>
+         <ConfigurationTable
+          filters={filters}
+          setFilters={setFilters}
+          offset={offset}
+          setOffset={setOffset}
+         />
       </Row>
     </Container>
   )
@@ -122,7 +129,6 @@ const enhance = compose(
       },
       refetchQueries: ({ filters, offset }) => () => [
         {
-          query: ResPartners.Document,
           variables: {
             filters,
             ...(offset > 0 ? { offset: offsetToCursor(offset) } : {}),
