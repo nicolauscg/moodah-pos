@@ -11,6 +11,7 @@ import { ResPartners } from '../../generated-models'
 import offsetToCursor from '../../utils/offsetToCursor'
 
 import Breadcrumb from '../../shared/components/Breadcrumb'
+import ProductCategoryTable from './components/ProductCategoryTable'
 
 const SearchInput = ({ field, form, handleSetValue, ...props }) => {
   const { onChange, ...restField } = field
@@ -97,6 +98,15 @@ const ProductCategoryIndex = ({
 
         </Col>
       </Row>
+      <Row>
+        <ProductCategoryTable
+         filters={filters}
+         setFilters={setFilters}
+         offset={offset}
+         setOffset={setOffset}
+         />
+      </Row>
+
     </Container>
   )
 }
@@ -120,7 +130,6 @@ const enhance = compose(
       },
       refetchQueries: ({ filters, offset }) => () => [
         {
-          query: ResPartners.Document,
           variables: {
             filters,
             ...(offset > 0 ? { offset: offsetToCursor(offset) } : {}),
