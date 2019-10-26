@@ -198,6 +198,8 @@ describe("Query", () => {
     const { query } = createTestClient(server);
     const res = await query({ query: getPaymentMethod });
     expect(res.data.paymentMethod).not.toBeNull();
+    // expect(res.data.paymentMethod[0]).not.toBeNull();
+    // expect(res.data.paymentMethod[1]).not.toBeNull();
   });
 });
 
