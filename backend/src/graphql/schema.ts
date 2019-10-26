@@ -117,7 +117,7 @@ const rootType = new GraphQLObjectType({
         })
     },
 
-    paymentMethod: {
+    paymentMethods: {
       type: GraphQLList(PaymentMethodType),
       args: {
         input: {
