@@ -47,8 +47,7 @@ const POS_CONFIG_FIELDS = [
   "receipt_header",
   "receipt_footer",
   "stock_location_id",
-  "picking_type_id",
-  "payment_method_id"
+  "picking_type_id"
 ];
 
 function createDomainFilter(args) {
@@ -176,7 +175,7 @@ const rootType = new GraphQLObjectType({
           });
         })
     },
-    paymentMethod: {
+    paymentMethods: {
       type: GraphQLList(PaymentMethodType),
       args: {
         input: {
