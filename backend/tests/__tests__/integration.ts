@@ -163,6 +163,28 @@ const GET_POS_CONFIGS_LOCATION = gql`
     }
   }
 `;
+const GET_INVENTORY_TYPES = gql`
+  query {
+    operationTypes(input: { first: 5, offset: 0 }) {
+      length
+      records {
+        id
+        name
+      }
+    }
+  }
+`;
+const GET_STOCK_LOCATIONS = gql`
+  query {
+    stockLocations(input: { first: 5, offset: 0 }) {
+      length
+      records {
+        id
+        name
+      }
+    }
+  }
+`;
 const getDeletePosConfigQuery = (id: number) => gql`
   mutation {
     deletePosConfig(input: {
@@ -277,6 +299,24 @@ describe("Query", () => {
           expect(posConfigResult.data.posConfig.stockLocation).not.toBeNull()
       )
     );
+  });
+
+  it("fetch all inventory operation types", async () => {
+    const server = await createTestServerWithSessionToken({
+      signInGql: SIGN_IN
+    });
+    const { query } = createTestClient(server);
+    const res = await query({ query: GET_INVENTORY_TYPES });
+    expect(res.data.operationTypes).not.toBeNull();
+  });
+
+  it("fetch all inventory stock locations", async () => {
+    const server = await createTestServerWithSessionToken({
+      signInGql: SIGN_IN
+    });
+    const { query } = createTestClient(server);
+    const res = await query({ query: GET_STOCK_LOCATIONS });
+    expect(res.data.stockLocations).not.toBeNull();
   });
 
   it("fetch discount products", async () => {

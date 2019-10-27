@@ -23,8 +23,10 @@ import { SignInInputType } from "./schemas/signInInput";
 import { CreatePosConfigType } from "./schemas/createPosConfig";
 import { UpdateOrDeletePosConfigType } from "./schemas/updateOrDeletePosConfig";
 import { CreateOrUpdatePosConfigInputType } from "./schemas/createOrUpdatePosConfigInput";
-import { DiscountProductType } from "./schemas/discountProduct";
+import { OperationTypesType } from "./schemas/operationType";
 import { PagableInputType } from "./schemas/pagableInput";
+import { StockLocationType } from "./schemas/stockLocation";
+import { DiscountProductType } from "./schemas/discountProduct";
 
 const POS_CONFIG_FIELDS = [
   "id",
@@ -167,6 +169,90 @@ const rootType = new GraphQLObjectType({
               } else {
                 res(camelizeKeys(result[0]));
               }
+            }
+          });
+        })
+    },
+    operationTypes: {
+      type: PaginateType(OperationTypesType),
+      args: {
+        input: {
+          type: PagableInputType,
+          defaultValue: {
+            first: 10,
+            offset: 0
+          }
+        }
+      },
+      resolve: (_0, args, context) =>
+        new Promise((res, rej) => {
+          configureService({
+            operation: getDataSet({
+              context
+            }).createSearchRead(
+              paginateOperationParam(
+                {
+                  modelName: "stock.picking.type",
+                  fields: POS_CONFIG_FIELDS,
+                  domain: []
+                },
+                args
+              )
+            ),
+            onError: error => {
+              rej(
+                new ApolloError("Application Error", "APPLICATION_ERROR", {
+                  errorMessage: error.message
+                })
+              );
+            },
+            onResult: result => {
+              res({
+                length: result.length,
+                records: camelizeKeys(result.records)
+              });
+            }
+          });
+        })
+    },
+    stockLocations: {
+      type: PaginateType(StockLocationType),
+      args: {
+        input: {
+          type: PagableInputType,
+          defaultValue: {
+            first: 10,
+            offset: 0
+          }
+        }
+      },
+      resolve: (_0, args, context) =>
+        new Promise((res, rej) => {
+          configureService({
+            operation: getDataSet({
+              context
+            }).createSearchRead(
+              paginateOperationParam(
+                {
+                  modelName: "stock.location",
+                  fields: POS_CONFIG_FIELDS,
+                  domain: []
+                },
+                args
+              )
+            ),
+            onError: error => {
+              rej(
+                new ApolloError("Application Error", "APPLICATION_ERROR", {
+                  errorMessage: error.message
+                })
+              );
+            },
+            onResult: result => {
+              res({
+                length: result.length,
+                records: camelizeKeys(result.records)
+              });
             }
           });
         })
