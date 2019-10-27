@@ -1,10 +1,17 @@
-schema:
-  - https://kjjpup3by7.execute-api.ap-southeast-1.amazonaws.com/staging/graphql-introspect
-documents:
-  - './src/**/*.graphql'
-config: {}
 generates:
   ./src/generated-models.tsx:
+    schema: https://kjjpup3by7.execute-api.ap-southeast-1.amazonaws.com/staging/graphql-introspect
+    documents:
+      - './src/graphqls/template/*.graphql'
+    config: {}
+    plugins:
+      - 'typescript-common'
+      - 'typescript-client'
+      - 'typescript-react-apollo'
+  ./src/generated-pos-models.tsx:
+    schema: https://o6w9uffa6d.execute-api.us-east-1.amazonaws.com/dev/graphql
+    documents:
+      - './src/graphqls/pos/*.graphql'
     config: {}
     plugins:
       - 'typescript-common'
