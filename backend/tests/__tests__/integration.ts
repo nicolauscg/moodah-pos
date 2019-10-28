@@ -208,6 +208,22 @@ const getUpdatePostConfigQuery = (fieldsToUpate: string) => gql`
     }
   }
 `;
+const GET_AVAILABLE_PRICELIST = gql`
+  query {
+    availablePriceLists {
+      length
+      records {
+        id
+        name
+        currency {
+          id
+          name
+        }
+      }
+    }
+  }
+`;
+
 const GET_DISCOUNT_PRODUCTS = gql`
   query {
     discountProducts {
@@ -275,7 +291,36 @@ describe("Query", () => {
     expect(res.data.posConfig).toBeNull();
   });
 
-  it(`fetch singular pos config with session token via id from multiple
+  it("query availablePriceLists with session token", async () => {
+    const server = await createTestServerWithSessionToken({
+      signInGql: SIGN_IN
+    });
+    const { query } = createTestClient(server);
+    const result = (await query({ query: GET_AVAILABLE_PRICELIST })).data
+      .availablePriceLists;
+    expect(result.length).toEqual(expect.anything());
+    expect(result.records).toEqual(expect.anything());
+    expect(result.records).toContainEqual(
+      expect.objectContaining({
+        id: expect.any(Number),
+        name: expect.any(String),
+        currency: expect.objectContaining({
+          id: expect.any(Number),
+          name: expect.any(String)
+        })
+      })
+    );
+  });
+
+  it("query availablePriceLists without session token", async () => {
+    const server = createTestServer();
+    const { query } = createTestClient(server);
+    const result = await query({ query: GET_AVAILABLE_PRICELIST });
+    expect(result.data.availablePriceLists).toBeNull();
+    expect(result.errors).toEqual(expect.anything());
+  });
+
+  it(`fetch singular pos config with session token via id from multiple 
       pos configs fetch`, async () => {
     const amountOfIdsToRead = 3;
     const server = await createTestServerWithSessionToken({

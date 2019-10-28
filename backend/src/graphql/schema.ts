@@ -23,6 +23,7 @@ import { SignInInputType } from "./schemas/signInInput";
 import { CreatePosConfigType } from "./schemas/createPosConfig";
 import { UpdateOrDeletePosConfigType } from "./schemas/updateOrDeletePosConfig";
 import { CreateOrUpdatePosConfigInputType } from "./schemas/createOrUpdatePosConfigInput";
+import { AvailablePriceListType } from "./schemas/availablePriceList";
 import { OperationTypesType } from "./schemas/operationType";
 import { PagableInputType } from "./schemas/pagableInput";
 import { StockLocationType } from "./schemas/stockLocation";
@@ -169,6 +170,48 @@ const rootType = new GraphQLObjectType({
               } else {
                 res(camelizeKeys(result[0]));
               }
+            }
+          });
+        })
+    },
+    availablePriceLists: {
+      type: PaginateType(AvailablePriceListType),
+      args: {
+        input: {
+          type: PagableInputType,
+          defaultValue: {
+            first: 10,
+            offset: 0
+          }
+        }
+      },
+      resolve: (_0, args, context) =>
+        new Promise((res, rej) => {
+          configureService({
+            operation: getDataSet({
+              context
+            }).createSearchRead(
+              paginateOperationParam(
+                {
+                  modelName: "product.pricelist",
+                  fields: ["id", "name", "currency_id"],
+                  domain: []
+                },
+                args
+              )
+            ),
+            onError: error => {
+              rej(
+                new ApolloError("Application Error", "APPLICATION_ERROR", {
+                  errorMessage: error.message
+                })
+              );
+            },
+            onResult: result => {
+              res({
+                length: result.length,
+                records: camelizeKeys(result.records)
+              });
             }
           });
         })
