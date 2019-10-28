@@ -194,8 +194,11 @@ const rootType = new GraphQLObjectType({
               paginateOperationParam(
                 {
                   modelName: "account.journal",
-                  nameToSearch: "",
-                  domain: [["journal_user", "=", true]]
+                  fields: ["id", "name", "company_id"],
+                  domain: [
+                    ["journal_user", "=", true],
+                    ["type", "in", ["bank", "cash"]]
+                  ]
                 },
                 args
               )
@@ -207,9 +210,7 @@ const rootType = new GraphQLObjectType({
                 })
               );
             },
-            onResult: result => {
-              res(camelizeKeys(result));
-            }
+            onResult: result => res(camelizeKeys(result))
           });
         })
     },
