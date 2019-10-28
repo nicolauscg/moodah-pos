@@ -210,9 +210,16 @@ const getUpdatePostConfigQuery = (fieldsToUpate: string) => gql`
 `;
 const GET_AVAILABLE_PRICELIST = gql`
   query {
-    availablePriceList {
-      id
-      name
+    availablePriceLists {
+      length
+      records {
+        id
+        name
+        currency {
+          id
+          name
+        }
+      }
     }
   }
 `;
@@ -284,20 +291,33 @@ describe("Query", () => {
     expect(res.data.posConfig).toBeNull();
   });
 
-  it("fetch all price list with correct implementation", async () => {
+  it("query availablePriceLists with session token", async () => {
     const server = await createTestServerWithSessionToken({
       signInGql: SIGN_IN
     });
     const { query } = createTestClient(server);
-    const res = await query({ query: GET_AVAILABLE_PRICELIST });
-    expect(res.data.availablePriceList).toBeDefined();
+    const result = (await query({ query: GET_AVAILABLE_PRICELIST })).data
+      .availablePriceLists;
+    expect(result.length).toEqual(expect.anything());
+    expect(result.records).toEqual(expect.anything());
+    expect(result.records).toContainEqual(
+      expect.objectContaining({
+        id: expect.any(Number),
+        name: expect.any(String),
+        currency: expect.objectContaining({
+          id: expect.any(Number),
+          name: expect.any(String)
+        })
+      })
+    );
   });
 
-  it("fetch all price list with wrong", async () => {
+  it("query availablePriceLists without session token", async () => {
     const server = createTestServer();
     const { query } = createTestClient(server);
-    const res = await query({ query: GET_AVAILABLE_PRICELIST });
-    expect(res.data.availablePriceList).toBeNull();
+    const result = await query({ query: GET_AVAILABLE_PRICELIST });
+    expect(result.data.availablePriceLists).toBeNull();
+    expect(result.errors).toEqual(expect.anything());
   });
 
   it(`fetch singular pos config with session token via id from multiple 

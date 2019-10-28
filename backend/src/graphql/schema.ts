@@ -3,8 +3,7 @@ import {
   GraphQLObjectType,
   GraphQLString,
   GraphQLInt,
-  GraphQLInputObjectType,
-  GraphQLList
+  GraphQLInputObjectType
 } from "graphql";
 
 import { ApolloError } from "apollo-server-lambda";
@@ -24,7 +23,7 @@ import { SignInInputType } from "./schemas/signInInput";
 import { CreatePosConfigType } from "./schemas/createPosConfig";
 import { UpdateOrDeletePosConfigType } from "./schemas/updateOrDeletePosConfig";
 import { CreateOrUpdatePosConfigInputType } from "./schemas/createOrUpdatePosConfigInput";
-import { availablePriceLists } from "./schemas/priceListOperation";
+import { AvailablePriceListType } from "./schemas/availablePriceList";
 import { OperationTypesType } from "./schemas/operationType";
 import { PagableInputType } from "./schemas/pagableInput";
 import { StockLocationType } from "./schemas/stockLocation";
@@ -175,20 +174,32 @@ const rootType = new GraphQLObjectType({
           });
         })
     },
-    availablePriceList: {
-      type: GraphQLList(availablePriceLists),
-      resolve: (_0, _1, context) =>
+    availablePriceLists: {
+      type: PaginateType(AvailablePriceListType),
+      args: {
+        input: {
+          type: PagableInputType,
+          defaultValue: {
+            first: 10,
+            offset: 0
+          }
+        }
+      },
+      resolve: (_0, args, context) =>
         new Promise((res, rej) => {
           configureService({
             operation: getDataSet({
               context
-            }).createNameSearch({
-              modelName: "product.pricelist",
-              nameToSearch: "",
-              limit: 8,
-              operator: "ilike",
-              kwargs: {}
-            }),
+            }).createSearchRead(
+              paginateOperationParam(
+                {
+                  modelName: "product.pricelist",
+                  fields: ["id", "name", "currency_id"],
+                  domain: []
+                },
+                args
+              )
+            ),
             onError: error => {
               rej(
                 new ApolloError("Application Error", "APPLICATION_ERROR", {
@@ -197,7 +208,10 @@ const rootType = new GraphQLObjectType({
               );
             },
             onResult: result => {
-              res(result);
+              res({
+                length: result.length,
+                records: camelizeKeys(result.records)
+              });
             }
           });
         })
