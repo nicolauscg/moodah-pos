@@ -96,6 +96,18 @@ const rootType = new GraphQLObjectType({
                   modelName: "pos.config",
                   fields: POS_CONFIG_FIELDS
                 },
+                [
+                  {
+                    domainName: "name",
+                    conventionName: "name",
+                    operator: "ilike"
+                  },
+                  {
+                    domainName: "stock_location_id",
+                    conventionName: "stockLocationName",
+                    operator: "ilike"
+                  }
+                ],
                 args
               )
             ),

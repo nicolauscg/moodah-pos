@@ -55,19 +55,20 @@ export const paginateOperationParam = (params, args) => ({
 });
 
 // eslint-disable-next-line consistent-return
-const createDomainNone = element => {
-  if (element.name !== undefined) {
-    return ["name", "ilike", element.name];
-  }
-  if (element.stockLocationName !== undefined) {
-    return ["stock_location_id", "ilike", element.stockLocationName];
+const createDomainNone = (element, models) => {
+  // eslint-disable-next-line guard-for-in
+  for (const idx in models) {
+    const model = models[idx];
+    if (element[model.conventionName] !== undefined) {
+      return [model.domainName, model.operator, element[model.conventionName]];
+    }
   }
 };
 
-const createDomainOr = array => {
+const createDomainOr = (array, models) => {
   const result = [];
   array.forEach(element => {
-    result.push(createDomainNone(element));
+    result.push(createDomainNone(element, models));
   });
 
   return Array(array.length - 1)
@@ -77,24 +78,24 @@ const createDomainOr = array => {
 
 // Logic constructor for OR,AND and ANDOR case
 // eslint-disable-next-line consistent-return
-const createFilterDomain = data => {
+const createFilterDomain = (data, models) => {
   // base case
   if (data === null) {
     return [];
   }
   if (data.OR !== undefined) {
-    return createDomainOr(data.OR);
+    return createDomainOr(data.OR, models);
   }
   if (data.AND !== undefined) {
     const array = data.AND;
     const result = [];
     if (array[0].OR !== undefined) {
       array.forEach(element => {
-        result.push(...createDomainOr(element.OR));
+        result.push(...createDomainOr(element.OR, models));
       });
     } else {
       array.forEach(element => {
-        result.push(createDomainNone(element));
+        result.push(createDomainNone(element, models));
       });
     }
 
@@ -102,11 +103,12 @@ const createFilterDomain = data => {
   }
 };
 
-export const paginateAndFilterOperationParam = (params, args) => {
+export const paginateAndFilterOperationParam = (params, models, args) => {
   // Create filterDomain
-
   const filterDomain =
-    args.input.where === undefined ? [] : createFilterDomain(args.input.where);
+    args.input.where === undefined
+      ? []
+      : createFilterDomain(args.input.where, models);
   // Add the domain to the paginate param
   const result = {
     ...paginateOperationParam(params, args),
@@ -148,20 +150,3 @@ export const isFilterArgsValid = args => {
         checkListContainOneKeyObject(data.AND) &&
         (data.OR === undefined || data.AND === undefined);
 };
-
-// export function createDomainFilter(args) {
-//   if (args.where === undefined) {
-//     return [];
-//   }
-//   const result = [];
-//   const data = args.where;
-
-//   if (data.name !== undefined) {
-//     result.push(["name", "ilike", data.name]);
-//   }
-//   if (data.stockLocationName !== undefined) {
-//     result.push(["stock_location_id", "ilike", data.stockLocationName]);
-//   }
-
-//   return result;
-// }
