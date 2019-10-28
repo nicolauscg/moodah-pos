@@ -107,9 +107,9 @@ const getUpdatePostConfigQuery = (fieldsToUpate: string) => gql`
     }
   }
 `;
-const GET_PRICELIST_OPERATION = gql`
+const GET_AVAILABLE_PRICELIST = gql`
   query {
-    priceListOperation {
+    availablePriceList {
       id
       name
     }
@@ -169,15 +169,15 @@ describe("Query", () => {
       signInGql: SIGN_IN
     });
     const { query } = createTestClient(server);
-    const res = await query({ query: GET_PRICELIST_OPERATION });
-    expect(res.data.priceListOperation).not.toBeNull();
+    const res = await query({ query: GET_AVAILABLE_PRICELIST });
+    expect(res.data.availablePriceList).toBeDefined();
   });
 
   it("fetch all price list with wrong", async () => {
     const server = createTestServer();
     const { query } = createTestClient(server);
-    const res = await query({ query: GET_PRICELIST_OPERATION });
-    expect(res.data.priceListOperation).toBeNull();
+    const res = await query({ query: GET_AVAILABLE_PRICELIST });
+    expect(res.data.availablePriceList).toBeNull();
   });
 
   it(`fetch singular pos config with session token via id from multiple 

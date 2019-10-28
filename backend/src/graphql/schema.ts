@@ -18,7 +18,7 @@ import { SignInInputType } from "./schemas/signInInput";
 import { CreatePosConfigType } from "./schemas/createPosConfig";
 import { UpdateOrDeletePosConfigType } from "./schemas/updateOrDeletePosConfig";
 import { CreateOrUpdatePosConfigInputType } from "./schemas/createOrUpdatePosConfigInput";
-import { PriceListOperationType } from "./schemas/priceListOperation";
+import { availablePriceLists } from "./schemas/priceListOperation";
 const POS_CONFIG_FIELDS = [
   "id",
   "name",
@@ -115,8 +115,8 @@ const rootType = new GraphQLObjectType({
           });
         })
     },
-    priceListOperation: {
-      type: GraphQLList(PriceListOperationType),
+    availablePriceList: {
+      type: GraphQLList(availablePriceLists),
       resolve: (_0, _1, context) =>
         new Promise((res, rej) => {
           configureService({

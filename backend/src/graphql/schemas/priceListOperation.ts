@@ -1,6 +1,6 @@
 import { GraphQLObjectType, GraphQLInt, GraphQLString } from "graphql";
 
-const PriceListOperationType = new GraphQLObjectType({
+const availablePriceLists = new GraphQLObjectType({
   name: "PriceListOperationType",
   fields: () => ({
     id: {
@@ -14,4 +14,4 @@ const PriceListOperationType = new GraphQLObjectType({
   })
 });
 
-export { PriceListOperationType };
+export { availablePriceLists };
