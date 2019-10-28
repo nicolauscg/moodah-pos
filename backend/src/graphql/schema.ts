@@ -176,33 +176,31 @@ const rootType = new GraphQLObjectType({
         })
     },
     paymentMethods: {
-      type: GraphQLList(PaymentMethodType),
+      type: PaginateType(PaymentMethodType),
       args: {
         input: {
-          type: new GraphQLInputObjectType({
-            name: "PaymentMethodInput",
-            fields: () => ({
-              id: {
-                type: GraphQLInt
-              },
-              name: {
-                type: GraphQLString
-              }
-            })
-          })
+          type: PagableInputType,
+          defaultValue: {
+            first: 10,
+            offset: 0
+          }
         }
       },
-      resolve: (_0, _1, context) =>
+      resolve: (_0, args, context) =>
         new Promise((res, rej) => {
           configureService({
             operation: getDataSet({
               context
-            }).createNameSearch({
-              modelName: "account.journal",
-              nameToSearch: "",
-              limit: 8,
-              searchDomain: [["journal_user", "=", true]]
-            }),
+            }).createSearchRead(
+              paginateOperationParam(
+                {
+                  modelName: "account.journal",
+                  nameToSearch: "",
+                  domain: [["journal_user", "=", true]]
+                },
+                args
+              )
+            ),
             onError: error => {
               rej(
                 new ApolloError("Application Error", "APPLICATION_ERROR", {
