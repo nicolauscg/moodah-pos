@@ -76,6 +76,14 @@ mutation {
     }
   }
 }`;
+const GET_READ_POS_CATEGORY = gql`
+  query {
+    posCategory(input: { id: 1 }) {
+      id
+      name
+    }
+  }
+`;
 
 describe("Query", () => {
   it("query pos categories without session token give error", async () => {
@@ -96,6 +104,15 @@ describe("Query", () => {
       .data.posCategories;
     expect(result.length).not.toBeNull();
     expect(result.records).not.toBeNull();
+  });
+
+  it("fetch specific pos category when given id", async () => {
+    const server = await createTestServerWithSessionToken({
+      signInGql: SIGN_IN
+    });
+    const { query } = createTestClient(server);
+    const res = await query({ query: GET_READ_POS_CATEGORY });
+    expect(res.data.readPosCategories).not.toBeNull();
   });
 });
 
