@@ -163,14 +163,6 @@ const GET_POS_CONFIGS_LOCATION = gql`
     }
   }
 `;
-const GET_READ_POS_CATEGORY = gql`
-  query {
-    readPosCategories(input: { id: 1 }) {
-      id
-      name
-    }
-  }
-`;
 const getDeletePosConfigQuery = (id: number) => gql`
   mutation {
     deletePosConfig(input: {
@@ -345,15 +337,6 @@ describe("Query", () => {
     expect(filteredResult1.data.posConfigs.records).toStrictEqual(
       filteredResult2
     );
-  });
-
-  it("fetch specific pos category when given id", async () => {
-    const server = await createTestServerWithSessionToken({
-      signInGql: SIGN_IN
-    });
-    const { query } = createTestClient(server);
-    const res = await query({ query: GET_READ_POS_CATEGORY });
-    expect(res.data.readPosCategories).not.toBeNull();
   });
 });
 
