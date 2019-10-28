@@ -5,10 +5,12 @@
   "description": "odoo middleware graphql apollo server",
   "main": "handler.js",
   "scripts": {
+    "start": "sls offline --port 3001",
     "test": "jest",
     "lint": "npm run lint:all",
     "lint:all": "eslint . --ext .js,.jsx,.ts,.tsx",
-    "lint:graphql": "eslint src/**/*.ts handler.ts"
+    "lint:graphql": "eslint src/**/*.ts handler.ts",
+    "gen-docs": "graphdoc -e http://localhost:3000/graphql -o ./doc/schema"
   },
   "dependencies": {
     "@types/graphql-relay": "^0.4.11",
@@ -28,6 +30,7 @@
     "source-map-support": "^0.5.10"
   },
   "devDependencies": {
+    "@2fd/graphdoc": "^2.4.0",
     "@babel/preset-typescript": "^7.6.0",
     "@types/aws-lambda": "^8.10.17",
     "@types/jest": "^24.0.18",
