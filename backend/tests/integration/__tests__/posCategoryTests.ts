@@ -55,7 +55,7 @@ const CREATE_POS_CATEGORY = gql`
 `;
 const GET_READ_POS_CATEGORY = gql`
   query {
-    readPosCategories(input: { id: 1 }) {
+    posCategory(input: { id: 1 }) {
       id
       name
     }

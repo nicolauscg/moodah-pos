@@ -27,7 +27,6 @@ import { PagableInputType } from "./schemas/pagableInput";
 import { PosCategoryType } from "./schemas/posCategory";
 import { CreateOrUpdatePosCategoryInputType } from "./schemas/createOrUpdatePosCategoryInput";
 import { CreatePosCategoryType } from "./schemas/CreatePosCategory";
-import { ReadPosCategoryType } from "./schemas/readPosCategory";
 
 const POS_CONFIG_FIELDS = [
   "id",
@@ -220,12 +219,12 @@ const rootType = new GraphQLObjectType({
           });
         })
     },
-    readPosCategories: {
-      type: ReadPosCategoryType,
+    posCategory: {
+      type: PosCategoryType,
       args: {
         input: {
           type: new GraphQLInputObjectType({
-            name: "ReadPosCategoryType",
+            name: "PosCategoryInput",
             fields: () => ({
               id: {
                 type: GraphQLInt
@@ -242,7 +241,7 @@ const rootType = new GraphQLObjectType({
             }).createRead({
               ids: [args.input.id],
               modelName: "pos.category",
-              fields: POS_CONFIG_FIELDS
+              fields: POS_CATEGORY_FIELDS
             }),
             onError: error => {
               rej(
@@ -258,7 +257,6 @@ const rootType = new GraphQLObjectType({
                     errorMessage: result.message
                   })
                 );
-                // array empty or does not have a matching id
               } else {
                 res(camelizeKeys(result[0]));
               }
