@@ -3,8 +3,7 @@ import {
   GraphQLObjectType,
   GraphQLString,
   GraphQLInt,
-  GraphQLInputObjectType,
-  GraphQLList
+  GraphQLInputObjectType
 } from "graphql";
 
 import { ApolloError } from "apollo-server-lambda";

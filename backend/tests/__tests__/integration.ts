@@ -210,9 +210,12 @@ const getUpdatePostConfigQuery = (fieldsToUpate: string) => gql`
 `;
 const getPaymentMethod = gql`
   query {
-    paymentMethods {
-      name
-      id
+    operationTypes {
+      length
+      records {
+        id
+        name
+      }
     }
   }
 `;
@@ -316,7 +319,8 @@ describe("Query", () => {
     });
     const { query } = createTestClient(server);
     const res = await query({ query: getPaymentMethod });
-    expect(res.data.paymentMethods).not.toBeNull();
+    expect(res.data.operationTypes.length).not.toBeNull();
+    expect(res.data.operationTypes.records).not.toBeNull();
   });
 
   it("fetch all inventory operation types", async () => {
