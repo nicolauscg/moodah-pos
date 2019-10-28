@@ -218,6 +218,51 @@ const rootType = new GraphQLObjectType({
             }
           });
         })
+    },
+    posCategory: {
+      type: PosCategoryType,
+      args: {
+        input: {
+          type: new GraphQLInputObjectType({
+            name: "PosCategoryInput",
+            fields: () => ({
+              id: {
+                type: GraphQLInt
+              }
+            })
+          })
+        }
+      },
+      resolve: (_0, args, context) =>
+        new Promise((res, rej) => {
+          configureService({
+            operation: getDataSet({
+              context
+            }).createRead({
+              ids: [args.input.id],
+              modelName: "pos.category",
+              fields: POS_CATEGORY_FIELDS
+            }),
+            onError: error => {
+              rej(
+                new ApolloError("Application Error", "APPLICATION_ERROR", {
+                  errorMessage: error.message
+                })
+              );
+            },
+            onResult: result => {
+              if (result.length === 0) {
+                rej(
+                  new ApolloError("Application Error", "APPLICATION_ERROR", {
+                    errorMessage: result.message
+                  })
+                );
+              } else {
+                res(camelizeKeys(result[0]));
+              }
+            }
+          });
+        })
     }
   })
 });
