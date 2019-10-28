@@ -279,7 +279,6 @@ const mutationType = new GraphQLObjectType({
       },
       resolve: (_0, args, context) =>
         new Promise((res, rej) => {
-          // update pos config with id specified
           const fieldsValues = args.input;
           ["availablePricelistIds", "journalIds"].forEach(fieldName => {
             if (fieldsValues[fieldName] !== undefined) {
@@ -321,7 +320,6 @@ const mutationType = new GraphQLObjectType({
         }).then(
           (updateResult: any) =>
             new Promise((res, rej) => {
-              // read pos config with id specified
               configureService({
                 operation: getDataSet({ context }).createRead({
                   modelName: "pos.config",
@@ -362,7 +360,6 @@ const mutationType = new GraphQLObjectType({
       },
       resolve: (_0, args, context) =>
         new Promise((res, rej) => {
-          // update pos config with id specified
           const fieldsValues = args.input;
           const decamelizedFieldValues: any = decamelizeKeys(fieldsValues);
           configureService({
@@ -399,7 +396,6 @@ const mutationType = new GraphQLObjectType({
         }).then(
           (updateResult: any) =>
             new Promise((res, rej) => {
-              // read pos config with id specified
               configureService({
                 operation: getDataSet({ context }).createRead({
                   modelName: "pos.category",
@@ -447,7 +443,6 @@ const mutationType = new GraphQLObjectType({
       },
       resolve: (_0, args, context) =>
         new Promise((res, rej) => {
-          // read pos config with id specified
           configureService({
             operation: getDataSet({ context }).createRead({
               modelName: "pos.config",
@@ -477,7 +472,6 @@ const mutationType = new GraphQLObjectType({
             }
           });
         }).then(
-          // delete pos config with id specified
           (result: any) =>
             new Promise((res, rej) => {
               configureService({
@@ -517,7 +511,6 @@ const mutationType = new GraphQLObjectType({
       },
       resolve: (_0, args, context) =>
         new Promise((res, rej) => {
-          // read pos config with id specified
           configureService({
             operation: getDataSet({ context }).createRead({
               modelName: "pos.category",
@@ -536,7 +529,7 @@ const mutationType = new GraphQLObjectType({
               if (result.length) {
                 const camelizedReadResult = camelizeKeys(result[0]);
 
-                res({ posConfig: camelizedReadResult });
+                res({ posCategory: camelizedReadResult });
               }
 
               rej(
@@ -547,7 +540,6 @@ const mutationType = new GraphQLObjectType({
             }
           });
         }).then(
-          // delete pos config with id specified
           (result: any) =>
             new Promise((res, rej) => {
               configureService({
