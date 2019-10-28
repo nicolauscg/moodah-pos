@@ -213,6 +213,28 @@ const GET_POS_CONFIGS_LOCATION = gql`
     }
   }
 `;
+const GET_INVENTORY_TYPES = gql`
+  query {
+    operationTypes(input: { first: 5, offset: 0 }) {
+      length
+      records {
+        id
+        name
+      }
+    }
+  }
+`;
+const GET_STOCK_LOCATIONS = gql`
+  query {
+    stockLocations(input: { first: 5, offset: 0 }) {
+      length
+      records {
+        id
+        name
+      }
+    }
+  }
+`;
 const getDeletePosConfigQuery = (id: number) => gql`
   mutation {
     deletePosConfig(input: {
@@ -230,6 +252,33 @@ const getUpdatePostConfigQuery = (fieldsToUpate: string) => gql`
     updatePosConfig(input: ${fieldsToUpate}) {
       success
       posConfig {
+        id
+        name
+      }
+    }
+  }
+`;
+const GET_AVAILABLE_PRICELIST = gql`
+  query {
+    availablePriceLists {
+      length
+      records {
+        id
+        name
+        currency {
+          id
+          name
+        }
+      }
+    }
+  }
+`;
+
+const GET_DISCOUNT_PRODUCTS = gql`
+  query {
+    discountProducts {
+      length
+      records {
         id
         name
       }
@@ -292,7 +341,36 @@ describe("Query", () => {
     expect(res.data.posConfig).toBeNull();
   });
 
-  it(`fetch singular pos config with session token via id from multiple
+  it("query availablePriceLists with session token", async () => {
+    const server = await createTestServerWithSessionToken({
+      signInGql: SIGN_IN
+    });
+    const { query } = createTestClient(server);
+    const result = (await query({ query: GET_AVAILABLE_PRICELIST })).data
+      .availablePriceLists;
+    expect(result.length).toEqual(expect.anything());
+    expect(result.records).toEqual(expect.anything());
+    expect(result.records).toContainEqual(
+      expect.objectContaining({
+        id: expect.any(Number),
+        name: expect.any(String),
+        currency: expect.objectContaining({
+          id: expect.any(Number),
+          name: expect.any(String)
+        })
+      })
+    );
+  });
+
+  it("query availablePriceLists without session token", async () => {
+    const server = createTestServer();
+    const { query } = createTestClient(server);
+    const result = await query({ query: GET_AVAILABLE_PRICELIST });
+    expect(result.data.availablePriceLists).toBeNull();
+    expect(result.errors).toEqual(expect.anything());
+  });
+
+  it(`fetch singular pos config with session token via id from multiple 
       pos configs fetch`, async () => {
     const amountOfIdsToRead = 3;
     const server = await createTestServerWithSessionToken({
@@ -316,6 +394,38 @@ describe("Query", () => {
           expect(posConfigResult.data.posConfig.stockLocation).not.toBeNull()
       )
     );
+  });
+
+  it("fetch all inventory operation types", async () => {
+    const server = await createTestServerWithSessionToken({
+      signInGql: SIGN_IN
+    });
+    const { query } = createTestClient(server);
+    const res = await query({ query: GET_INVENTORY_TYPES });
+    expect(res.data.operationTypes).not.toBeNull();
+  });
+
+  it("fetch all inventory stock locations", async () => {
+    const server = await createTestServerWithSessionToken({
+      signInGql: SIGN_IN
+    });
+    const { query } = createTestClient(server);
+    const res = await query({ query: GET_STOCK_LOCATIONS });
+    expect(res.data.stockLocations).not.toBeNull();
+  });
+
+  it("fetch discount products", async () => {
+    const server = await createTestServerWithSessionToken({
+      signInGql: SIGN_IN
+    });
+    const { query } = createTestClient(server);
+    const result = (await query({ query: GET_DISCOUNT_PRODUCTS })).data
+      .discountProducts;
+    expect(result).not.toBeNull();
+    if (result.records.length) {
+      expect(result.records[0].id).toEqual(expect.any(Number));
+      expect(result.records[0].name).toEqual(expect.any(String));
+    }
   });
 
   it("fetch paginated pos configs returns correct record length", async () => {
