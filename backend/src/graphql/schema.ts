@@ -25,6 +25,7 @@ import { SignInInputType } from "./schemas/signInInput";
 import { CreatePosConfigType } from "./schemas/createPosConfig";
 import { UpdateOrDeletePosConfigType } from "./schemas/updateOrDeletePosConfig";
 import { CreateOrUpdatePosConfigInputType } from "./schemas/createOrUpdatePosConfigInput";
+import { PaymentMethodType } from "./schemas/paymentMethod";
 import { FilterableAndPagableInputType } from "./schemas/FilterableAndPageableInputType";
 import { AvailablePriceListType } from "./schemas/availablePriceList";
 import { OperationTypesType } from "./schemas/operationType";
@@ -176,6 +177,46 @@ const rootType = new GraphQLObjectType({
                 res(camelizeKeys(result[0]));
               }
             }
+          });
+        })
+    },
+    paymentMethods: {
+      type: PaginateType(PaymentMethodType),
+      args: {
+        input: {
+          type: PagableInputType,
+          defaultValue: {
+            first: 10,
+            offset: 0
+          }
+        }
+      },
+      resolve: (_0, args, context) =>
+        new Promise((res, rej) => {
+          configureService({
+            operation: getDataSet({
+              context
+            }).createSearchRead(
+              paginateOperationParam(
+                {
+                  modelName: "account.journal",
+                  fields: ["id", "name", "company_id"],
+                  domain: [
+                    ["journal_user", "=", true],
+                    ["type", "in", ["bank", "cash"]]
+                  ]
+                },
+                args
+              )
+            ),
+            onError: error => {
+              rej(
+                new ApolloError("Application Error", "APPLICATION_ERROR", {
+                  errorMessage: error.message
+                })
+              );
+            },
+            onResult: result => res(camelizeKeys(result))
           });
         })
     },

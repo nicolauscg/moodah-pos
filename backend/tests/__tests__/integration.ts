@@ -258,6 +258,21 @@ const getUpdatePostConfigQuery = (fieldsToUpate: string) => gql`
     }
   }
 `;
+const GET_OPERATION_TYPES = gql`
+  query {
+    paymentMethods {
+      length
+      records {
+        id
+        name
+        company {
+          id
+          name
+        }
+      }
+    }
+  }
+`;
 const GET_AVAILABLE_PRICELIST = gql`
   query {
     availablePriceLists {
@@ -394,6 +409,34 @@ describe("Query", () => {
           expect(posConfigResult.data.posConfig.stockLocation).not.toBeNull()
       )
     );
+  });
+
+  it("query paymentMethods with session token", async () => {
+    const server = await createTestServerWithSessionToken({
+      signInGql: SIGN_IN
+    });
+    const { query } = createTestClient(server);
+    const result = (await query({ query: GET_OPERATION_TYPES })).data
+      .paymentMethods;
+    expect(result.length).toEqual(expect.any(Number));
+    expect(result.records).toContainEqual(
+      expect.objectContaining({
+        id: expect.any(Number),
+        name: expect.any(String),
+        company: expect.objectContaining({
+          id: expect.any(Number),
+          name: expect.any(String)
+        })
+      })
+    );
+  });
+
+  it("query paymentMethods without session token", async () => {
+    const server = createTestServer();
+    const { query } = createTestClient(server);
+    const result = await query({ query: GET_OPERATION_TYPES });
+    expect(result.data.paymentMethods).toBeNull();
+    expect(result.errors).toEqual(expect.anything());
   });
 
   it("fetch all inventory operation types", async () => {
