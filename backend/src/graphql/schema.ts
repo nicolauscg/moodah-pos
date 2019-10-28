@@ -22,6 +22,7 @@ import { SignInType } from "./schemas/signIn";
 import { SignInInputType } from "./schemas/signInInput";
 import { CreatePosConfigType } from "./schemas/createPosConfig";
 import { UpdateOrDeletePosConfigType } from "./schemas/updateOrDeletePosConfig";
+import { UpdateOrDeletePosCategoryType } from "./schemas/updateOrDeletePosCategory";
 import { CreateOrUpdatePosConfigInputType } from "./schemas/createOrUpdatePosConfigInput";
 import { PagableInputType } from "./schemas/pagableInput";
 import { PosCategoryType } from "./schemas/posCategory";
@@ -323,7 +324,6 @@ const mutationType = new GraphQLObjectType({
       },
       resolve: (_0, args, context) =>
         new Promise((res, rej) => {
-          // update pos config with id specified
           const fieldsValues = args.input;
           ["availablePricelistIds", "journalIds"].forEach(fieldName => {
             if (fieldsValues[fieldName] !== undefined) {
@@ -365,7 +365,6 @@ const mutationType = new GraphQLObjectType({
         }).then(
           (updateResult: any) =>
             new Promise((res, rej) => {
-              // read pos config with id specified
               configureService({
                 operation: getDataSet({ context }).createRead({
                   modelName: "pos.config",
@@ -397,6 +396,82 @@ const mutationType = new GraphQLObjectType({
             })
         )
     },
+    updatePosCategory: {
+      type: UpdateOrDeletePosCategoryType,
+      args: {
+        input: {
+          type: CreateOrUpdatePosCategoryInputType
+        }
+      },
+      resolve: (_0, args, context) =>
+        new Promise((res, rej) => {
+          const fieldsValues = args.input;
+          const decamelizedFieldValues: any = decamelizeKeys(fieldsValues);
+          configureService({
+            operation: getDataSet({ context }).createUpdate({
+              modelName: "pos.category",
+              ids: [decamelizedFieldValues.id],
+              fieldsValues: decamelizedFieldValues,
+              kwargs: {}
+            }),
+            onError: error => {
+              rej(
+                new ApolloError("Application Error", "APPLICATION_ERROR", {
+                  errorMessage: error.message
+                })
+              );
+            },
+            onResult: result => {
+              if (result) {
+                res({
+                  success: result,
+                  posCategory: {
+                    id: decamelizedFieldValues.id
+                  }
+                });
+              }
+
+              rej(
+                new ApolloError("Application Error", "APPLICATION_ERROR", {
+                  errorMessage: result.message
+                })
+              );
+            }
+          });
+        }).then(
+          (updateResult: any) =>
+            new Promise((res, rej) => {
+              configureService({
+                operation: getDataSet({ context }).createRead({
+                  modelName: "pos.category",
+                  ids: [updateResult.posCategory.id],
+                  fields: POS_CATEGORY_FIELDS,
+                  kwargs: {}
+                }),
+                onError: error => {
+                  rej(
+                    new ApolloError("Application Error", "APPLICATION_ERROR", {
+                      errorMessage: error.message
+                    })
+                  );
+                },
+                onResult: result => {
+                  if (result.length) {
+                    const camelizedReadResult = camelizeKeys(result[0]);
+                    updateResult.posCategory = camelizedReadResult;
+                    res(updateResult);
+                  }
+
+                  rej(
+                    new ApolloError("Application Error", "APPLICATION_ERROR", {
+                      errorMessage: result.message
+                    })
+                  );
+                }
+              });
+            })
+        )
+    },
     deletePosConfig: {
       type: UpdateOrDeletePosConfigType,
       args: {
@@ -413,7 +488,6 @@ const mutationType = new GraphQLObjectType({
       },
       resolve: (_0, args, context) =>
         new Promise((res, rej) => {
-          // read pos config with id specified
           configureService({
             operation: getDataSet({ context }).createRead({
               modelName: "pos.config",
@@ -443,12 +517,79 @@ const mutationType = new GraphQLObjectType({
             }
           });
         }).then(
-          // delete pos config with id specified
           (result: any) =>
             new Promise((res, rej) => {
               configureService({
                 operation: getDataSet({ context }).createDelete({
                   modelName: "pos.config",
+                  ids: [args.input.id],
+                  kwargs: {}
+                }),
+                onError: error => {
+                  rej(
+                    new ApolloError("Application Error", "APPLICATION_ERROR", {
+                      errorMessage: error.message
+                    })
+                  );
+                },
+                onResult: result2 => {
+                  result.success = result2;
+                  res(result);
+                }
+              });
+            })
+        )
+    },
+    deletePosCategory: {
+      type: UpdateOrDeletePosCategoryType,
+      args: {
+        input: {
+          type: new GraphQLInputObjectType({
+            name: "DeletePosCategoryInputType",
+            fields: () => ({
+              id: {
+                type: GraphQLInt
+              }
+            })
+          })
+        }
+      },
+      resolve: (_0, args, context) =>
+        new Promise((res, rej) => {
+          configureService({
+            operation: getDataSet({ context }).createRead({
+              modelName: "pos.category",
+              ids: [args.input.id],
+              fields: POS_CATEGORY_FIELDS,
+              kwargs: {}
+            }),
+            onError: error => {
+              rej(
+                new ApolloError("Application Error", "APPLICATION_ERROR", {
+                  errorMessage: error.message
+                })
+              );
+            },
+            onResult: result => {
+              if (result.length) {
+                const camelizedReadResult = camelizeKeys(result[0]);
+
+                res({ posCategory: camelizedReadResult });
+              }
+
+              rej(
+                new ApolloError("Application Error", "APPLICATION_ERROR", {
+                  errorMessage: result.message
+                })
+              );
+            }
+          });
+        }).then(
+          (result: any) =>
+            new Promise((res, rej) => {
+              configureService({
+                operation: getDataSet({ context }).createDelete({
+                  modelName: "pos.category",
                   ids: [args.input.id],
                   kwargs: {}
                 }),
@@ -519,7 +660,7 @@ const mutationType = new GraphQLObjectType({
                 },
                 onResult: result2 => {
                   const camelizedResult = camelizeKeys(result2[0]);
-                  createResult.posConfig = camelizedResult;
+                  createResult.posCategory = camelizedResult;
                   res(createResult);
                 }
               });
@@ -552,8 +693,40 @@ const mutationType = new GraphQLObjectType({
               res({ id: result });
             }
           });
-          // add read created pos category
-        })
+        }).then(
+          (createResult: any) =>
+            new Promise((res, rej) => {
+              // read pos config with id specified
+              configureService({
+                operation: getDataSet({ context }).createRead({
+                  modelName: "pos.category",
+                  ids: [createResult.id],
+                  fields: POS_CATEGORY_FIELDS,
+                  kwargs: {}
+                }),
+                onError: error => {
+                  rej(
+                    new ApolloError("Application Error", "APPLICATION_ERROR", {
+                      errorMessage: error.message
+                    })
+                  );
+                },
+                onResult: result => {
+                  if (result.length) {
+                    const camelizedReadResult = camelizeKeys(result[0]);
+                    createResult.posCategory = camelizedReadResult;
+                    res(createResult);
+                  }
+
+                  rej(
+                    new ApolloError("Application Error", "APPLICATION_ERROR", {
+                      errorMessage: result.message
+                    })
+                  );
+                }
+              });
+            })
+        )
     }
   })
 });

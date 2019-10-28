@@ -1,7 +1,7 @@
 import { GraphQLString, GraphQLInputObjectType, GraphQLInt } from "graphql";
 
 const CreateOrUpdatePosCategoryInputType = new GraphQLInputObjectType({
-  name: "CreateOrUpdatePosCategoryInputType",
+  name: "CreateOrUpdatePosCategoryInput",
   fields: () => ({
     id: {
       type: GraphQLInt
