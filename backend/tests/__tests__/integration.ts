@@ -52,26 +52,18 @@ const GET_POS_CONFIGS_ALL_FIELDS = gql`
     }
   }
 `;
-const getPaginatedPosConfigQuery = (first = 0, offset = 0) => gql`
-  query {
-    posConfigs(input: { first: ${first}, offset: ${offset} }) {
-      length
-      records {
-        id
-        name
-        active
-      }
-    }
-  }
-`;
 
 // Function that returns the filtered pos config query based on args given
 function filterPosConfigQuery(name: string, stockLocationName: string) {
   return gql`
     query {
-      posConfigs(where: {
-        name:"${name}",
-        stockLocationName:"${stockLocationName}"
+      posConfigs(input: {
+        where: {
+          OR: [
+            {name:"${name}"},
+            {stockLocationName:"${stockLocationName}"}
+          ]
+        }
       }) {
         records {
           id
@@ -86,6 +78,90 @@ function filterPosConfigQuery(name: string, stockLocationName: string) {
     }
   `;
 }
+const getPaginatedPosConfigQuery = (first = 0, offset = 0) => gql`
+  query {
+    posConfigs(input: { first: ${first}, offset: ${offset} }) {
+      length
+      records {
+        id
+        name
+        active
+        stockLocation {
+          id
+          name
+        }
+      }
+    }
+  }
+`;
+
+const filterPosConfigQueryError = gql`
+  query {
+    posConfigs(
+      input: {
+        where: {
+          OR: [
+            { name: "cannot place 2 keys inside object", stockLocationName: "" }
+          ]
+        }
+      }
+    ) {
+      records {
+        id
+        name
+        active
+        stockLocation {
+          id
+          name
+        }
+      }
+    }
+  }
+`;
+
+const filterPosConfigQueryExclusiveAndOr = (andOr, name, stockLocationName) =>
+  gql`
+  query {
+    posConfigs(input:{where:{ 
+      ${andOr}:[{name:"${name}"},{stockLocationName:"${stockLocationName}"}]
+    }}) {
+      records {
+        id
+        name
+        active
+        stockLocation {
+          id
+          name
+        }
+      }
+    }
+  }
+`;
+
+const filterPosConfigQueryBothAndOr = gql`
+  query {
+    posConfigs(
+      input: {
+        where: {
+          AND: [
+            { OR: [{ name: "test1" }, { stockLocationName: "WH" }] }
+            { OR: [{ name: "test2" }] }
+          ]
+        }
+      }
+    ) {
+      records {
+        id
+        name
+        active
+        stockLocation {
+          id
+          name
+        }
+      }
+    }
+  }
+`;
 
 // Function that returns the posConfig query based on the id given
 function getPosConfigQuery(id: number) {
@@ -163,6 +239,28 @@ const GET_POS_CONFIGS_LOCATION = gql`
     }
   }
 `;
+const GET_INVENTORY_TYPES = gql`
+  query {
+    operationTypes(input: { first: 5, offset: 0 }) {
+      length
+      records {
+        id
+        name
+      }
+    }
+  }
+`;
+const GET_STOCK_LOCATIONS = gql`
+  query {
+    stockLocations(input: { first: 5, offset: 0 }) {
+      length
+      records {
+        id
+        name
+      }
+    }
+  }
+`;
 const getDeletePosConfigQuery = (id: number) => gql`
   mutation {
     deletePosConfig(input: {
@@ -180,6 +278,48 @@ const getUpdatePostConfigQuery = (fieldsToUpate: string) => gql`
     updatePosConfig(input: ${fieldsToUpate}) {
       success
       posConfig {
+        id
+        name
+      }
+    }
+  }
+`;
+const GET_OPERATION_TYPES = gql`
+  query {
+    paymentMethods {
+      length
+      records {
+        id
+        name
+        company {
+          id
+          name
+        }
+      }
+    }
+  }
+`;
+const GET_AVAILABLE_PRICELIST = gql`
+  query {
+    availablePriceLists {
+      length
+      records {
+        id
+        name
+        currency {
+          id
+          name
+        }
+      }
+    }
+  }
+`;
+
+const GET_DISCOUNT_PRODUCTS = gql`
+  query {
+    discountProducts {
+      length
+      records {
         id
         name
       }
@@ -242,7 +382,36 @@ describe("Query", () => {
     expect(res.data.posConfig).toBeNull();
   });
 
-  it(`fetch singular pos config with session token via id from multiple
+  it("query availablePriceLists with session token", async () => {
+    const server = await createTestServerWithSessionToken({
+      signInGql: SIGN_IN
+    });
+    const { query } = createTestClient(server);
+    const result = (await query({ query: GET_AVAILABLE_PRICELIST })).data
+      .availablePriceLists;
+    expect(result.length).toEqual(expect.anything());
+    expect(result.records).toEqual(expect.anything());
+    expect(result.records).toContainEqual(
+      expect.objectContaining({
+        id: expect.any(Number),
+        name: expect.any(String),
+        currency: expect.objectContaining({
+          id: expect.any(Number),
+          name: expect.any(String)
+        })
+      })
+    );
+  });
+
+  it("query availablePriceLists without session token", async () => {
+    const server = createTestServer();
+    const { query } = createTestClient(server);
+    const result = await query({ query: GET_AVAILABLE_PRICELIST });
+    expect(result.data.availablePriceLists).toBeNull();
+    expect(result.errors).toEqual(expect.anything());
+  });
+
+  it(`fetch singular pos config with session token via id from multiple 
       pos configs fetch`, async () => {
     const amountOfIdsToRead = 3;
     const server = await createTestServerWithSessionToken({
@@ -266,6 +435,66 @@ describe("Query", () => {
           expect(posConfigResult.data.posConfig.stockLocation).not.toBeNull()
       )
     );
+  });
+
+  it("query paymentMethods with session token", async () => {
+    const server = await createTestServerWithSessionToken({
+      signInGql: SIGN_IN
+    });
+    const { query } = createTestClient(server);
+    const result = (await query({ query: GET_OPERATION_TYPES })).data
+      .paymentMethods;
+    expect(result.length).toEqual(expect.any(Number));
+    expect(result.records).toContainEqual(
+      expect.objectContaining({
+        id: expect.any(Number),
+        name: expect.any(String),
+        company: expect.objectContaining({
+          id: expect.any(Number),
+          name: expect.any(String)
+        })
+      })
+    );
+  });
+
+  it("query paymentMethods without session token", async () => {
+    const server = createTestServer();
+    const { query } = createTestClient(server);
+    const result = await query({ query: GET_OPERATION_TYPES });
+    expect(result.data.paymentMethods).toBeNull();
+    expect(result.errors).toEqual(expect.anything());
+  });
+
+  it("fetch all inventory operation types", async () => {
+    const server = await createTestServerWithSessionToken({
+      signInGql: SIGN_IN
+    });
+    const { query } = createTestClient(server);
+    const res = await query({ query: GET_INVENTORY_TYPES });
+    expect(res.data.operationTypes).not.toBeNull();
+  });
+
+  it("fetch all inventory stock locations", async () => {
+    const server = await createTestServerWithSessionToken({
+      signInGql: SIGN_IN
+    });
+    const { query } = createTestClient(server);
+    const res = await query({ query: GET_STOCK_LOCATIONS });
+    expect(res.data.stockLocations).not.toBeNull();
+  });
+
+  it("fetch discount products", async () => {
+    const server = await createTestServerWithSessionToken({
+      signInGql: SIGN_IN
+    });
+    const { query } = createTestClient(server);
+    const result = (await query({ query: GET_DISCOUNT_PRODUCTS })).data
+      .discountProducts;
+    expect(result).not.toBeNull();
+    if (result.records.length) {
+      expect(result.records[0].id).toEqual(expect.any(Number));
+      expect(result.records[0].name).toEqual(expect.any(String));
+    }
   });
 
   it("fetch paginated pos configs returns correct record length", async () => {
@@ -323,7 +552,52 @@ describe("Query", () => {
     const name = unfilteredData[0].name;
     const stockLocationName = unfilteredData[0].stockLocation.name;
     const filteredQuery = filterPosConfigQuery(name, stockLocationName);
+    // Testing the created graphQL filter function
+    const filteredResult1 = await query({ query: filteredQuery });
+    // Manual javascript filter function
+    const filteredResult2 = unfilteredData.filter(
+      (data: { name: any; stockLocation: { name: any } }) =>
+        data.name === unfilteredData[0].name &&
+        data.stockLocation.name === unfilteredData[0].stockLocation.name
+    );
 
+    // Checks whether the graphQL filter function actually "filters" the data
+    expect(filteredResult1.data.posConfigs.records).toEqual(
+      expect.arrayContaining(filteredResult2)
+    );
+  });
+
+  it("fetch filtered pos without proper convention", async () => {
+    const server = await createTestServerWithSessionToken({
+      signInGql: SIGN_IN
+    });
+    const { query } = createTestClient(server);
+    // Testing the created graphQL filter function
+    const result = await query({ query: filterPosConfigQueryError });
+    // Manual javascript filter function
+    expect(result.errors).toEqual(expect.anything());
+  });
+
+  // fetch created graphQL posConfig by comparing it with the normal javascript ANDfilter function
+  it("fetch filtered pos config using AND", async () => {
+    const server = await createTestServerWithSessionToken({
+      signInGql: SIGN_IN
+    });
+    const { query } = createTestClient(server);
+    const posConfigResults = await query({
+      query: getPaginatedPosConfigQuery()
+    });
+    const unfilteredData = posConfigResults.data.posConfigs.records;
+
+    // The database should have at least one posConfigs data for the test to work
+    const name = unfilteredData[0].name;
+    const stockLocationName = unfilteredData[0].stockLocation.name;
+
+    const filteredQuery = filterPosConfigQueryExclusiveAndOr(
+      "AND",
+      name,
+      stockLocationName
+    );
     // Testing the created graphQL filter function
     const filteredResult1 = await query({ query: filteredQuery });
     // Manual javascript filter function
@@ -337,6 +611,52 @@ describe("Query", () => {
     expect(filteredResult1.data.posConfigs.records).toStrictEqual(
       filteredResult2
     );
+  });
+
+  // fetch created graphQL posConfig by comparing it with the normal javascript OR filter function
+  it("fetch filtered pos config using OR", async () => {
+    const server = await createTestServerWithSessionToken({
+      signInGql: SIGN_IN
+    });
+    const { query } = createTestClient(server);
+    const posConfigResults = await query({
+      query: getPaginatedPosConfigQuery()
+    });
+    const unfilteredData = posConfigResults.data.posConfigs.records;
+
+    // The database should have at least one posConfigs data for the test to work
+    const name = unfilteredData[0].name;
+    const stockLocationName = unfilteredData[0].stockLocation.name;
+
+    const filteredQuery = filterPosConfigQueryExclusiveAndOr(
+      "OR",
+      name,
+      stockLocationName
+    );
+    // Testing the created graphQL filter function
+    const filteredResult1 = await query({ query: filteredQuery });
+    // Manual javascript filter function
+    const filteredResult2 = unfilteredData.filter(
+      (data: { name: any; stockLocation: { name: any } }) =>
+        data.name === unfilteredData[0].name ||
+        data.stockLocation.name === unfilteredData[0].stockLocation.name
+    );
+
+    // Checks whether the graphQL filter function actually "filters" the data
+    expect(filteredResult1.data.posConfigs.records).toStrictEqual(
+      filteredResult2
+    );
+  });
+
+  it("fetch filtered pos config using ANDOR", async () => {
+    const server = await createTestServerWithSessionToken({
+      signInGql: SIGN_IN
+    });
+    const { query } = createTestClient(server);
+    const results = await query({
+      query: filterPosConfigQueryBothAndOr
+    });
+    expect(results.data.posConfigs.records).not.toBeNull();
   });
 });
 
@@ -416,7 +736,6 @@ describe("Mutations", () => {
     const result: any = await mutate({
       mutation: CREATE_WITH_CORRECT_INPUT
     });
-
     expect(result.errors).toEqual(expect.anything());
   });
 
@@ -429,7 +748,6 @@ describe("Mutations", () => {
           name: "new name"
         }`)
     });
-
     expect(result.errors).toEqual(expect.anything());
   });
 
@@ -439,7 +757,6 @@ describe("Mutations", () => {
     const result: any = await mutate({
       mutation: getDeletePosConfigQuery(-1)
     });
-
     expect(result.errors).toEqual(expect.anything());
   });
 });

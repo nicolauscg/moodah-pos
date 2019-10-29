@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 import {
   httpController,
   createService,
@@ -52,3 +53,100 @@ export const paginateOperationParam = (params, args) => ({
   limit: args.input.first,
   offset: args.input.offset
 });
+
+// eslint-disable-next-line consistent-return
+const createDomainNone = (element, models) => {
+  // eslint-disable-next-line guard-for-in
+  for (const idx in models) {
+    const model = models[idx];
+    if (element[model.conventionName] !== undefined) {
+      return [model.domainName, model.operator, element[model.conventionName]];
+    }
+  }
+};
+
+const createDomainOr = (array, models) => {
+  const result = [];
+  array.forEach(element => {
+    result.push(createDomainNone(element, models));
+  });
+
+  return Array(array.length - 1)
+    .fill("|")
+    .concat(result);
+};
+
+// Logic constructor for OR,AND and ANDOR case
+// eslint-disable-next-line consistent-return
+const createFilterDomain = (data, models) => {
+  // base case
+  if (data === null) {
+    return [];
+  }
+  if (data.OR !== undefined) {
+    return createDomainOr(data.OR, models);
+  }
+  if (data.AND !== undefined) {
+    const array = data.AND;
+    const result = [];
+    if (array[0].OR !== undefined) {
+      array.forEach(element => {
+        result.push(...createDomainOr(element.OR, models));
+      });
+    } else {
+      array.forEach(element => {
+        result.push(createDomainNone(element, models));
+      });
+    }
+
+    return result;
+  }
+};
+
+export const paginateAndFilterOperationParam = (params, models, args) => {
+  // Create filterDomain
+  const filterDomain =
+    args.input.where === undefined
+      ? []
+      : createFilterDomain(args.input.where, models);
+  // Add the domain to the paginate param
+  const result = {
+    ...paginateOperationParam(params, args),
+    domain: filterDomain
+  };
+
+  return result;
+};
+
+// recursively checks wether list of objects have only one key
+// eslint-disable-next-line no-confusing-arrow
+const checkListContainOneKeyObject = (objectList: Array<any>) =>
+  !objectList
+    ? true
+    : objectList
+        .map(field => {
+          const keys = Object.keys(field);
+          if (Array.isArray(field[keys[0]])) {
+            return checkListContainOneKeyObject(field[keys[0]]);
+          }
+
+          if (keys.length !== 1) {
+            return false;
+          }
+
+          return true;
+        })
+        .every(valid => valid === true);
+
+// check args.OR contain list of object with only 1 key
+// check args.AND contain list of object with only 1 key
+// check only either .OR or .AND can be defined
+export const isFilterArgsValid = args => {
+  const data = args && args.input && args.input.where;
+
+  return data === undefined
+    ? true
+    : checkListContainOneKeyObject(data.OR) &&
+        checkListContainOneKeyObject(data.AND) &&
+        (data.OR === undefined || data.AND === undefined);
+};

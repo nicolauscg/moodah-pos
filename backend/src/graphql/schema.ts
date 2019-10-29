@@ -13,6 +13,8 @@ import {
   getDataSet,
   getSessionAuthNone,
   configureService,
+  isFilterArgsValid,
+  paginateAndFilterOperationParam,
   paginateOperationParam
 } from "./utils";
 
@@ -28,6 +30,12 @@ import { PagableInputType } from "./schemas/pagableInput";
 import { PosCategoryType } from "./schemas/posCategory";
 import { CreateOrUpdatePosCategoryInputType } from "./schemas/createOrUpdatePosCategoryInput";
 import { CreatePosCategoryType } from "./schemas/CreatePosCategory";
+import { PaymentMethodType } from "./schemas/paymentMethod";
+import { FilterableAndPagableInputType } from "./schemas/FilterableAndPageableInputType";
+import { AvailablePriceListType } from "./schemas/availablePriceList";
+import { OperationTypesType } from "./schemas/operationType";
+import { StockLocationType } from "./schemas/stockLocation";
+import { DiscountProductType } from "./schemas/discountProduct";
 
 const POS_CONFIG_FIELDS = [
   "id",
@@ -50,23 +58,6 @@ const POS_CONFIG_FIELDS = [
 ];
 const POS_CATEGORY_FIELDS = ["image", "name", "parent_id", "sequence"];
 
-function createDomainFilter(args) {
-  if (args.where === undefined) {
-    return [];
-  }
-  const result = [];
-  const data = args.where;
-
-  if (data.name !== undefined) {
-    result.push(["name", "ilike", data.name]);
-  }
-  if (data.stockLocationName !== undefined) {
-    result.push(["stock_location_id", "ilike", data.stockLocationName]);
-  }
-
-  return result;
-}
-
 const rootType = new GraphQLObjectType({
   name: "Query",
   fields: () => ({
@@ -77,21 +68,20 @@ const rootType = new GraphQLObjectType({
     posConfigs: {
       type: PaginateType(PosConfigType),
       args: {
-        where: {
-          type: new GraphQLInputObjectType({
-            name: "PosConfigsInput",
-            fields: () => ({
-              name: {
-                type: GraphQLString
-              },
-              stockLocationName: {
-                type: GraphQLString
-              }
-            })
-          })
-        },
         input: {
-          type: PagableInputType,
+          type: FilterableAndPagableInputType(
+            new GraphQLInputObjectType({
+              name: "PosConfigsInput",
+              fields: () => ({
+                name: {
+                  type: GraphQLString
+                },
+                stockLocationName: {
+                  type: GraphQLString
+                }
+              })
+            })
+          ),
           defaultValue: {
             first: 10,
             offset: 0
@@ -100,16 +90,36 @@ const rootType = new GraphQLObjectType({
       },
       resolve: (_0, args, context) =>
         new Promise((res, rej) => {
+          if (!isFilterArgsValid(args)) {
+            rej(
+              new ApolloError("Application Error", "APPLICATION_ERROR", {
+                errorMessage:
+                  "invalid filter-related input, ensure each field object " +
+                  "has only 1 key and OR and AND are mutually exclusive"
+              })
+            );
+          }
           configureService({
             operation: getDataSet({
               context
             }).createSearchRead(
-              paginateOperationParam(
+              paginateAndFilterOperationParam(
                 {
                   modelName: "pos.config",
-                  fields: POS_CONFIG_FIELDS,
-                  domain: createDomainFilter(args)
+                  fields: POS_CONFIG_FIELDS
                 },
+                [
+                  {
+                    domainName: "name",
+                    conventionName: "name",
+                    operator: "ilike"
+                  },
+                  {
+                    domainName: "stock_location_id",
+                    conventionName: "stockLocationName",
+                    operator: "ilike"
+                  }
+                ],
                 args
               )
             ),
@@ -220,6 +230,172 @@ const rootType = new GraphQLObjectType({
           });
         })
     },
+    paymentMethods: {
+      type: PaginateType(PaymentMethodType),
+      args: {
+        input: {
+          type: PagableInputType,
+          defaultValue: {
+            first: 10,
+            offset: 0
+          }
+        }
+      },
+      resolve: (_0, args, context) =>
+        new Promise((res, rej) => {
+          configureService({
+            operation: getDataSet({
+              context
+            }).createSearchRead(
+              paginateOperationParam(
+                {
+                  modelName: "account.journal",
+                  fields: ["id", "name", "company_id"],
+                  domain: [
+                    ["journal_user", "=", true],
+                    ["type", "in", ["bank", "cash"]]
+                  ]
+                },
+                args
+              )
+            ),
+            onError: error => {
+              rej(
+                new ApolloError("Application Error", "APPLICATION_ERROR", {
+                  errorMessage: error.message
+                })
+              );
+            },
+            onResult: result => res(camelizeKeys(result))
+          });
+        })
+    },
+    availablePriceLists: {
+      type: PaginateType(AvailablePriceListType),
+      args: {
+        input: {
+          type: PagableInputType,
+          defaultValue: {
+            first: 10,
+            offset: 0
+          }
+        }
+      },
+      resolve: (_0, args, context) =>
+        new Promise((res, rej) => {
+          configureService({
+            operation: getDataSet({
+              context
+            }).createSearchRead(
+              paginateOperationParam(
+                {
+                  modelName: "product.pricelist",
+                  fields: ["id", "name", "currency_id"],
+                  domain: []
+                },
+                args
+              )
+            ),
+            onError: error => {
+              rej(
+                new ApolloError("Application Error", "APPLICATION_ERROR", {
+                  errorMessage: error.message
+                })
+              );
+            },
+            onResult: result => {
+              res({
+                length: result.length,
+                records: camelizeKeys(result.records)
+              });
+            }
+          });
+        })
+    },
+    operationTypes: {
+      type: PaginateType(OperationTypesType),
+      args: {
+        input: {
+          type: PagableInputType,
+          defaultValue: {
+            first: 10,
+            offset: 0
+          }
+        }
+      },
+      resolve: (_0, args, context) =>
+        new Promise((res, rej) => {
+          configureService({
+            operation: getDataSet({
+              context
+            }).createSearchRead(
+              paginateOperationParam(
+                {
+                  modelName: "stock.picking.type",
+                  fields: POS_CONFIG_FIELDS,
+                  domain: []
+                },
+                args
+              )
+            ),
+            onError: error => {
+              rej(
+                new ApolloError("Application Error", "APPLICATION_ERROR", {
+                  errorMessage: error.message
+                })
+              );
+            },
+            onResult: result => {
+              res({
+                length: result.length,
+                records: camelizeKeys(result.records)
+              });
+            }
+          });
+        })
+    },
+    stockLocations: {
+      type: PaginateType(StockLocationType),
+      args: {
+        input: {
+          type: PagableInputType,
+          defaultValue: {
+            first: 10,
+            offset: 0
+          }
+        }
+      },
+      resolve: (_0, args, context) =>
+        new Promise((res, rej) => {
+          configureService({
+            operation: getDataSet({
+              context
+            }).createSearchRead(
+              paginateOperationParam(
+                {
+                  modelName: "stock.location",
+                  fields: POS_CONFIG_FIELDS,
+                  domain: []
+                },
+                args
+              )
+            ),
+            onError: error => {
+              rej(
+                new ApolloError("Application Error", "APPLICATION_ERROR", {
+                  errorMessage: error.message
+                })
+              );
+            },
+            onResult: result => {
+              res({
+                length: result.length,
+                records: camelizeKeys(result.records)
+              });
+            }
+          });
+        })
+    },
     posCategory: {
       type: PosCategoryType,
       args: {
@@ -261,6 +437,53 @@ const rootType = new GraphQLObjectType({
               } else {
                 res(camelizeKeys(result[0]));
               }
+            }
+          });
+        })
+    },
+    discountProducts: {
+      type: PaginateType(DiscountProductType),
+      args: {
+        input: {
+          type: PagableInputType,
+          defaultValue: {
+            first: 10,
+            offset: 0
+          }
+        }
+      },
+      resolve: (_0, args, context) =>
+        new Promise((res, rej) => {
+          configureService({
+            operation: getDataSet({
+              context
+            }).createSearchRead(
+              paginateOperationParam(
+                {
+                  modelName: "product.product",
+                  fields: ["id", "name"],
+                  domain: [
+                    ["available_in_pos", "=", true],
+                    ["sale_ok", "=", true]
+                  ]
+                },
+                args
+              )
+            ),
+            onError: error => {
+              rej(
+                new ApolloError("Application Error", "APPLICATION_ERROR", {
+                  errorMessage: error.message
+                })
+              );
+            },
+            onResult: result => {
+              res(
+                camelizeKeys({
+                  length: result.length,
+                  records: result.records
+                })
+              );
             }
           });
         })
