@@ -1,0 +1,76 @@
+fragment posConfigFields on PosConfig {
+  id
+  name
+  active
+  stockLocation{
+      id
+      name
+  }
+  ifaceTaxIncluded
+  globalDiscount
+  discountProduct {
+    id
+    name
+  }
+  discountPc
+  usePricelist
+  availablePricelistIds
+  pricelist{
+    id
+    name
+  }
+  restrictPriceControl
+  journalIds
+  isHeaderOrFooter
+  receiptHeader
+  receiptFooter
+  pickingType{
+    id
+    name
+  }
+}
+
+query PosConfigs {
+  posConfigs {
+    length
+    records {
+      name
+      stockLocation {
+        name
+      }
+    }
+  }
+}
+
+query PosConfig($input: PosConfigInput!) {
+  posConfig(input: $input) {
+    ...posConfigFields
+  }
+}
+
+mutation CreatePosConfig($input: CreateOrUpdatePosConfigInputType!) {
+  createPosConfig(input: $input) {
+    id
+    posConfig {
+      ...posConfigFields
+    }
+  }
+}
+
+mutation UpdatePosConfig($input: CreateOrUpdatePosConfigInputType!) {
+  updatePosConfig(input: $input) {
+    success
+    posConfig {
+      ...posConfigFields
+    }
+  }
+}
+
+mutation DeletePosConfig($input: DeletePosConfigInputType!){
+  deletePosConfig(input: $input){
+    success
+    posConfig {
+      ...posConfigFields
+    }
+  }
+}
