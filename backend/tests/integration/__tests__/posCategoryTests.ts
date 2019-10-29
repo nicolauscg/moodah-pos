@@ -117,23 +117,13 @@ describe("Query", () => {
 });
 
 describe("Mutation", () => {
-  it("create pos category without session token give error", async () => {
+  it("query pos categories with session token", async () => {
     const server = createTestServer();
     const { query } = createTestClient(server);
     const { errors } = await query({
       query: GET_POS_CATEGORIES_WITH_ALL_FIELDS
     });
     expect(errors).toEqual(expect.anything());
-  });
-
-  it("query pos categories with session token", async () => {
-    const server = await createTestServerWithSessionToken({
-      signInGql: SIGN_IN
-    });
-    const { query } = createTestClient(server);
-    const result = (await query({ query: CREATE_POS_CATEGORY })).data
-      .createPosCategory;
-    expect(result.id).not.toBeNull();
   });
 
   it("create pos category, update, then delete", async () => {
