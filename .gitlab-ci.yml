@@ -140,7 +140,7 @@ deploy dev backend:
     name: development
   only:
     changes:
-      - serverless.yml
+      - backend/serverless.yml
   except:
     - master
     - staging
@@ -161,7 +161,7 @@ deploy stag backend:
     refs:
       - staging
     changes:
-      - serverless.yml
+      - backend/serverless.yml
 
 deploy prod backend:
   image: node:10.16.3-alpine
@@ -179,7 +179,7 @@ deploy prod backend:
     refs:
       - master
     changes:
-      - serverless.yml
+      - backend/serverless.yml
 
 update dev backend functions:
   image: node:10.16.3-alpine

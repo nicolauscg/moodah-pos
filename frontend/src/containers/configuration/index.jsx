@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react'
+import React from 'react'
 import { debounce } from 'lodash'
 import { compose, withState, withPropsOnChange, withHandlers } from 'recompose'
 
@@ -7,11 +7,13 @@ import { Link } from 'react-router-dom'
 import SearchIcon from 'mdi-react/SearchIcon'
 import { withFormik, Form, Field } from 'formik'
 
-import { ResPartners } from '../../generated-models'
 import offsetToCursor from '../../utils/offsetToCursor'
 
-import PartnerTabs from './components/PartnerTabs'
 import Breadcrumb from '../../shared/components/Breadcrumb'
+
+import ConfigurationTable from './components/ConfigurationTable'
+
+import { PosConfigs } from '../../generated-pos-models'
 
 const SearchInput = ({ field, form, handleSetValue, ...props }) => {
   const { onChange, ...restField } = field
@@ -37,7 +39,7 @@ const SearchForm = ({ handleSetValue }) => {
       <Field
         name="keyword"
         className="search-field"
-        placeholder="Nama Kontak"
+        placeholder="Search..."
         handleSetValue={handleSetValue}
         component={SearchInput}
       />
@@ -61,61 +63,75 @@ const FormikSearch = compose(
   }))
 )(SearchForm)
 
-const PartnerIndex = ({
-  location,
+const ConfigurationIndex = ({
   filters,
   setFilters,
   offset,
   setOffset,
   handleSetValue,
-  refetchQueries,
 }) => {
   return (
-    <Container className="partners__list">
+    <Container className="configuration__list">
       <Row className="header">
         <Col md={4} className="header__item">
-          <Breadcrumb crumbs={[{ text: 'Kontak' }]} />
+          <Breadcrumb crumbs={[{ text: 'Configuration' }]} />
         </Col>
         <Col
           md={8}
           className="header__item d-flex align-items-center justify-content-end"
         >
-          <FormikSearch
+           <FormikSearch
             filters={filters}
             setFilters={setFilters}
             setOffset={setOffset}
             handleSetValue={handleSetValue}
-          />
+           />
+
           <Link
-            to={`/partners/create${location.hash}`}
-            className="btn btn-primary btn-sm"
+          to={`/configuration/list`}
+          className="btn btn-primary btn-sm"
           >
-            Buat Baru
+          Buat Baru
           </Link>
+
           <Button size="sm" color="help" tag="a" href="mailto:support@rubyh.co">
-            Bantuan
+          Bantuan
           </Button>
+
         </Col>
       </Row>
       <Row>
-        <PartnerTabs
+         <ConfigurationTable
           filters={filters}
           setFilters={setFilters}
           offset={offset}
           setOffset={setOffset}
-        />
+         />
       </Row>
     </Container>
   )
 }
 
+
 const defaultFilters = {
-  name_contains: '',
-  type: 'contact',
-  OR: [{ supplier: true }, { customer: true }],
-}
+    name_contains: '',
+    type: 'configuration',
+  }
 
 const enhance = compose(
+  PosConfigs.HOC({
+    name: 'getPosConfigs',
+    options: {
+      context: {
+        clientName: "pos"
+      }
+    }
+  }),
+  withPropsOnChange(['getPosConfigs'], ({ getPosConfigs }) => {
+    if (!getPosConfigs.loading) {
+      console.log("getPosConfigs", getPosConfigs);
+    }
+  }),
   withState('filters', 'setFilters', defaultFilters),
   withState('offset', 'setOffset', 0),
   withHandlers({
@@ -128,7 +144,6 @@ const enhance = compose(
     },
     refetchQueries: ({ filters, offset }) => () => [
       {
-        query: ResPartners.Document,
         variables: {
           filters,
           ...(offset > 0 ? { offset: offsetToCursor(offset) } : {}),
@@ -137,5 +152,5 @@ const enhance = compose(
     ],
   })
 )
-
-export default enhance(PartnerIndex)
+  
+  export default enhance(ConfigurationIndex)
