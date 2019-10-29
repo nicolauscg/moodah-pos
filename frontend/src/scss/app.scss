@@ -26,7 +26,8 @@
 @import './component/progress-bar'; // ProgressBar from 'reactstrap'
 @import './component/scroll';
 @import './component/select-options'; // <select> and <option>
-@import './component/sidebar'; // components/sidebar/*
+// @import './component/sidebar'; components/sidebar/*
+@import './component/sidebar2'; // components/sidebar/*
 @import './component/table'; // components/Table.js ('reactstrap')
 @import './component/tabs'; // Nav, NavItem, NavLink, TabContent, TabPane from 'reactstrap'
 @import './component/tooltip'; // Tooltip from 'reactstrap'
@@ -44,6 +45,9 @@
 @import 'containers/partners';
 @import 'containers/report-sales.scss';
 @import 'containers/journal.scss';
+@import 'containers/configuration.scss';
+@import 'containers/productcategory.scss';
 
 //objects...
-@import 'objects/layout.scss'; // layout settings
+// @import 'objects/layout.scss'; layout settings
+@import 'objects/layout2.scss'; // layout settings
