@@ -52,6 +52,32 @@ const GET_POS_CONFIGS_ALL_FIELDS = gql`
     }
   }
 `;
+
+// Function that returns the filtered pos config query based on args given
+function filterPosConfigQuery(name: string, stockLocationName: string) {
+  return gql`
+    query {
+      posConfigs(input: {
+        where: {
+          OR: [
+            {name:"${name}"},
+            {stockLocationName:"${stockLocationName}"}
+          ]
+        }
+      }) {
+        records {
+          id
+          name
+          active
+          stockLocation {
+            id
+            name
+          }
+        }
+      }
+    }
+  `;
+}
 const getPaginatedPosConfigQuery = (first = 0, offset = 0) => gql`
   query {
     posConfigs(input: { first: ${first}, offset: ${offset} }) {
@@ -512,6 +538,35 @@ describe("Query", () => {
     );
   });
 
+  // fetch created graphQL posConfig by comparing it with the normal javascript filter function
+  it("fetch filtered pos config", async () => {
+    const server = await createTestServerWithSessionToken({
+      signInGql: SIGN_IN
+    });
+    const { query } = createTestClient(server);
+    const posConfigResults = await query({ query: GET_POS_CONFIGS });
+    const unfilteredData = posConfigResults.data.posConfigs.records;
+    // The database should have at least one posConfigs data for the test to work
+    expect(unfilteredData[0]).toBeDefined();
+
+    const name = unfilteredData[0].name;
+    const stockLocationName = unfilteredData[0].stockLocation.name;
+    const filteredQuery = filterPosConfigQuery(name, stockLocationName);
+    // Testing the created graphQL filter function
+    const filteredResult1 = await query({ query: filteredQuery });
+    // Manual javascript filter function
+    const filteredResult2 = unfilteredData.filter(
+      (data: { name: any; stockLocation: { name: any } }) =>
+        data.name === unfilteredData[0].name &&
+        data.stockLocation.name === unfilteredData[0].stockLocation.name
+    );
+
+    // Checks whether the graphQL filter function actually "filters" the data
+    expect(filteredResult1.data.posConfigs.records).toEqual(
+      expect.arrayContaining(filteredResult2)
+    );
+  });
+
   it("fetch filtered pos without proper convention", async () => {
     const server = await createTestServerWithSessionToken({
       signInGql: SIGN_IN
@@ -614,6 +669,7 @@ describe("Mutations", () => {
     });
     expect(res.data.signIn.sessionToken).toEqual(expect.any(String));
   });
+
   it("incorrect credentials returns null", async () => {
     const server = createTestServer();
     const { mutate } = createTestClient(server);
@@ -622,6 +678,7 @@ describe("Mutations", () => {
     });
     expect(res.data.signIn).toBeNull();
   });
+
   it("invalid database on sign in give error", async () => {
     const server = createTestServer();
     const { mutate } = createTestClient(server);
@@ -630,6 +687,7 @@ describe("Mutations", () => {
     });
     expect(res.errors).toEqual(expect.anything());
   });
+
   it("correct create returns correct output then delete", async () => {
     const server = await createTestServerWithSessionToken({
       signInGql: SIGN_IN
@@ -644,6 +702,7 @@ describe("Mutations", () => {
     expect(createResult.data.createPosConfig.id).not.toBeNull();
     expect(deleteResult.data.deletePosConfig.success).toEqual(true);
   });
+
   it("create pos cofig, update, then delete", async () => {
     const UPDATED_POS_CONFIG_NAME = "updatedFromTest";
     const server = await createTestServerWithSessionToken({
@@ -670,6 +729,7 @@ describe("Mutations", () => {
     );
     expect(deleteResult.data.deletePosConfig.success).toEqual(true);
   });
+
   it("create pos cofig without session token give error", async () => {
     const server = createTestServer();
     const { mutate } = createTestClient(server);
@@ -678,6 +738,7 @@ describe("Mutations", () => {
     });
     expect(result.errors).toEqual(expect.anything());
   });
+
   it("update pos cofig without session token give error", async () => {
     const server = createTestServer();
     const { mutate } = createTestClient(server);
@@ -689,6 +750,7 @@ describe("Mutations", () => {
     });
     expect(result.errors).toEqual(expect.anything());
   });
+
   it("delete pos cofig without session token give error", async () => {
     const server = createTestServer();
     const { mutate } = createTestClient(server);
