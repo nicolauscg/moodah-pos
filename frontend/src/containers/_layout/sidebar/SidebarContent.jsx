@@ -59,11 +59,31 @@ class SidebarContent extends Component {
   render() {
     const { openMenu, toggle } = this.props
 
-    const availableMenus = pathOr(
-      [],
-      ['availableMenus'],
-      this.props.availableMenus
-    )
+    const availableMenus =
+      [
+        {
+            action: "",
+            children: [],
+            id: "",
+            name: "Mitra",
+            parentId: "",
+            sequence: 1,
+            xmlid: "moodah_general_menu.menu_contacts",
+            __typename: "IrUiMenuType",
+        },
+        {
+            action: "",
+            children: [],
+            id: "",
+            name: "Configuration",
+            parentId: "",
+            sequence: 2,
+            xmlid: "moodah_general_menu.menu_configuration",
+            __typename: "IrUiMenuType",
+        },
+      ]
+
+
 
     const menus = availableMenus.filter(
       menu =>

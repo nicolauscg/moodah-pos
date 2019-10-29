@@ -1,0 +1,220 @@
+.configuration__form {
+  .header {
+    margin-bottom: 1rem;
+
+    .header__item {
+      border-radius: 0.25rem;
+
+      .btn {
+        margin-bottom: 0;
+      }
+    }
+
+    ol {
+      &.breadcrumb {
+        margin-bottom: 0;
+        background: unset;
+        padding-left: 0;
+      }
+    }
+  }
+}
+
+.configuration__list {
+  .header {
+    margin-bottom: 1rem;
+
+    .header__item {
+      border-radius: 0.25rem;
+
+      h1 {
+        font-family: $font-family;
+        color: $color-topbrand;
+      }
+
+      .btn {
+        margin-top: 0;
+        margin-bottom: 0;
+      }
+    }
+
+    ol {
+      &.breadcrumb {
+        margin-top: 0;
+        margin-bottom: 0;
+        background: unset;
+        padding-left: 0;
+      }
+    }
+  }
+
+  .tabs-container {
+    padding: 10px;
+  }
+
+  .card {
+    padding-bottom: 0px;
+  }
+
+  .card-body {
+    padding: 1.25rem;
+  }
+
+  .search {
+    margin: auto 15px auto 0;
+    padding: 0;
+    position: relative;
+    display: flex;
+    align-items: center;
+
+    .search-field {
+      width: 0;
+      margin: auto;
+      border: none;
+      border-radius: 5px;
+      height: 30px;
+      padding-left: 30px;
+      width: 200px;
+      font-family: 'Rubik', 'Roboto', sans-serif;
+
+      &:focus {
+        outline: none;
+      }
+    }
+
+    .search-btn {
+      height: 26px;
+      width: 26px;
+      border-radius: 13px;
+      border: none;
+      padding: 0;
+      background: transparent;
+      position: absolute;
+      left: 5px;
+
+      &:hover {
+
+        @include themify($themes) {
+          background-color: themed('colorBackgroundBody');
+        }
+      }
+
+      svg {
+        margin: auto;
+        height: 18px;
+        width: 18px;
+        fill: #737373;
+      }
+    }
+  }
+
+  .btn {
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+
+  .youtube__wrapper {
+    position: relative;
+    padding-bottom: 50%;
+    height: 0;
+    overflow: hidden;
+    max-width: 100%;
+    background: #000;
+
+    .modal-dialog {
+      box-shadow: unset;
+      background: transparent;
+    }
+  }
+
+  .youtube__thumbnail {
+    display: block;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    margin: auto;
+    border: none;
+    cursor: pointer;
+    transition: all .4s;
+
+    &:hover {
+      filter: brightness(75%);
+    }
+  }
+
+  .youtube__play {
+    position: absolute;
+    height: 72px;
+    width: 72px;
+    left: 50%;
+    top: 50%;
+    margin-left: -36px;
+    margin-top: -36px;
+    background: no-repeat center/60% url("/img/play.png");
+    cursor: pointer;
+    border: none;
+  }
+}
+
+.configuration__list-help {
+
+  & > .card-body {
+    background-color: #405A89;
+    padding-top: 2rem;
+  }
+
+  h5, p {
+    color: white;
+  }
+
+  h5 {
+    &.bold-text {
+      font-weight: 500;
+    }
+  }
+
+  p {
+    font-weight: 300;
+  }
+
+  .help-video {
+    background-color: #7588AA;
+
+    h5 {
+      font-family: $font-family;
+    }
+  }
+
+  .panel__btn {
+    width: unset;
+    height: unset;
+
+    svg {
+      fill: white;
+    }
+  }
+}
+
+.youtube__modal-content {
+  box-shadow: unset;
+  background: transparent;
+  padding: 0;
+
+  .youtube__close-btn {
+    position: absolute;
+    top: -40px;
+    right: 0;
+    background: #70bbfd;
+    border: none;
+    cursor: pointer;
+
+    &:hover, &:active, &:focus {
+      background: #57affd;
+    }
+  }
+}
