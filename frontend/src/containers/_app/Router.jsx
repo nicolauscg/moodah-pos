@@ -16,6 +16,7 @@ import EditPartner from '../partners/EditPartner'
 import AccountSettings from '../account_settings/index'
 import withTracker from '../../shared/components/withTracker'
 import withStandardPlanHandler from '../../shared/components/withStandardPlanHandler'
+import ProductCategoryIndex from '../product_category/index' // Routing Product Category
 
 const RouteList = {
   Partners: {
@@ -36,6 +37,18 @@ const RouteList = {
       },
     ],
   },
+
+  ProductCategory: {
+      path: '/product_category',
+      title: 'Product Category',
+      component: [
+        {
+          path: '/product_category/list',
+          component: ProductCategoryIndex,
+        },
+      ],
+  },
+
   AccountSettings: {
     path: '/account_settings',
     component: [

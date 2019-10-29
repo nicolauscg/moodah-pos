@@ -106,7 +106,7 @@
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
     "gql-gen": "rm -rf src/generated-models.tsx && gql-gen",
-	"gql-gen-windows": "(IF EXIST DEL /F src/generated-models.tsx) & gql-gen",
+    "gql-gen-windows": "(IF EXIST DEL /F src/generated-models.tsx) & gql-gen",
     "develop": "npm run gql-gen && npm run start"
   },
   "devDependencies": {

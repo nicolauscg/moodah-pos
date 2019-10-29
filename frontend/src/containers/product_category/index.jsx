@@ -10,8 +10,8 @@ import { withFormik, Form, Field } from 'formik'
 import { ResPartners } from '../../generated-models'
 import offsetToCursor from '../../utils/offsetToCursor'
 
-import PartnerTabs from './components/PartnerTabs'
 import Breadcrumb from '../../shared/components/Breadcrumb'
+import ProductCategoryTable from './components/ProductCategoryTable'
 
 const SearchInput = ({ field, form, handleSetValue, ...props }) => {
   const { onChange, ...restField } = field
@@ -37,7 +37,7 @@ const SearchForm = ({ handleSetValue }) => {
       <Field
         name="keyword"
         className="search-field"
-        placeholder="Nama Kontak"
+        placeholder="Search..."
         handleSetValue={handleSetValue}
         component={SearchInput}
       />
@@ -61,81 +61,82 @@ const FormikSearch = compose(
   }))
 )(SearchForm)
 
-const PartnerIndex = ({
-  location,
+const ProductCategoryIndex = ({
   filters,
   setFilters,
   offset,
   setOffset,
   handleSetValue,
-  refetchQueries,
 }) => {
   return (
-    <Container className="partners__list">
+    <Container className="productcategory__list">
       <Row className="header">
         <Col md={4} className="header__item">
-          <Breadcrumb crumbs={[{ text: 'Kontak' }]} />
+          <Breadcrumb crumbs={[{ text: 'Category' }]} />
         </Col>
         <Col
           md={8}
           className="header__item d-flex align-items-center justify-content-end"
         >
-          <FormikSearch
+           <FormikSearch
             filters={filters}
             setFilters={setFilters}
             setOffset={setOffset}
             handleSetValue={handleSetValue}
-          />
+           />
+
           <Link
-            to={`/partners/create${location.hash}`}
-            className="btn btn-primary btn-sm"
+          to={`/product_category/list`}
+          className="btn btn-primary btn-sm"
           >
-            Buat Baru
+          Buat Baru
           </Link>
+
           <Button size="sm" color="help" tag="a" href="mailto:support@rubyh.co">
-            Bantuan
+          Bantuan
           </Button>
+
         </Col>
       </Row>
       <Row>
-        <PartnerTabs
-          filters={filters}
-          setFilters={setFilters}
-          offset={offset}
-          setOffset={setOffset}
-        />
+        <ProductCategoryTable
+         filters={filters}
+         setFilters={setFilters}
+         offset={offset}
+         setOffset={setOffset}
+         />
       </Row>
+
     </Container>
   )
 }
 
+
 const defaultFilters = {
-  name_contains: '',
-  type: 'contact',
-  OR: [{ supplier: true }, { customer: true }],
-}
+    name_contains: '',
+    type: 'productcategory',
+  }
 
 const enhance = compose(
-  withState('filters', 'setFilters', defaultFilters),
-  withState('offset', 'setOffset', 0),
-  withHandlers({
-    handleSetValue: ({ filters, setFilters, setOffset }) => value => {
-      setFilters({
-        ...filters,
-        name_contains: value,
-      })
-      setOffset(0)
-    },
-    refetchQueries: ({ filters, offset }) => () => [
-      {
-        query: ResPartners.Document,
-        variables: {
-          filters,
-          ...(offset > 0 ? { offset: offsetToCursor(offset) } : {}),
-        },
+    withState('filters', 'setFilters', defaultFilters),
+    withState('offset', 'setOffset', 0),
+    withHandlers({
+      handleSetValue: ({ filters, setFilters, setOffset }) => value => {
+        setFilters({
+          ...filters,
+          name_contains: value,
+        })
+        setOffset(0)
       },
-    ],
-  })
-)
+      refetchQueries: ({ filters, offset }) => () => [
+        {
+          variables: {
+            filters,
+            ...(offset > 0 ? { offset: offsetToCursor(offset) } : {}),
+          },
+        },
+      ],
+    })
+  )
 
-export default enhance(PartnerIndex)
+export default enhance(ProductCategoryIndex)
