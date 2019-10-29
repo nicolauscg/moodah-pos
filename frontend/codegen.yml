@@ -9,7 +9,7 @@ generates:
       - 'typescript-client'
       - 'typescript-react-apollo'
   ./src/generated-pos-models.tsx:
-    schema: https://o6w9uffa6d.execute-api.us-east-1.amazonaws.com/dev/graphql
+    schema: https://j3li8dtqy4.execute-api.us-east-1.amazonaws.com/stag/graphql-introspect
     documents:
       - './src/graphqls/pos/*.graphql'
     config: {}
