@@ -1,0 +1,11 @@
+mutation SignIn($db: String!, $username: String!, $password: String!) {
+  signIn(input: {
+    db: $db,
+    username: $username,
+    password: $password
+  }) {
+    username
+    isSuperuser
+    sessionToken
+  }
+}

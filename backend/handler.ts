@@ -24,6 +24,6 @@ exports.graphqlHandler = server.createHandler({
 
 exports.playgroundHandler = lambdaPlayground({
   endpoint: process.env.IS_OFFLINE
-    ? "http://localhost:3000/graphql-introspect"
+    ? `http://localhost:${process.env.PORT}/graphql-introspect`
     : `/${process.env.STAGE}/graphql-introspect`
 });

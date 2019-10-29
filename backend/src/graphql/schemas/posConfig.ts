@@ -92,7 +92,8 @@ const PosConfigType = new GraphQLObjectType({
       type: GraphQLList(GraphQLInt)
     },
     pricelist: {
-      type: PriceListType
+      type: PriceListType,
+      resolve: parent => parent.pricelistId
     },
     restrictPriceControl: {
       type: GraphQLBoolean
