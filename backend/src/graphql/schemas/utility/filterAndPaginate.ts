@@ -1,58 +1,4 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
-import {
-  httpController,
-  createService,
-  createInsecureClientOptions,
-  ServiceOperation
-} from "nodoo";
-
-interface GetDataSetParam {
-  context: {
-    sessionToken?: string;
-  };
-}
-interface GetServiceParam {
-  operation: ServiceOperation;
-  onResult: (result: any) => any;
-  onError: (error: any) => void;
-}
-
-// get operation for configureService that does not need auth
-export const getSessionAuthNone = () =>
-  httpController().operation.session.authNone;
-
-// get operation for configureService that needs auth
-export const getDataSet = ({ context }: GetDataSetParam) =>
-  httpController().operation.dataSet({
-    sessionToken: context.sessionToken
-  });
-
-// creates service with defaults
-export const configureService = ({
-  operation,
-  onResult,
-  onError
-}: GetServiceParam) => {
-  const clientOptions = createInsecureClientOptions({
-    host: "178.128.103.135",
-    port: 8069
-  });
-
-  createService({
-    operation,
-    clientOptions
-  }).addListener({
-    next: result => {
-      result.fold(onError, onResult);
-    }
-  });
-};
-
-export const paginateOperationParam = (params, args) => ({
-  ...params,
-  limit: args.input.first,
-  offset: args.input.offset
-});
+import { paginateOperationParam } from "./paginate";
 
 // eslint-disable-next-line consistent-return
 const createDomainNone = (element, models) => {
@@ -76,7 +22,7 @@ const createDomainOr = (array, models) => {
     .concat(result);
 };
 
-// Logic constructor for OR,AND and ANDOR case
+// Logic constructor for OR,AND and AND OR case
 // eslint-disable-next-line consistent-return
 const createFilterDomain = (data, models) => {
   // base case
@@ -103,7 +49,7 @@ const createFilterDomain = (data, models) => {
   }
 };
 
-export const paginateAndFilterOperationParam = (params, models, args) => {
+const paginateAndFilterOperationParam = (params, models, args) => {
   // Create filterDomain
   const filterDomain =
     args.input.where === undefined
@@ -138,10 +84,8 @@ const checkListContainOneKeyObject = (objectList: Array<any>) =>
         })
         .every(valid => valid === true);
 
-// check args.OR contain list of object with only 1 key
-// check args.AND contain list of object with only 1 key
-// check only either .OR or .AND can be defined
-export const isFilterArgsValid = args => {
+// args is valid for filtering
+const isFilterArgsValid = args => {
   const data = args && args.input && args.input.where;
 
   return data === undefined
@@ -150,3 +94,5 @@ export const isFilterArgsValid = args => {
         checkListContainOneKeyObject(data.AND) &&
         (data.OR === undefined || data.AND === undefined);
 };
+
+export { paginateAndFilterOperationParam, isFilterArgsValid };
