@@ -63,7 +63,7 @@ const posConfigMutations = new GraphQLObjectType({
                 },
                 onResult: result2 => {
                   const camelizedResult = camelizeKeys(result2[0]);
-                  createResult.posCategory = camelizedResult;
+                  createResult.posConfig = camelizedResult;
                   res(createResult);
                 }
               });
