@@ -9,8 +9,8 @@ import {
 import { globalIdField } from "graphql-relay";
 import { IfaceTaxIncludedType } from "./ifaceTaxIncluded";
 
-const DiscountProductType = new GraphQLObjectType({
-  name: "DiscountProduct",
+const PosConfigDiscountProductType = new GraphQLObjectType({
+  name: "PosConfig_DiscountProduct",
   fields: () => ({
     id: {
       type: GraphQLInt,
@@ -22,8 +22,9 @@ const DiscountProductType = new GraphQLObjectType({
     }
   })
 });
-const PriceListType = new GraphQLObjectType({
-  name: "Pricelist",
+
+const PosConfigPriceListType = new GraphQLObjectType({
+  name: "PosConfig_Pricelist",
   fields: () => ({
     id: {
       type: GraphQLInt,
@@ -35,8 +36,9 @@ const PriceListType = new GraphQLObjectType({
     }
   })
 });
-const StockLocationType = new GraphQLObjectType({
-  name: "StockLocation",
+
+const PosConfigStockLocationType = new GraphQLObjectType({
+  name: "PosConfig_StockLocation",
   fields: () => ({
     id: {
       type: GraphQLInt,
@@ -48,8 +50,9 @@ const StockLocationType = new GraphQLObjectType({
     }
   })
 });
-const PickingTypeType = new GraphQLObjectType({
-  name: "PickingType",
+
+const PosConfigPickingTypeType = new GraphQLObjectType({
+  name: "PosConfig_PickingType",
   fields: () => ({
     id: {
       type: GraphQLInt,
@@ -79,7 +82,7 @@ const PosConfigType = new GraphQLObjectType({
       type: GraphQLBoolean
     },
     discountProduct: {
-      type: DiscountProductType,
+      type: PosConfigDiscountProductType,
       resolve: parent => parent.discountProductId
     },
     discountPc: {
@@ -92,7 +95,7 @@ const PosConfigType = new GraphQLObjectType({
       type: GraphQLList(GraphQLInt)
     },
     pricelist: {
-      type: PriceListType,
+      type: PosConfigPriceListType,
       resolve: parent => parent.pricelistId
     },
     restrictPriceControl: {
@@ -111,11 +114,11 @@ const PosConfigType = new GraphQLObjectType({
       type: GraphQLString
     },
     stockLocation: {
-      type: StockLocationType,
+      type: PosConfigStockLocationType,
       resolve: parent => parent.stockLocationId
     },
     pickingType: {
-      type: PickingTypeType,
+      type: PosConfigPickingTypeType,
       resolve: parent => parent.pickingTypeId
     }
   })
