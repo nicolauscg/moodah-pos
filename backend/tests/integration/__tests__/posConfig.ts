@@ -1,354 +1,29 @@
 import { createTestClient } from "apollo-server-testing";
-import gql from "graphql-tag";
 
-import { createTestServer, createTestServerWithSessionToken } from "../utils";
+import {
+  createTestServer,
+  createTestServerWithSessionToken
+} from "../../utility/createTestServer";
 import { fromGlobalId } from "graphql-relay";
-
-// graphql payloads for testing
-const GET_TEST = gql`
-  {
-    test
-  }
-`;
-const GET_POS_CONFIGS = gql`
-  query {
-    posConfigs {
-      records {
-        id
-        name
-        active
-        stockLocation {
-          id
-          name
-        }
-      }
-    }
-  }
-`;
-const GET_POS_CONFIGS_ALL_FIELDS = gql`
-  query {
-    posConfigs {
-      records {
-        id
-        name
-        active
-        pricelist {
-          id
-          name
-        }
-        discountProduct {
-          id
-          name
-        }
-        stockLocation {
-          id
-          name
-        }
-        pickingType {
-          id
-          name
-        }
-      }
-    }
-  }
-`;
-
-// Function that returns the filtered pos config query based on args given
-function filterPosConfigQuery(name: string, stockLocationName: string) {
-  return gql`
-    query {
-      posConfigs(input: {
-        where: {
-          OR: [
-            {name:"${name}"},
-            {stockLocationName:"${stockLocationName}"}
-          ]
-        }
-      }) {
-        records {
-          id
-          name
-          active
-          stockLocation {
-            id
-            name
-          }
-        }
-      }
-    }
-  `;
-}
-const getPaginatedPosConfigQuery = (first = 0, offset = 0) => gql`
-  query {
-    posConfigs(input: { first: ${first}, offset: ${offset} }) {
-      length
-      records {
-        id
-        name
-        active
-        stockLocation {
-          id
-          name
-        }
-      }
-    }
-  }
-`;
-
-const filterPosConfigQueryError = gql`
-  query {
-    posConfigs(
-      input: {
-        where: {
-          OR: [
-            { name: "cannot place 2 keys inside object", stockLocationName: "" }
-          ]
-        }
-      }
-    ) {
-      records {
-        id
-        name
-        active
-        stockLocation {
-          id
-          name
-        }
-      }
-    }
-  }
-`;
-
-const filterPosConfigQueryExclusiveAndOr = (andOr, name, stockLocationName) =>
-  gql`
-  query {
-    posConfigs(input:{where:{ 
-      ${andOr}:[{name:"${name}"},{stockLocationName:"${stockLocationName}"}]
-    }}) {
-      records {
-        id
-        name
-        active
-        stockLocation {
-          id
-          name
-        }
-      }
-    }
-  }
-`;
-
-const filterPosConfigQueryBothAndOr = gql`
-  query {
-    posConfigs(
-      input: {
-        where: {
-          AND: [
-            { OR: [{ name: "test1" }, { stockLocationName: "WH" }] }
-            { OR: [{ name: "test2" }] }
-          ]
-        }
-      }
-    ) {
-      records {
-        id
-        name
-        active
-        stockLocation {
-          id
-          name
-        }
-      }
-    }
-  }
-`;
-
-// Function that returns the posConfig query based on the id given
-function getPosConfigQuery(id: number) {
-  return gql`
-    query {
-      posConfig(input: {
-        id:${id}
-      }) {
-        id
-        name
-        active
-        stockLocation {
-          id
-          name
-        }
-      }
-    }
-  `;
-}
-const SIGN_IN = gql`
-  mutation {
-    signIn(input: {
-      db: "${process.env.odoo_db}",
-      username: "${process.env.odoo_username}",
-      password: "${process.env.odoo_password}"
-    }) {
-      sessionToken
-    }
-  }
-`;
-const SIGN_IN_WITH_WRONG_CREDENTIALS = gql`
-mutation {
-  signIn(input: {
-    db: "${process.env.odoo_db}",
-    username: "test",
-    password: "test"
-  }) {
-    sessionToken
-  }
-}
-`;
-const SIGN_IN_WITH_INVALID_DB = gql`
-  mutation {
-    signIn(input: { db: "", username: "", password: "" }) {
-      sessionToken
-    }
-  }
-`;
-const CREATE_WITH_CORRECT_INPUT = gql`
-  mutation {
-    createPosConfig(
-      input: { name: "createdFromTest", pickingTypeId: 12, journalIds: [36] }
-    ) {
-      posConfig {
-        id
-        name
-        active
-      }
-      id
-    }
-  }
-`;
-const GET_POS_CONFIGS_LOCATION = gql`
-  query {
-    posConfigs {
-      records {
-        id
-        name
-        active
-        stockLocation {
-          id
-          name
-        }
-      }
-    }
-  }
-`;
-const GET_INVENTORY_TYPES = gql`
-  query {
-    operationTypes(input: { first: 5, offset: 0 }) {
-      length
-      records {
-        id
-        name
-      }
-    }
-  }
-`;
-const GET_STOCK_LOCATIONS = gql`
-  query {
-    stockLocations(input: { first: 5, offset: 0 }) {
-      length
-      records {
-        id
-        name
-      }
-    }
-  }
-`;
-const getDeletePosConfigQuery = (id: number) => gql`
-  mutation {
-    deletePosConfig(input: {
-      id: ${id}
-    }) {
-      success
-      posConfig {
-        id
-        name
-      }
-    }
-  }`;
-const getUpdatePostConfigQuery = (fieldsToUpate: string) => gql`
-  mutation {
-    updatePosConfig(input: ${fieldsToUpate}) {
-      success
-      posConfig {
-        id
-        name
-      }
-    }
-  }
-`;
-const GET_OPERATION_TYPES = gql`
-  query {
-    paymentMethods {
-      length
-      records {
-        id
-        name
-        company {
-          id
-          name
-        }
-      }
-    }
-  }
-`;
-const GET_AVAILABLE_PRICELIST = gql`
-  query {
-    availablePriceLists {
-      length
-      records {
-        id
-        name
-        currency {
-          id
-          name
-        }
-      }
-    }
-  }
-`;
-
-const GET_DISCOUNT_PRODUCTS = gql`
-  query {
-    discountProducts {
-      length
-      records {
-        id
-        name
-      }
-    }
-  }
-`;
+import posConfigRequests from "../graphqls/posConfig";
 
 describe("Query", () => {
-  it("return test query response", async () => {
-    const server = createTestServer();
-    const { query } = createTestClient(server);
-    const res = await query({ query: GET_TEST });
-    expect(res.data.test).toEqual("test");
-  });
-
   it("fetch pos configs without session token", async () => {
     const server = createTestServer();
     const { query } = createTestClient(server);
-    const res = await query({ query: GET_POS_CONFIGS });
+    const res = await query({ query: posConfigRequests.GET_POS_CONFIGS });
     expect(res.data.posConfigs).toBeNull();
   });
 
   // test that still return the config location id
   it("return test query response for nested query location", async () => {
     const server = await createTestServerWithSessionToken({
-      signInGql: SIGN_IN
+      signInGql: posConfigRequests.SIGN_IN
     });
     const { query } = createTestClient(server);
-    const res = await query({ query: GET_POS_CONFIGS_LOCATION });
+    const res = await query({
+      query: posConfigRequests.GET_POS_CONFIGS_LOCATION
+    });
     for (const index of res.data.posConfigs.records) {
       expect(index.stockLocationId).not.toBeNull();
     }
@@ -357,38 +32,41 @@ describe("Query", () => {
   it("fetch pos config without session token give error", async () => {
     const server = createTestServer();
     const { query } = createTestClient(server);
-    const res = await query({ query: getPosConfigQuery(1) });
+    const res = await query({ query: posConfigRequests.getPosConfigQuery(1) });
     expect(res.errors).toEqual(expect.anything());
   });
 
   it("fetch pos configs with session token", async () => {
     const server = await createTestServerWithSessionToken({
-      signInGql: SIGN_IN
+      signInGql: posConfigRequests.SIGN_IN
     });
     const { query } = createTestClient(server);
-    const res = await query({ query: GET_POS_CONFIGS_ALL_FIELDS });
+    const res = await query({
+      query: posConfigRequests.GET_POS_CONFIGS_ALL_FIELDS
+    });
     expect(res.data.posConfigs).not.toBeNull();
   });
 
   it("fetch singular pos config with session token via wrong id", async () => {
     const server = await createTestServerWithSessionToken({
-      signInGql: SIGN_IN
+      signInGql: posConfigRequests.SIGN_IN
     });
     // Id is set as natural number, -1 will always be wrong id
     const WRONG_ID = -1;
     const { query } = createTestClient(server);
-    const GET_POS_CONFIG = getPosConfigQuery(WRONG_ID);
+    const GET_POS_CONFIG = posConfigRequests.getPosConfigQuery(WRONG_ID);
     const res = await query({ query: GET_POS_CONFIG });
     expect(res.data.posConfig).toBeNull();
   });
 
   it("query availablePriceLists with session token", async () => {
     const server = await createTestServerWithSessionToken({
-      signInGql: SIGN_IN
+      signInGql: posConfigRequests.SIGN_IN
     });
     const { query } = createTestClient(server);
-    const result = (await query({ query: GET_AVAILABLE_PRICELIST })).data
-      .availablePriceLists;
+    const result = (await query({
+      query: posConfigRequests.GET_AVAILABLE_PRICELIST
+    })).data.availablePriceLists;
     expect(result.length).toEqual(expect.anything());
     expect(result.records).toEqual(expect.anything());
     expect(result.records).toContainEqual(
@@ -406,7 +84,9 @@ describe("Query", () => {
   it("query availablePriceLists without session token", async () => {
     const server = createTestServer();
     const { query } = createTestClient(server);
-    const result = await query({ query: GET_AVAILABLE_PRICELIST });
+    const result = await query({
+      query: posConfigRequests.GET_AVAILABLE_PRICELIST
+    });
     expect(result.data.availablePriceLists).toBeNull();
     expect(result.errors).toEqual(expect.anything());
   });
@@ -415,18 +95,22 @@ describe("Query", () => {
       pos configs fetch`, async () => {
     const amountOfIdsToRead = 3;
     const server = await createTestServerWithSessionToken({
-      signInGql: SIGN_IN
+      signInGql: posConfigRequests.SIGN_IN
     });
     const { query } = createTestClient(server);
     // posConfigRes will contain the id that will be used to check
     // if the singular posConfig is working
-    const posConfigRes = await query({ query: GET_POS_CONFIGS });
+    const posConfigRes = await query({
+      query: posConfigRequests.GET_POS_CONFIGS
+    });
     const idsToRead = posConfigRes.data.posConfigs.records
       .slice(0, amountOfIdsToRead)
       .map(posConfig => parseInt(fromGlobalId(posConfig.id).id, 10));
     // concurrently read posConfig
     Promise.all(
-      idsToRead.map(id => query({ query: getPosConfigQuery(id) }))
+      idsToRead.map(id =>
+        query({ query: posConfigRequests.getPosConfigQuery(id) })
+      )
     ).then(posConfigResults =>
       posConfigResults.forEach(
         (posConfigResult: any) =>
@@ -439,11 +123,12 @@ describe("Query", () => {
 
   it("query paymentMethods with session token", async () => {
     const server = await createTestServerWithSessionToken({
-      signInGql: SIGN_IN
+      signInGql: posConfigRequests.SIGN_IN
     });
     const { query } = createTestClient(server);
-    const result = (await query({ query: GET_OPERATION_TYPES })).data
-      .paymentMethods;
+    const result = (await query({
+      query: posConfigRequests.GET_OPERATION_TYPES
+    })).data.paymentMethods;
     expect(result.length).toEqual(expect.any(Number));
     expect(result.records).toContainEqual(
       expect.objectContaining({
@@ -460,36 +145,39 @@ describe("Query", () => {
   it("query paymentMethods without session token", async () => {
     const server = createTestServer();
     const { query } = createTestClient(server);
-    const result = await query({ query: GET_OPERATION_TYPES });
+    const result = await query({
+      query: posConfigRequests.GET_OPERATION_TYPES
+    });
     expect(result.data.paymentMethods).toBeNull();
     expect(result.errors).toEqual(expect.anything());
   });
 
   it("fetch all inventory operation types", async () => {
     const server = await createTestServerWithSessionToken({
-      signInGql: SIGN_IN
+      signInGql: posConfigRequests.SIGN_IN
     });
     const { query } = createTestClient(server);
-    const res = await query({ query: GET_INVENTORY_TYPES });
+    const res = await query({ query: posConfigRequests.GET_INVENTORY_TYPES });
     expect(res.data.operationTypes).not.toBeNull();
   });
 
   it("fetch all inventory stock locations", async () => {
     const server = await createTestServerWithSessionToken({
-      signInGql: SIGN_IN
+      signInGql: posConfigRequests.SIGN_IN
     });
     const { query } = createTestClient(server);
-    const res = await query({ query: GET_STOCK_LOCATIONS });
+    const res = await query({ query: posConfigRequests.GET_STOCK_LOCATIONS });
     expect(res.data.stockLocations).not.toBeNull();
   });
 
   it("fetch discount products", async () => {
     const server = await createTestServerWithSessionToken({
-      signInGql: SIGN_IN
+      signInGql: posConfigRequests.SIGN_IN
     });
     const { query } = createTestClient(server);
-    const result = (await query({ query: GET_DISCOUNT_PRODUCTS })).data
-      .discountProducts;
+    const result = (await query({
+      query: posConfigRequests.GET_DISCOUNT_PRODUCTS
+    })).data.discountProducts;
     expect(result).not.toBeNull();
     if (result.records.length) {
       expect(result.records[0].id).toEqual(expect.any(Number));
@@ -499,12 +187,12 @@ describe("Query", () => {
 
   it("fetch paginated pos configs returns correct record length", async () => {
     const server = await createTestServerWithSessionToken({
-      signInGql: SIGN_IN
+      signInGql: posConfigRequests.SIGN_IN
     });
     const AMOUNT_TO_FETCH = 5;
     const { query } = createTestClient(server);
     const result = (await query({
-      query: getPaginatedPosConfigQuery(AMOUNT_TO_FETCH)
+      query: posConfigRequests.getPaginatedPosConfigQuery(AMOUNT_TO_FETCH)
     })).data.posConfigs;
     expect(result.length).not.toBeNull();
     if (result.length >= AMOUNT_TO_FETCH) {
@@ -516,18 +204,23 @@ describe("Query", () => {
 
   it("fetch paginated pos configs check offset", async () => {
     const server = await createTestServerWithSessionToken({
-      signInGql: SIGN_IN
+      signInGql: posConfigRequests.SIGN_IN
     });
     const { query } = createTestClient(server);
     const GET_ONE_RECORD = 1;
     const OFFSETS_TO_TEST = 3;
     const { length, records } = (await query({
-      query: getPaginatedPosConfigQuery(OFFSETS_TO_TEST)
+      query: posConfigRequests.getPaginatedPosConfigQuery(OFFSETS_TO_TEST)
     })).data.posConfigs;
     const recordIds = records.map(record => record.id);
     Promise.all(
       [...Array(Math.min(OFFSETS_TO_TEST, length)).keys()].map(offset =>
-        query({ query: getPaginatedPosConfigQuery(GET_ONE_RECORD, offset) })
+        query({
+          query: posConfigRequests.getPaginatedPosConfigQuery(
+            GET_ONE_RECORD,
+            offset
+          )
+        })
       )
     ).then(paginatedResults =>
       paginatedResults.forEach((paginatedResult: any, index: number) =>
@@ -541,17 +234,22 @@ describe("Query", () => {
   // fetch created graphQL posConfig by comparing it with the normal javascript filter function
   it("fetch filtered pos config", async () => {
     const server = await createTestServerWithSessionToken({
-      signInGql: SIGN_IN
+      signInGql: posConfigRequests.SIGN_IN
     });
     const { query } = createTestClient(server);
-    const posConfigResults = await query({ query: GET_POS_CONFIGS });
+    const posConfigResults = await query({
+      query: posConfigRequests.GET_POS_CONFIGS
+    });
     const unfilteredData = posConfigResults.data.posConfigs.records;
     // The database should have at least one posConfigs data for the test to work
     expect(unfilteredData[0]).toBeDefined();
 
     const name = unfilteredData[0].name;
     const stockLocationName = unfilteredData[0].stockLocation.name;
-    const filteredQuery = filterPosConfigQuery(name, stockLocationName);
+    const filteredQuery = posConfigRequests.filterPosConfigQuery(
+      name,
+      stockLocationName
+    );
     // Testing the created graphQL filter function
     const filteredResult1 = await query({ query: filteredQuery });
     // Manual javascript filter function
@@ -569,11 +267,13 @@ describe("Query", () => {
 
   it("fetch filtered pos without proper convention", async () => {
     const server = await createTestServerWithSessionToken({
-      signInGql: SIGN_IN
+      signInGql: posConfigRequests.SIGN_IN
     });
     const { query } = createTestClient(server);
     // Testing the created graphQL filter function
-    const result = await query({ query: filterPosConfigQueryError });
+    const result = await query({
+      query: posConfigRequests.filterPosConfigQueryError
+    });
     // Manual javascript filter function
     expect(result.errors).toEqual(expect.anything());
   });
@@ -581,11 +281,11 @@ describe("Query", () => {
   // fetch created graphQL posConfig by comparing it with the normal javascript ANDfilter function
   it("fetch filtered pos config using AND", async () => {
     const server = await createTestServerWithSessionToken({
-      signInGql: SIGN_IN
+      signInGql: posConfigRequests.SIGN_IN
     });
     const { query } = createTestClient(server);
     const posConfigResults = await query({
-      query: getPaginatedPosConfigQuery()
+      query: posConfigRequests.getPaginatedPosConfigQuery()
     });
     const unfilteredData = posConfigResults.data.posConfigs.records;
 
@@ -593,7 +293,7 @@ describe("Query", () => {
     const name = unfilteredData[0].name;
     const stockLocationName = unfilteredData[0].stockLocation.name;
 
-    const filteredQuery = filterPosConfigQueryExclusiveAndOr(
+    const filteredQuery = posConfigRequests.filterPosConfigQueryExclusiveAndOr(
       "AND",
       name,
       stockLocationName
@@ -616,11 +316,11 @@ describe("Query", () => {
   // fetch created graphQL posConfig by comparing it with the normal javascript OR filter function
   it("fetch filtered pos config using OR", async () => {
     const server = await createTestServerWithSessionToken({
-      signInGql: SIGN_IN
+      signInGql: posConfigRequests.SIGN_IN
     });
     const { query } = createTestClient(server);
     const posConfigResults = await query({
-      query: getPaginatedPosConfigQuery()
+      query: posConfigRequests.getPaginatedPosConfigQuery()
     });
     const unfilteredData = posConfigResults.data.posConfigs.records;
 
@@ -628,7 +328,7 @@ describe("Query", () => {
     const name = unfilteredData[0].name;
     const stockLocationName = unfilteredData[0].stockLocation.name;
 
-    const filteredQuery = filterPosConfigQueryExclusiveAndOr(
+    const filteredQuery = posConfigRequests.filterPosConfigQueryExclusiveAndOr(
       "OR",
       name,
       stockLocationName
@@ -650,11 +350,11 @@ describe("Query", () => {
 
   it("fetch filtered pos config using ANDOR", async () => {
     const server = await createTestServerWithSessionToken({
-      signInGql: SIGN_IN
+      signInGql: posConfigRequests.SIGN_IN
     });
     const { query } = createTestClient(server);
     const results = await query({
-      query: filterPosConfigQueryBothAndOr
+      query: posConfigRequests.filterPosConfigQueryBothAndOr
     });
     expect(results.data.posConfigs.records).not.toBeNull();
   });
@@ -665,7 +365,7 @@ describe("Mutations", () => {
     const server = createTestServer();
     const { mutate } = createTestClient(server);
     const res = await mutate({
-      mutation: SIGN_IN
+      mutation: posConfigRequests.SIGN_IN
     });
     expect(res.data.signIn.sessionToken).toEqual(expect.any(String));
   });
@@ -674,7 +374,7 @@ describe("Mutations", () => {
     const server = createTestServer();
     const { mutate } = createTestClient(server);
     const res = await mutate({
-      mutation: SIGN_IN_WITH_WRONG_CREDENTIALS
+      mutation: posConfigRequests.SIGN_IN_WITH_WRONG_CREDENTIALS
     });
     expect(res.data.signIn).toBeNull();
   });
@@ -683,21 +383,23 @@ describe("Mutations", () => {
     const server = createTestServer();
     const { mutate } = createTestClient(server);
     const res = await mutate({
-      mutation: SIGN_IN_WITH_INVALID_DB
+      mutation: posConfigRequests.SIGN_IN_WITH_INVALID_DB
     });
     expect(res.errors).toEqual(expect.anything());
   });
 
   it("correct create returns correct output then delete", async () => {
     const server = await createTestServerWithSessionToken({
-      signInGql: SIGN_IN
+      signInGql: posConfigRequests.SIGN_IN
     });
     const { mutate } = createTestClient(server);
     const createResult: any = await mutate({
-      mutation: CREATE_WITH_CORRECT_INPUT
+      mutation: posConfigRequests.CREATE_WITH_CORRECT_INPUT
     });
     const deleteResult: any = await mutate({
-      mutation: getDeletePosConfigQuery(createResult.data.createPosConfig.id)
+      mutation: posConfigRequests.getDeletePosConfigQuery(
+        createResult.data.createPosConfig.id
+      )
     });
     expect(createResult.data.createPosConfig.id).not.toBeNull();
     expect(deleteResult.data.deletePosConfig.success).toEqual(true);
@@ -706,22 +408,22 @@ describe("Mutations", () => {
   it("create pos cofig, update, then delete", async () => {
     const UPDATED_POS_CONFIG_NAME = "updatedFromTest";
     const server = await createTestServerWithSessionToken({
-      signInGql: SIGN_IN
+      signInGql: posConfigRequests.SIGN_IN
     });
     const { mutate } = createTestClient(server);
     const createResult: any = await mutate({
-      mutation: CREATE_WITH_CORRECT_INPUT
+      mutation: posConfigRequests.CREATE_WITH_CORRECT_INPUT
     });
     const createdPosConfigId = createResult.data.createPosConfig.id;
     const updateResult: any = await mutate({
-      mutation: getUpdatePostConfigQuery(`{
+      mutation: posConfigRequests.getUpdatePostConfigQuery(`{
         id: ${createdPosConfigId},
         name: "${UPDATED_POS_CONFIG_NAME}",
         journalIds : [36]
       }`)
     });
     const deleteResult: any = await mutate({
-      mutation: getDeletePosConfigQuery(createdPosConfigId)
+      mutation: posConfigRequests.getDeletePosConfigQuery(createdPosConfigId)
     });
     expect(createResult.data.createPosConfig).not.toBeNull();
     expect(updateResult.data.updatePosConfig.posConfig.name).toEqual(
@@ -734,7 +436,7 @@ describe("Mutations", () => {
     const server = createTestServer();
     const { mutate } = createTestClient(server);
     const result: any = await mutate({
-      mutation: CREATE_WITH_CORRECT_INPUT
+      mutation: posConfigRequests.CREATE_WITH_CORRECT_INPUT
     });
     expect(result.errors).toEqual(expect.anything());
   });
@@ -743,7 +445,7 @@ describe("Mutations", () => {
     const server = createTestServer();
     const { mutate } = createTestClient(server);
     const result: any = await mutate({
-      mutation: getUpdatePostConfigQuery(`{
+      mutation: posConfigRequests.getUpdatePostConfigQuery(`{
           id: -1,
           name: "new name"
         }`)
@@ -755,7 +457,7 @@ describe("Mutations", () => {
     const server = createTestServer();
     const { mutate } = createTestClient(server);
     const result: any = await mutate({
-      mutation: getDeletePosConfigQuery(-1)
+      mutation: posConfigRequests.getDeletePosConfigQuery(-1)
     });
     expect(result.errors).toEqual(expect.anything());
   });

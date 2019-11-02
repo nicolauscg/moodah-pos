@@ -10,7 +10,8 @@
     "lint": "npm run lint:all",
     "lint:all": "eslint . --ext .js,.jsx,.ts,.tsx",
     "lint:graphql": "eslint src/**/*.ts handler.ts",
-    "gen-docs": "graphdoc -e http://localhost:3000/graphql -o ./doc/schema"
+    "gen-docs": "graphdoc -e http://localhost:3000/graphql -o ./doc/schema",
+    "deploy-docs-netlify": "netlify deploy --prod --dir doc/schema"
   },
   "dependencies": {
     "@types/graphql-relay": "^0.4.11",
