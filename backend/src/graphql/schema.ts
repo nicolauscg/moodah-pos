@@ -71,7 +71,12 @@ const POS_PRODUCT_FIELDS = [
   "barcode",
   "hs_code",
   "sale_ok",
-  "purchase_ok"
+  "purchase_ok",
+  "sales_count",
+  "purchase_count",
+  "active",
+  "qty_available",
+  "nbr_reordering_rules"
 ];
 
 const rootType = new GraphQLObjectType({

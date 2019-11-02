@@ -64,6 +64,21 @@ const PosProductType = new GraphQLObjectType({
     },
     purchaseOk: {
       type: GraphQLBoolean
+    },
+    salesCount: {
+      type: GraphQLInt
+    },
+    purchaseCount: {
+      type: GraphQLInt
+    },
+    active: {
+      type: GraphQLBoolean
+    },
+    qtyAvailable: {
+      type: GraphQLFloat
+    },
+    nbrReorderingRules: {
+      type: GraphQLInt
     }
   })
 });
