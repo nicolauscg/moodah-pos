@@ -19,7 +19,7 @@ import { BrowserRouter } from 'react-router-dom'
 import { MuiPickersUtilsProvider } from 'material-ui-pickers'
 import { CookiesProvider } from 'react-cookie'
 
-import { getAccessToken, logOut } from './redux/modules/auth'
+import { getAccessToken, logOut, getOdooToken } from './redux/modules/auth'
 
 import App from './containers/_app/App'
 import configureStore from './containers/_app/store'
@@ -32,19 +32,6 @@ Amplify.configure({
     userPoolWebClientId: process.env.REACT_APP_CLIENT_ID,
   },
 })
-
-const httpLink = new HttpLink({
-  uri: process.env.REACT_APP_GRAPHQL_URL,
-})
-
-const authLink = setContext((_, { headers }) =>
-  getAccessToken().then(token => ({
-    headers: {
-      ...headers,
-      Authorization: token,
-    },
-  }))
-)
 
 const ApolloClientProvider = connect(
   null,
@@ -71,6 +58,15 @@ const ApolloClientProvider = connect(
         }))
       )
 
+      const posAuthLink = setContext((_, { headers }) =>
+        getOdooToken().then(token => ({
+          headers: {
+            ...headers,
+            Authorization: token
+          },
+        }))
+      )
+
       const errorLink = onError(({ graphQLErrors, _ }) => {
         if (graphQLErrors && graphQLErrors.length) {
           const extensionsError = path(
@@ -89,7 +85,11 @@ const ApolloClientProvider = connect(
       this._client = new ApolloClient({
         ssrMode: !process.browser,
         link: from([
-          authLink,
+          split(
+            operation => operation.getContext().clientName === "pos",
+            posAuthLink,
+            authLink
+          ),
           errorLink,
           split(
             operation => operation.getContext().clientName === "pos",

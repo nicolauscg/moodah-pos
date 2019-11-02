@@ -1,6 +1,6 @@
 import { ApolloServer } from "apollo-server-lambda";
 import { createTestClient } from "apollo-server-testing";
-import { schema } from "../src/graphql/schema";
+import { schema } from "../../src/graphql/schemas";
 
 const createTestServer = ({ context } = { context: () => {} }) =>
   new ApolloServer({
@@ -29,4 +29,4 @@ const createTestServerWithSessionToken = async ({ signInGql }) => {
   });
 };
 
-export { createTestServer, getSessionToken, createTestServerWithSessionToken };
+export { createTestServer, createTestServerWithSessionToken };
