@@ -21,8 +21,10 @@ const GET_POS_PRODUCT = gql`
       records {
         id
         name
+        saleOk
+        purchaseOk
+        image
         type
-        category
       }
     }
   }

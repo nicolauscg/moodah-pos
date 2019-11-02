@@ -36,6 +36,7 @@ import { AvailablePriceListType } from "./schemas/availablePriceList";
 import { OperationTypesType } from "./schemas/operationType";
 import { StockLocationType } from "./schemas/stockLocation";
 import { DiscountProductType } from "./schemas/discountProduct";
+import { PosProductType } from "./schemas/PosProduct";
 
 const POS_CONFIG_FIELDS = [
   "id",
@@ -57,6 +58,21 @@ const POS_CONFIG_FIELDS = [
   "picking_type_id"
 ];
 const POS_CATEGORY_FIELDS = ["image", "name", "parent_id", "sequence"];
+
+const POS_PRODUCT_FIELDS = [
+  "id",
+  "image_medium",
+  "list_price",
+  "categ_id",
+  "type",
+  "name",
+  "default_code",
+  "standard_price",
+  "barcode",
+  "hs_code",
+  "sale_ok",
+  "purchase_ok"
+];
 
 const rootType = new GraphQLObjectType({
   name: "Query",
@@ -484,6 +500,51 @@ const rootType = new GraphQLObjectType({
                   records: result.records
                 })
               );
+            }
+          });
+        })
+    },
+    posProducts: {
+      type: PaginateType(PosProductType),
+      args: {
+        input: {
+          type: PagableInputType,
+          defaultValue: {
+            first: 10,
+            offset: 0
+          }
+        }
+      },
+      resolve: (_0, args, context) =>
+        new Promise((res, rej) => {
+          configureService({
+            operation: getDataSet({
+              context
+            }).createSearchRead(
+              paginateOperationParam(
+                {
+                  modelName: "product.template",
+                  fields: POS_PRODUCT_FIELDS,
+                  domain: [["available_in_pos", "=", true]]
+                },
+                args
+              )
+            ),
+            onError: error => {
+              rej(
+                new ApolloError("Application Error", "APPLICATION_ERROR", {
+                  errorMessage: error.message
+                })
+              );
+            },
+            onResult: result => {
+              result.records.forEach(
+                record => record.image || (record.image = null)
+              );
+              res({
+                length: result.length,
+                records: camelizeKeys(result.records)
+              });
             }
           });
         })
