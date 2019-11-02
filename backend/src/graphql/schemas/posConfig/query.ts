@@ -69,10 +69,10 @@ const posConfigQueries = new GraphQLObjectType({
               paginateAndFilterOperationParam(
                 {
                   modelName: "pos.config",
-                  fields: posConfigFields.posConfigs,
+                  fields: posConfigFields.posConfig,
                   domain: []
                 },
-                posConfigsFilter.posConfig,
+                posConfigsFilter.posConfigs,
                 args
               )
             ),
