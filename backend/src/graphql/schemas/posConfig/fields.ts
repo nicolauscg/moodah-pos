@@ -1,4 +1,6 @@
-const posConfigFields = {
+import { FieldConfig } from "../utility/types/fields";
+
+const posConfigFields: FieldConfig = {
   posConfig: [
     "id",
     "name",

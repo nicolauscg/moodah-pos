@@ -23,6 +23,7 @@ import { OperationTypesType } from "./types/operationType";
 import { StockLocationType } from "./types/stockLocation";
 import { DiscountProductType } from "./types/discountProduct";
 import posConfigFields from "./fields";
+import posConfigsFilter from "./filter";
 
 const posConfigQueries = new GraphQLObjectType({
   name: "posConfigQueries",
@@ -68,20 +69,10 @@ const posConfigQueries = new GraphQLObjectType({
               paginateAndFilterOperationParam(
                 {
                   modelName: "pos.config",
-                  fields: posConfigFields.posConfig
+                  fields: posConfigFields.posConfig,
+                  domain: []
                 },
-                [
-                  {
-                    domainName: "name",
-                    conventionName: "name",
-                    operator: "ilike"
-                  },
-                  {
-                    domainName: "stock_location_id",
-                    conventionName: "stockLocationName",
-                    operator: "ilike"
-                  }
-                ],
+                posConfigsFilter.posConfig,
                 args
               )
             ),

@@ -3,11 +3,15 @@ import { camelizeKeys } from "humps";
 import { ApolloError } from "apollo-server-lambda";
 
 import { configureService, getDataSet } from "../utility/nodoo";
-import { paginateOperationParam } from "../utility/paginate";
 import { PaginateType } from "../utility/types/paginateType";
 import { PagableInputType } from "../utility/types/pagableInput";
 import { PosCategoryType } from "./types/posCategory";
+import {
+  paginateAndFilterOperationParam,
+  isFilterArgsValid
+} from "../utility/filterAndPaginate";
 import posCategoryFields from "./fields";
+import posCategoryFilter from "./filter";
 
 const posCategoryQueries = new GraphQLObjectType({
   name: "posCategoryQueries",
@@ -25,16 +29,27 @@ const posCategoryQueries = new GraphQLObjectType({
       },
       resolve: (_0, args, context) =>
         new Promise((res, rej) => {
+          if (!isFilterArgsValid(args)) {
+            rej(
+              new ApolloError("Application Error", "APPLICATION_ERROR", {
+                errorMessage:
+                  "invalid filter-related input, ensure each field object " +
+                  "has only 1 key and OR and AND are mutually exclusive"
+              })
+            );
+          }
+
           configureService({
             operation: getDataSet({
               context
             }).createSearchRead(
-              paginateOperationParam(
+              paginateAndFilterOperationParam(
                 {
                   modelName: "pos.category",
                   fields: posCategoryFields.posCategory,
                   domain: []
                 },
+                posCategoryFilter.posCategories,
                 args
               )
             ),

@@ -1,4 +1,7 @@
+import { CreateSearchReadParams } from "nodoo/dist/types/controllers/http/operations/model/searchRead";
 import { paginateOperationParam } from "./paginate";
+import { FilterField } from "./types/filter";
+import { ResolverArgs } from "./types/args";
 
 // eslint-disable-next-line consistent-return
 const createDomainNone = (element, models) => {
@@ -49,7 +52,11 @@ const createFilterDomain = (data, models) => {
   }
 };
 
-const paginateAndFilterOperationParam = (params, models, args) => {
+const paginateAndFilterOperationParam = (
+  params: CreateSearchReadParams,
+  models: Array<FilterField>,
+  args: ResolverArgs
+): CreateSearchReadParams => {
   // Create filterDomain
   const filterDomain =
     args.input.where === undefined
@@ -85,7 +92,7 @@ const checkListContainOneKeyObject = (objectList: Array<any>) =>
         .every(valid => valid === true);
 
 // args is valid for filtering
-const isFilterArgsValid = args => {
+const isFilterArgsValid = (args: ResolverArgs): boolean => {
   const data = args && args.input && args.input.where;
 
   return data === undefined
