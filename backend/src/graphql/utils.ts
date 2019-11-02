@@ -2,7 +2,7 @@
 import {
   httpController,
   createService,
-  createInsecureClientOptions,
+  createSecureClientOptions,
   ServiceOperation
 } from "nodoo";
 
@@ -33,9 +33,8 @@ export const configureService = ({
   onResult,
   onError
 }: GetServiceParam) => {
-  const clientOptions = createInsecureClientOptions({
-    host: "178.128.103.135",
-    port: 8069
+  const clientOptions = createSecureClientOptions({
+    host: "odoo.staging.moodah.id"
   });
 
   createService({
