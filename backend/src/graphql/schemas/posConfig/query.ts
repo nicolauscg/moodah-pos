@@ -229,7 +229,7 @@ const posConfigQueries = new GraphQLObjectType({
               paginateOperationParam(
                 {
                   modelName: "stock.picking.type",
-                  fields: posConfigFields.posConfig,
+                  fields: ["id", "name"],
                   domain: []
                 },
                 args
@@ -266,7 +266,7 @@ const posConfigQueries = new GraphQLObjectType({
               paginateOperationParam(
                 {
                   modelName: "stock.location",
-                  fields: posConfigFields.posConfig,
+                  fields: ["id", "name"],
                   domain: []
                 },
                 args
