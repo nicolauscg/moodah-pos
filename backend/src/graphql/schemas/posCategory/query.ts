@@ -1,4 +1,4 @@
-import { GraphQLObjectType, GraphQLInputObjectType, GraphQLInt } from "graphql";
+import { GraphQLObjectType, GraphQLInputObjectType } from "graphql";
 import { camelizeKeys } from "humps";
 import { ApolloError } from "apollo-server-lambda";
 
@@ -12,6 +12,7 @@ import {
 } from "../utility/filterAndPaginate";
 import posCategoryFields from "./fields";
 import posCategoryFilter from "./filter";
+import { GlobalIdInput } from "../utility/types/globalIdInput";
 
 const posCategoryQueries = new GraphQLObjectType({
   name: "posCategoryQueries",
@@ -80,7 +81,7 @@ const posCategoryQueries = new GraphQLObjectType({
             name: "PosCategoryInput",
             fields: () => ({
               id: {
-                type: GraphQLInt
+                type: GlobalIdInput
               }
             })
           })

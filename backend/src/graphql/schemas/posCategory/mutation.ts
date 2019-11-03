@@ -1,4 +1,4 @@
-import { GraphQLObjectType, GraphQLInputObjectType, GraphQLInt } from "graphql";
+import { GraphQLObjectType, GraphQLInputObjectType } from "graphql";
 import { ApolloError } from "apollo-server-lambda";
 import { camelizeKeys, decamelizeKeys } from "humps";
 
@@ -7,6 +7,7 @@ import { CreatePosCategoryType } from "./types/CreatePosCategory";
 import { CreateOrUpdatePosCategoryInputType } from "./types/createOrUpdatePosCategoryInput";
 import { UpdateOrDeletePosCategoryType } from "./types/updateOrDeletePosCategory";
 import posCategoryFields from "./fields";
+import { GlobalIdInput } from "../utility/types/globalIdInput";
 
 const posCategoryMutations = new GraphQLObjectType({
   name: "posCategoryMutations",
@@ -156,7 +157,7 @@ const posCategoryMutations = new GraphQLObjectType({
             name: "DeletePosCategoryInputType",
             fields: () => ({
               id: {
-                type: GraphQLInt
+                type: GlobalIdInput
               }
             })
           })
