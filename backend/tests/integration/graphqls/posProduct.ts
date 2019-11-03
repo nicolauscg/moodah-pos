@@ -1,10 +1,4 @@
-import { createTestClient } from "apollo-server-testing";
 import gql from "graphql-tag";
-
-import {
-  createTestServer,
-  createTestServerWithSessionToken
-} from "../../utils";
 
 const SIGN_IN = gql`
   mutation {
@@ -47,15 +41,8 @@ const CREATE_POS_PRODUCT = gql`
     }
   }
 `;
-describe("Mutation", () => {
-  // Needs to be changed with the
-  it("create pos product", async () => {
-    const server = await createTestServerWithSessionToken({
-      signInGql: SIGN_IN
-    });
-    const { query } = createTestClient(server);
-    const createResult = (await query({ query: CREATE_POS_PRODUCT })).data
-      .createPosProduct;
-    expect(createResult.id).not.toBeNull();
-  });
-});
+
+export default {
+  SIGN_IN,
+  CREATE_POS_PRODUCT
+};

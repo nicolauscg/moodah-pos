@@ -1,6 +1,6 @@
 import { ApolloServer } from "apollo-server-lambda";
 import lambdaPlayground from "graphql-playground-middleware-lambda";
-import { schema } from "./src/graphql/schema";
+import { schema } from "./src/graphql/schemas";
 import "source-map-support/register";
 
 const server = new ApolloServer({
@@ -10,7 +10,6 @@ const server = new ApolloServer({
   context: ({ event }) => {
     const sessionToken = event.headers.Authorization || "";
 
-    // set sessionToken in context
     return { sessionToken };
   },
   introspection: true

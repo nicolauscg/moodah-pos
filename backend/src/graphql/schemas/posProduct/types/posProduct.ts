@@ -36,7 +36,7 @@ const PosProductType = new GraphQLObjectType({
       type: GraphQLString,
       resolve: parent =>
         // eslint-disable-next-line prettier/prettier
-        (parent.imageMedium === false ? null : parent.imageMedium)
+          (parent.imageMedium === false ? null : parent.imageMedium)
     },
     canBeSold: {
       type: GraphQLBoolean,
@@ -72,7 +72,7 @@ const PosProductType = new GraphQLObjectType({
     },
 
     /* For fetching data that is represented on the
-     upper right corner of the UI/UX demo in nodoo */
+       upper right corner of the UI/UX demo in nodoo */
     sales: {
       type: GraphQLInt,
       resolve: parent => parent.salesCount
