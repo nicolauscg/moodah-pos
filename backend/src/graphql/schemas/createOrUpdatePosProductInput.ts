@@ -15,7 +15,7 @@ const CreateOrUpdatePosProductInputType = new GraphQLInputObjectType({
     name: {
       type: GraphQLString
     },
-    type: {
+    productType: {
       type: GraphQLString
     },
     image: {
@@ -44,15 +44,6 @@ const CreateOrUpdatePosProductInputType = new GraphQLInputObjectType({
     },
     cost: {
       type: GraphQLFloat
-    },
-    sales: {
-      type: GraphQLInt
-    },
-    purchases: {
-      type: GraphQLInt
-    },
-    archive: {
-      type: GraphQLBoolean
     }
   })
 });

@@ -2,8 +2,8 @@
 import {
   httpController,
   createService,
-  createInsecureClientOptions,
-  ServiceOperation
+  ServiceOperation,
+  createSecureClientOptions
 } from "nodoo";
 
 interface GetDataSetParam {
@@ -33,9 +33,8 @@ export const configureService = ({
   onResult,
   onError
 }: GetServiceParam) => {
-  const clientOptions = createInsecureClientOptions({
-    host: "178.128.103.135",
-    port: 8069
+  const clientOptions = createSecureClientOptions({
+    host: "odoo.staging.moodah.id"
   });
 
   createService({

@@ -36,6 +36,8 @@ import { AvailablePriceListType } from "./schemas/availablePriceList";
 import { OperationTypesType } from "./schemas/operationType";
 import { StockLocationType } from "./schemas/stockLocation";
 import { DiscountProductType } from "./schemas/discountProduct";
+import { CreatePosProductType } from "./schemas/createPosProduct";
+import { CreateOrUpdatePosProductInputType } from "./schemas/createOrUpdatePosProductInput";
 
 const POS_CONFIG_FIELDS = [
   "id",
@@ -57,7 +59,25 @@ const POS_CONFIG_FIELDS = [
   "picking_type_id"
 ];
 const POS_CATEGORY_FIELDS = ["image", "name", "parent_id", "sequence"];
-
+const POS_PRODUCT_FIELDS = [
+  "name",
+  "image_medium",
+  "sale_ok",
+  "purchase_ok",
+  "type",
+  "categ_id",
+  "default_code",
+  "barcode",
+  "hs_code",
+  "list_price",
+  "standard_price",
+  "sales_count",
+  "purchase_count",
+  "active",
+  "qty_available",
+  "virtual_avaiable",
+  "nbr_reordering_rules"
+];
 const rootType = new GraphQLObjectType({
   name: "Query",
   fields: () => ({
@@ -938,6 +958,67 @@ const mutationType = new GraphQLObjectType({
                   if (result.length) {
                     const camelizedReadResult = camelizeKeys(result[0]);
                     createResult.posCategory = camelizedReadResult;
+                    res(createResult);
+                  }
+
+                  rej(
+                    new ApolloError("Application Error", "APPLICATION_ERROR", {
+                      errorMessage: result.message
+                    })
+                  );
+                }
+              });
+            })
+        )
+    },
+    createPosProduct: {
+      type: CreatePosProductType,
+      args: {
+        input: {
+          type: CreateOrUpdatePosProductInputType
+        }
+      },
+      resolve: (_0, args, context) =>
+        new Promise((res, rej) => {
+          configureService({
+            operation: getDataSet({ context }).createCreate({
+              modelName: "product.template",
+              fieldsValues: decamelizeKeys(args.input),
+              kwargs: {}
+            }),
+            onError: error => {
+              rej(
+                new ApolloError("Application Error", "APPLICATION_ERROR", {
+                  errorMessage: error.message
+                })
+              );
+            },
+            onResult: result => {
+              res({ id: result });
+            }
+          });
+        }).then(
+          (createResult: any) =>
+            new Promise((res, rej) => {
+              // read pos config with id specified
+              configureService({
+                operation: getDataSet({ context }).createRead({
+                  modelName: "product.template",
+                  ids: [createResult.id],
+                  fields: POS_PRODUCT_FIELDS,
+                  kwargs: {}
+                }),
+                onError: error => {
+                  rej(
+                    new ApolloError("Application Error", "APPLICATION_ERROR", {
+                      errorMessage: error.message
+                    })
+                  );
+                },
+                onResult: result => {
+                  if (result.length) {
+                    const camelizedReadResult = camelizeKeys(result[0]);
+                    createResult.posProduct = camelizedReadResult;
                     res(createResult);
                   }
 

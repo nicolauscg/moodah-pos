@@ -28,8 +28,9 @@ const PosProductType = new GraphQLObjectType({
     name: {
       type: GraphQLString
     },
-    type: {
-      type: GraphQLString
+    productType: {
+      type: GraphQLString,
+      resolve: parent => parent.type
     },
     image: {
       type: GraphQLString,
@@ -39,17 +40,19 @@ const PosProductType = new GraphQLObjectType({
     },
     canBeSold: {
       type: GraphQLBoolean,
-      resolve: parent => parent.sale_ok
+      resolve: parent => parent.saleOk
     },
     canBePurchased: {
       type: GraphQLBoolean,
-      resolve: parent => parent.purchase_ok
+      resolve: parent => parent.purchaseOk
     },
     category: {
-      type: categoryIdType
+      type: categoryIdType,
+      resolve: parent => parent.categId
     },
     internalReference: {
-      type: GraphQLString
+      type: GraphQLString,
+      resolve: parent => parent.defaultCode
     },
     barcode: {
       type: GraphQLString,
@@ -57,27 +60,42 @@ const PosProductType = new GraphQLObjectType({
     },
     HSCode: {
       type: GraphQLString,
-      resolve: parent => parent.hs_code
+      resolve: parent => parent.hsCode
     },
     salesPrice: {
       type: GraphQLFloat,
-      resolve: parent => parent.list_price
+      resolve: parent => parent.listPrice
     },
     cost: {
       type: GraphQLFloat,
-      resolve: parent => parent.standard_price
+      resolve: parent => parent.standardPrice
     },
+
+    /* For fetching data that is represented on the
+     upper right corner of the UI/UX demo in nodoo */
     sales: {
       type: GraphQLInt,
-      resolve: parent => parent.sales_count
+      resolve: parent => parent.salesCount
     },
     purchases: {
       type: GraphQLInt,
-      resolve: parent => parent.purchase_count
+      resolve: parent => parent.purchaseCount
     },
     archive: {
       type: GraphQLBoolean,
       resolve: parent => parent.active
+    },
+    onHand: {
+      type: GraphQLBoolean,
+      resolve: parent => parent.qtyAvailable
+    },
+    forecastedQuantity: {
+      type: GraphQLFloat,
+      resolve: parent => parent.virtualAvaiable
+    },
+    reorderingRules: {
+      type: GraphQLInt,
+      resolve: parent => parent.nbrReorderingRules
     }
   })
 });

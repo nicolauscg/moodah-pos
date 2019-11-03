@@ -18,13 +18,31 @@ const SIGN_IN = gql`
   }
 `;
 
-const CREATE_POS_CATEGORY = gql`
+const CREATE_POS_PRODUCT = gql`
   mutation {
-    createPosCategory(input: { name: "createdFromTest" }) {
+    createPosProduct(input: { name: "createdFromTest" }) {
       id
-      posCategory {
+      posProduct {
         id
         name
+        canBeSold
+        canBePurchased
+        productType
+        category {
+          id
+          name
+        }
+        internalReference
+        barcode
+        HSCode
+        salesPrice
+        cost
+        sales
+        purchases
+        archive
+        onHand
+        forecastedQuantity
+        reorderingRules
       }
     }
   }
@@ -36,8 +54,8 @@ describe("Mutation", () => {
       signInGql: SIGN_IN
     });
     const { query } = createTestClient(server);
-    const createResult = (await query({ query: CREATE_POS_CATEGORY })).data
-      .createPosCategory;
+    const createResult = (await query({ query: CREATE_POS_PRODUCT })).data
+      .createPosProduct;
     expect(createResult.id).not.toBeNull();
   });
 });
