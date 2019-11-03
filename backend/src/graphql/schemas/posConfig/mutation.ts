@@ -21,12 +21,22 @@ const posConfigMutations = new GraphQLObjectType({
       },
       resolve: (_0, args, context) =>
         new Promise((res, rej) => {
+          const OPERATION_TYPE_RECEIPT_ID = 2;
           const fieldsValues = args.input;
+          // transform to format for many to many relation
           ["availablePricelistIds", "journalIds"].forEach(fieldName => {
             if (fieldsValues[fieldName] !== undefined) {
               fieldsValues[fieldName] = [6, false, fieldsValues[fieldName]];
             }
           });
+          // populate default values
+          fieldsValues.ifaceDisplayCategImages = true;
+          fieldsValues.ifacePrintAuto = true;
+          fieldsValues.ifacePrecomputeCash = true;
+          if (fieldsValues.pickingTypeId === undefined) {
+            fieldsValues.pickingTypeId = OPERATION_TYPE_RECEIPT_ID;
+          }
+
           const decamelizedFieldValues: any = decamelizeKeys(fieldsValues);
           configureService({
             operation: getDataSet({ context }).createCreate({
