@@ -4,7 +4,6 @@ import {
   createTestServer,
   createTestServerWithSessionToken
 } from "../../utility/createTestServer";
-import { fromGlobalId } from "graphql-relay";
 import posConfigRequests from "../graphqls/posConfig";
 
 describe("Query", () => {
@@ -32,7 +31,9 @@ describe("Query", () => {
   it("fetch pos config without session token give error", async () => {
     const server = createTestServer();
     const { query } = createTestClient(server);
-    const res = await query({ query: posConfigRequests.getPosConfigQuery(1) });
+    const res = await query({
+      query: posConfigRequests.getPosConfigQuery("cG9zLmNvbmZpZzox")
+    });
     expect(res.errors).toEqual(expect.anything());
   });
 
@@ -52,11 +53,11 @@ describe("Query", () => {
       signInGql: posConfigRequests.SIGN_IN
     });
     // Id is set as natural number, -1 will always be wrong id
-    const WRONG_ID = -1;
+    const WRONG_ID = "-1";
     const { query } = createTestClient(server);
     const GET_POS_CONFIG = posConfigRequests.getPosConfigQuery(WRONG_ID);
     const res = await query({ query: GET_POS_CONFIG });
-    expect(res.data.posConfig).toBeNull();
+    expect(res.errors).toEqual(expect.anything());
   });
 
   it("query availablePriceLists with session token", async () => {
@@ -71,10 +72,10 @@ describe("Query", () => {
     expect(result.records).toEqual(expect.anything());
     expect(result.records).toContainEqual(
       expect.objectContaining({
-        id: expect.any(Number),
+        id: expect.any(String),
         name: expect.any(String),
         currency: expect.objectContaining({
-          id: expect.any(Number),
+          id: expect.any(String),
           name: expect.any(String)
         })
       })
@@ -105,7 +106,7 @@ describe("Query", () => {
     });
     const idsToRead = posConfigRes.data.posConfigs.records
       .slice(0, amountOfIdsToRead)
-      .map(posConfig => parseInt(fromGlobalId(posConfig.id).id, 10));
+      .map(posConfig => posConfig.id);
     // concurrently read posConfig
     Promise.all(
       idsToRead.map(id =>
@@ -132,10 +133,10 @@ describe("Query", () => {
     expect(result.length).toEqual(expect.any(Number));
     expect(result.records).toContainEqual(
       expect.objectContaining({
-        id: expect.any(Number),
+        id: expect.any(String),
         name: expect.any(String),
         company: expect.objectContaining({
-          id: expect.any(Number),
+          id: expect.any(String),
           name: expect.any(String)
         })
       })
@@ -180,7 +181,7 @@ describe("Query", () => {
     })).data.discountProducts;
     expect(result).not.toBeNull();
     if (result.records.length) {
-      expect(result.records[0].id).toEqual(expect.any(Number));
+      expect(result.records[0].id).toEqual(expect.any(String));
       expect(result.records[0].name).toEqual(expect.any(String));
     }
   });
@@ -417,9 +418,9 @@ describe("Mutations", () => {
     const createdPosConfigId = createResult.data.createPosConfig.id;
     const updateResult: any = await mutate({
       mutation: posConfigRequests.getUpdatePostConfigQuery(`{
-        id: ${createdPosConfigId},
+        id: "${createdPosConfigId}",
         name: "${UPDATED_POS_CONFIG_NAME}",
-        journalIds : [36]
+        journalIds : ["YWNjb3VudC5qb3VybmFsOjEx"]
       }`)
     });
     const deleteResult: any = await mutate({
@@ -457,7 +458,7 @@ describe("Mutations", () => {
     const server = createTestServer();
     const { mutate } = createTestClient(server);
     const result: any = await mutate({
-      mutation: posConfigRequests.getDeletePosConfigQuery(-1)
+      mutation: posConfigRequests.getDeletePosConfigQuery("-1")
     });
     expect(result.errors).toEqual(expect.anything());
   });
