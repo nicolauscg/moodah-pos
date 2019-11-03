@@ -41,7 +41,6 @@ const posCategoryMutations = new GraphQLObjectType({
         }).then(
           (createResult: any) =>
             new Promise((res, rej) => {
-              // read pos config with id specified
               configureService({
                 operation: getDataSet({ context }).createRead({
                   modelName: "pos.category",
@@ -194,7 +193,7 @@ const posCategoryMutations = new GraphQLObjectType({
             }
           });
         }).then(
-          (result: any) =>
+          (readResult: any) =>
             new Promise((res, rej) => {
               configureService({
                 operation: getDataSet({ context }).createDelete({
@@ -209,9 +208,9 @@ const posCategoryMutations = new GraphQLObjectType({
                     })
                   );
                 },
-                onResult: result2 => {
-                  result.success = result2;
-                  res(result);
+                onResult: result => {
+                  readResult.success = result;
+                  res(readResult);
                 }
               });
             })

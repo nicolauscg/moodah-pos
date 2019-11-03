@@ -197,7 +197,7 @@ const posConfigMutations = new GraphQLObjectType({
             }
           });
         }).then(
-          (result: any) =>
+          (readResult: any) =>
             new Promise((res, rej) => {
               configureService({
                 operation: getDataSet({ context }).createDelete({
@@ -212,9 +212,9 @@ const posConfigMutations = new GraphQLObjectType({
                     })
                   );
                 },
-                onResult: result2 => {
-                  result.success = result2;
-                  res(result);
+                onResult: result => {
+                  readResult.success = result;
+                  res(readResult);
                 }
               });
             })

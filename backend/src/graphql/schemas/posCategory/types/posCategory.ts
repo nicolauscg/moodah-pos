@@ -20,7 +20,8 @@ const PosCategoryType = new GraphQLObjectType({
       type: GraphQLString
     },
     image: {
-      type: GraphQLString
+      type: GraphQLString,
+      resolve: parent => (parent.image === false ? null : parent.image)
     },
     parent: {
       type: PosCategoryParentType,
