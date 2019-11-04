@@ -87,7 +87,7 @@ const getDeletePosProductQuery = (id: number) => gql`
       id: ${id}
     }) {
       success
-      posCategory {
+      posProduct {
         id
         name
       }
