@@ -40,6 +40,19 @@ const GET_POS_PRODUCT = gql`
     }
   }
 `;
+const GET_POS_PRODUCT_WITH_ID = gql`
+  query {
+    posProduct(input: { id: 8 }) {
+      id
+      name
+      canBeSold
+      cost
+      sales
+      salesPrice
+      barcode
+    }
+  }
+`;
 
 const CREATE_POS_PRODUCT = gql`
   mutation {
@@ -74,5 +87,6 @@ const CREATE_POS_PRODUCT = gql`
 export default {
   SIGN_IN,
   GET_POS_PRODUCT,
-  CREATE_POS_PRODUCT
+  CREATE_POS_PRODUCT,
+  GET_POS_PRODUCT_WITH_ID
 };
