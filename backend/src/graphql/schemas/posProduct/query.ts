@@ -12,6 +12,8 @@ import { PagableInputType } from "../utility/types/pagableInput";
 import { PosProductType } from "./types/posProduct";
 import posProductFields from "./fields";
 import posProductFilter from "./filter";
+import { CategoryType } from "./types/category";
+import { paginateOperationParam } from "../utility/paginate";
 
 const posProductQueries = new GraphQLObjectType({
   name: "posProductQueries",
@@ -68,6 +70,43 @@ const posProductQueries = new GraphQLObjectType({
                 records: camelizeKeys(result.records)
               });
             }
+          });
+        })
+    },
+    categories: {
+      type: PaginateType(CategoryType),
+      args: {
+        input: {
+          type: PagableInputType,
+          defaultValue: {
+            first: 10,
+            offset: 0
+          }
+        }
+      },
+      resolve: (_0, args, context) =>
+        new Promise((res, rej) => {
+          configureService({
+            operation: getDataSet({
+              context
+            }).createSearchRead(
+              paginateOperationParam(
+                {
+                  modelName: "product.category",
+                  fields: ["id", "name"],
+                  domain: []
+                },
+                args
+              )
+            ),
+            onError: error => {
+              rej(
+                new ApolloError("Application Error", "APPLICATION_ERROR", {
+                  errorMessage: error.message
+                })
+              );
+            },
+            onResult: result => res(camelizeKeys(result))
           });
         })
     }
