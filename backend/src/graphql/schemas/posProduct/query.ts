@@ -60,9 +60,6 @@ const posProductQueries = new GraphQLObjectType({
               );
             },
             onResult: result => {
-              result.records.forEach(
-                record => record.image || (record.image = null)
-              );
               res({
                 length: result.length,
                 records: camelizeKeys(result.records)
