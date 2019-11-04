@@ -45,7 +45,7 @@ const posProductQueries = new GraphQLObjectType({
               paginateAndFilterOperationParam(
                 {
                   modelName: "product.template",
-                  fields: posProductFields.posProducts,
+                  fields: posProductFields.posProduct,
                   domain: [["available_in_pos", "=", true]]
                 },
                 posProductFilter.posProducts,
