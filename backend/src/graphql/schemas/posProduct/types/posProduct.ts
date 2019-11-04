@@ -1,14 +1,15 @@
 import {
   GraphQLObjectType,
   GraphQLString,
-  GraphQLInt,
   GraphQLBoolean,
+  GraphQLInt,
   GraphQLFloat
 } from "graphql";
 import { globalIdField } from "graphql-relay";
+import { ProductTypeType } from "./productType";
 
-const categoryIdType = new GraphQLObjectType({
-  name: "categoryId",
+const CategoryProductType = new GraphQLObjectType({
+  name: "CategoryProduct",
   fields: () => ({
     id: {
       type: GraphQLInt,
@@ -22,15 +23,11 @@ const categoryIdType = new GraphQLObjectType({
 });
 
 const PosProductType = new GraphQLObjectType({
-  name: "PosProduct",
+  name: "PosProductType",
   fields: () => ({
-    id: globalIdField("pos.product"),
+    id: globalIdField("product.template"),
     name: {
       type: GraphQLString
-    },
-    productType: {
-      type: GraphQLString,
-      resolve: parent => parent.type
     },
     image: {
       type: GraphQLString,
@@ -45,13 +42,18 @@ const PosProductType = new GraphQLObjectType({
       type: GraphQLBoolean,
       resolve: parent => parent.purchaseOk
     },
+    productType: {
+      type: ProductTypeType,
+      resolve: parent => parent.type
+    },
     category: {
-      type: categoryIdType,
+      type: CategoryProductType,
       resolve: parent => parent.categId
     },
     internalReference: {
       type: GraphQLString,
-      resolve: parent => parent.defaultCode
+      resolve: parent =>
+        parent.defaultCode === false ? null : parent.defaultCode
     },
     barcode: {
       type: GraphQLString,
@@ -59,7 +61,7 @@ const PosProductType = new GraphQLObjectType({
     },
     HSCode: {
       type: GraphQLString,
-      resolve: parent => parent.hsCode
+      resolve: parent => (parent.hsCode === false ? null : parent.hsCode)
     },
     salesPrice: {
       type: GraphQLFloat,
@@ -85,12 +87,12 @@ const PosProductType = new GraphQLObjectType({
       resolve: parent => parent.active
     },
     onHand: {
-      type: GraphQLBoolean,
+      type: GraphQLFloat,
       resolve: parent => parent.qtyAvailable
     },
     forecastedQuantity: {
       type: GraphQLFloat,
-      resolve: parent => parent.virtualAvaiable
+      resolve: parent => parent.virtualAvailable
     },
     reorderingRules: {
       type: GraphQLInt,

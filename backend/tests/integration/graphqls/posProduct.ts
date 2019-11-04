@@ -11,6 +11,35 @@ const SIGN_IN = gql`
     }
   }
 `;
+const GET_POS_PRODUCT = gql`
+  query {
+    posProducts(input: { first: 40, offset: 0 }) {
+      length
+      records {
+        id
+        name
+        canBeSold
+        canBePurchased
+        productType
+        category {
+          id
+          name
+        }
+        internalReference
+        barcode
+        HSCode
+        salesPrice
+        cost
+        sales
+        purchases
+        archive
+        onHand
+        forecastedQuantity
+        reorderingRules
+      }
+    }
+  }
+`;
 
 const CREATE_POS_PRODUCT = gql`
   mutation {
@@ -44,5 +73,6 @@ const CREATE_POS_PRODUCT = gql`
 
 export default {
   SIGN_IN,
+  GET_POS_PRODUCT,
   CREATE_POS_PRODUCT
 };
