@@ -93,7 +93,7 @@ const posProductQueries = new GraphQLObjectType({
             }).createRead({
               ids: [args.input.id],
               modelName: "product.template",
-              fields: posProductFields.posProducts
+              fields: posProductFields.posProduct
             }),
             onError: error => {
               rej(
