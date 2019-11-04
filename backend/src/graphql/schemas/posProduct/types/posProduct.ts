@@ -35,7 +35,7 @@ const PosProductType = new GraphQLObjectType({
     image: {
       type: GraphQLString,
       resolve: parent =>
-          (parent.imageMedium === false ? null : parent.imageMedium)
+        parent.imageMedium === false ? null : parent.imageMedium
     },
     canBeSold: {
       type: GraphQLBoolean,
