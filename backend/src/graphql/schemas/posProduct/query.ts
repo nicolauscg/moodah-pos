@@ -60,7 +60,6 @@ const posProductQueries = new GraphQLObjectType({
               );
             },
             onResult: result => {
-              console.log(result);
               result.records.forEach(
                 record => record.image || (record.image = null)
               );
