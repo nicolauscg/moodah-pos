@@ -1,4 +1,4 @@
-import { GraphQLObjectType } from "graphql";
+import { GraphQLObjectType, GraphQLInputObjectType, GraphQLInt } from "graphql";
 import { ApolloError } from "apollo-server-lambda";
 import { camelizeKeys } from "humps";
 
@@ -67,6 +67,51 @@ const posProductQueries = new GraphQLObjectType({
                 length: result.length,
                 records: camelizeKeys(result.records)
               });
+            }
+          });
+        })
+    },
+    posProduct: {
+      type: PosProductType,
+      args: {
+        input: {
+          type: new GraphQLInputObjectType({
+            name: "PosProductInput",
+            fields: () => ({
+              id: {
+                type: GraphQLInt
+              }
+            })
+          })
+        }
+      },
+      resolve: (_0, args, context) =>
+        new Promise((res, rej) => {
+          configureService({
+            operation: getDataSet({
+              context
+            }).createRead({
+              ids: [args.input.id],
+              modelName: "product.template",
+              fields: posProductFields.posProducts
+            }),
+            onError: error => {
+              rej(
+                new ApolloError("Application Error", "APPLICATION_ERROR", {
+                  errorMessage: error.message
+                })
+              );
+            },
+            onResult: result => {
+              if (result.length === 0) {
+                rej(
+                  new ApolloError("Application Error", "APPLICATION_ERROR", {
+                    errorMessage: result.message
+                  })
+                );
+              } else {
+                res(camelizeKeys(result[0]));
+              }
             }
           });
         })
