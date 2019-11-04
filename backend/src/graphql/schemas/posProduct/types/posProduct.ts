@@ -71,6 +71,9 @@ const PosProductType = new GraphQLObjectType({
       type: GraphQLFloat,
       resolve: parent => parent.standardPrice
     },
+
+    /* For fetching data that is represented on the
+       upper right corner of the UI/UX demo in nodoo */
     sales: {
       type: GraphQLInt,
       resolve: parent => parent.salesCount

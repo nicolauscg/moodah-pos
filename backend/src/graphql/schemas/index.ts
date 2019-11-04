@@ -19,7 +19,8 @@ const mutationType = new GraphQLObjectType({
   fields: () => ({
     ...auth.mutation,
     ...posConfig.mutation,
-    ...posCategory.mutation
+    ...posCategory.mutation,
+    ...posProduct.mutation
   })
 });
 

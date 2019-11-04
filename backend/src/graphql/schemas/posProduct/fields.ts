@@ -18,8 +18,8 @@ const posProductFields: FieldConfig = {
     "purchase_count",
     "active",
     "qty_available",
-    "nbr_reordering_rules",
-    "virtual_available"
+    "virtual_avaiable",
+    "nbr_reordering_rules"
   ]
 };
 

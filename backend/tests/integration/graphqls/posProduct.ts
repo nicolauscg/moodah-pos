@@ -41,7 +41,38 @@ const GET_POS_PRODUCT = gql`
   }
 `;
 
+const CREATE_POS_PRODUCT = gql`
+  mutation {
+    createPosProduct(input: { name: "createdFromTest" }) {
+      id
+      posProduct {
+        id
+        name
+        canBeSold
+        canBePurchased
+        productType
+        category {
+          id
+          name
+        }
+        internalReference
+        barcode
+        HSCode
+        salesPrice
+        cost
+        sales
+        purchases
+        archive
+        onHand
+        forecastedQuantity
+        reorderingRules
+      }
+    }
+  }
+`;
+
 export default {
   SIGN_IN,
-  GET_POS_PRODUCT
+  GET_POS_PRODUCT,
+  CREATE_POS_PRODUCT
 };
