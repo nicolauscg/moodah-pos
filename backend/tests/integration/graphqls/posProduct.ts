@@ -71,8 +71,21 @@ const CREATE_POS_PRODUCT = gql`
   }
 `;
 
+const GET_PRODUCT_CATEGORES = gql`
+  query {
+    categories {
+      length
+      records {
+        id
+        name
+      }
+    }
+  }
+`;
+
 export default {
   SIGN_IN,
   GET_POS_PRODUCT,
-  CREATE_POS_PRODUCT
+  CREATE_POS_PRODUCT,
+  GET_PRODUCT_CATEGORES
 };

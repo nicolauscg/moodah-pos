@@ -15,6 +15,23 @@ describe("Query", () => {
     expect(res.data.posProducts.length).not.toBeNull();
     expect(res.data.posProducts.records).not.toBeNull();
   });
+
+  it("query categories", async () => {
+    const server = await createTestServerWithSessionToken({
+      signInGql: posProductRequests.SIGN_IN
+    });
+    const { query } = createTestClient(server);
+    const res = await query({
+      query: posProductRequests.GET_PRODUCT_CATEGORES
+    });
+    expect(res.data.categories.length).toEqual(expect.any(Number));
+    expect(res.data.categories.records).toContainEqual(
+      expect.objectContaining({
+        id: expect.any(Number),
+        name: expect.any(String)
+      })
+    );
+  });
 });
 
 describe("Mutation", () => {
