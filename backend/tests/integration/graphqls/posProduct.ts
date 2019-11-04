@@ -70,6 +70,17 @@ const CREATE_POS_PRODUCT = gql`
     }
   }
 `;
+const getUpdatePosProductQuery = (fieldsToUpdate: string) => gql`
+    mutation {
+      updatePosProduct(input: ${fieldsToUpdate}) {
+        success
+        posProduct {
+          id
+          name
+        }
+      }
+    }
+  `;
 const getDeletePosProductQuery = (id: number) => gql`
   mutation {
     deletePosProduct (input: {
@@ -87,5 +98,6 @@ export default {
   SIGN_IN,
   GET_POS_PRODUCT,
   CREATE_POS_PRODUCT,
+  getUpdatePosProductQuery,
   getDeletePosProductQuery
 };
