@@ -70,9 +70,22 @@ const CREATE_POS_PRODUCT = gql`
     }
   }
 `;
+const getDeletePosProductQuery = (id: number) => gql`
+  mutation {
+    deletePosProduct (input: {
+      id: ${id}
+    }) {
+      success
+      posCategory {
+        id
+        name
+      }
+    }
+  }`;
 
 export default {
   SIGN_IN,
   GET_POS_PRODUCT,
-  CREATE_POS_PRODUCT
+  CREATE_POS_PRODUCT,
+  getDeletePosProductQuery
 };
