@@ -6,6 +6,7 @@ import {
   GraphQLFloat
 } from "graphql";
 import { globalIdField } from "graphql-relay";
+import { ProductTypeType } from "./productType";
 
 const CategoryProductType = new GraphQLObjectType({
   name: "CategoryProduct",
@@ -33,52 +34,66 @@ const PosProductType = new GraphQLObjectType({
       resolve: parent =>
         parent.imageMedium === false ? null : parent.imageMedium
     },
-    type: {
-      type: GraphQLString
+    canBeSold: {
+      type: GraphQLBoolean,
+      resolve: parent => parent.saleOk
+    },
+    canBePurchased: {
+      type: GraphQLBoolean,
+      resolve: parent => parent.purchaseOk
+    },
+    productType: {
+      type: ProductTypeType,
+      resolve: parent => parent.type
+    },
+    category: {
+      type: CategoryProductType,
+      resolve: parent => parent.categId
+    },
+    internalReference: {
+      type: GraphQLString,
+      resolve: parent =>
+        parent.defaultCode === false ? null : parent.defaultCode
     },
     barcode: {
       type: GraphQLString,
       resolve: parent => (parent.barcode === false ? null : parent.barcode)
     },
-    hsCode: {
+    HSCode: {
       type: GraphQLString,
       resolve: parent => (parent.hsCode === false ? null : parent.hsCode)
     },
-    defaultCode: {
-      type: GraphQLString,
-      resolve: parent =>
-        parent.defaultCode === false ? null : parent.defaultCode
+    salesPrice: {
+      type: GraphQLFloat,
+      resolve: parent => parent.listPrice
     },
-    listPrice: {
-      type: GraphQLFloat
+    cost: {
+      type: GraphQLFloat,
+      resolve: parent => parent.standardPrice
     },
-    standardPrice: {
-      type: GraphQLFloat
+    sales: {
+      type: GraphQLInt,
+      resolve: parent => parent.salesCount
     },
-    categId: {
-      type: CategoryProductType,
-      resolve: parent => parent.categId
+    purchases: {
+      type: GraphQLInt,
+      resolve: parent => parent.purchaseCount
     },
-    saleOk: {
-      type: GraphQLBoolean
+    archive: {
+      type: GraphQLBoolean,
+      resolve: parent => parent.active
     },
-    purchaseOk: {
-      type: GraphQLBoolean
+    onHand: {
+      type: GraphQLFloat,
+      resolve: parent => parent.qtyAvailable
     },
-    salesCount: {
-      type: GraphQLInt
+    forecastedQuantity: {
+      type: GraphQLFloat,
+      resolve: parent => parent.virtualAvailable
     },
-    purchaseCount: {
-      type: GraphQLInt
-    },
-    active: {
-      type: GraphQLBoolean
-    },
-    qtyAvailable: {
-      type: GraphQLFloat
-    },
-    nbrReorderingRules: {
-      type: GraphQLInt
+    reorderingRules: {
+      type: GraphQLInt,
+      resolve: parent => parent.nbrReorderingRules
     }
   })
 });

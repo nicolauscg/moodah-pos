@@ -6,6 +6,11 @@ const posProductFilter: FilterConfig = {
       domainName: "name",
       conventionName: "name",
       operator: "ilike"
+    },
+    {
+      domainName: "barcode",
+      conventionName: "barcode",
+      operator: "ilike"
     }
   ]
 };
