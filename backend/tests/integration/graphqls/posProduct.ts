@@ -13,15 +13,29 @@ const SIGN_IN = gql`
 `;
 const GET_POS_PRODUCT = gql`
   query {
-    posProducts {
+    posProducts(input: { first: 40, offset: 0 }) {
       length
       records {
         id
         name
-        saleOk
-        purchaseOk
-        image
-        type
+        canBeSold
+        canBePurchased
+        productType
+        category {
+          id
+          name
+        }
+        internalReference
+        barcode
+        HSCode
+        salesPrice
+        cost
+        sales
+        purchases
+        archive
+        onHand
+        forecastedQuantity
+        reorderingRules
       }
     }
   }
