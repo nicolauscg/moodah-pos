@@ -35,7 +35,6 @@ const PosProductType = new GraphQLObjectType({
     image: {
       type: GraphQLString,
       resolve: parent =>
-        // eslint-disable-next-line prettier/prettier
           (parent.imageMedium === false ? null : parent.imageMedium)
     },
     canBeSold: {

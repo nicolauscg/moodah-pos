@@ -1,4 +1,3 @@
-// import posProductQueries from "./query";
 import posProductMutations from "./mutation";
 
 const posProduct = {

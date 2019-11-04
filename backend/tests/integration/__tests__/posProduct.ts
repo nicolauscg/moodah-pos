@@ -1,17 +1,11 @@
 import { createTestClient } from "apollo-server-testing";
 
-import {
-  createTestServer,
-  createTestServerWithSessionToken
-} from "../../utility/createTestServer";
-// import posCategoryRequests from "../graphqls/posCategory";
-// import { createTestClient } from "apollo-server-testing";
-// import { createTestServerWithSessionToken } from "../../utility/createTestServer";
+import { createTestServerWithSessionToken } from "../../utility/createTestServer";
 
 import posProductRequests from "../graphqls/posProduct";
 
 describe("Mutation", () => {
-  // Needs to be changed with the
+  // Needs to be followed with update, then delete
   it("create pos product", async () => {
     const server = await createTestServerWithSessionToken({
       signInGql: posProductRequests.SIGN_IN

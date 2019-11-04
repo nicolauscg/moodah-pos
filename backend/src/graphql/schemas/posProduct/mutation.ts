@@ -39,7 +39,6 @@ const posProductMutations = new GraphQLObjectType({
         }).then(
           (createResult: any) =>
             new Promise((res, rej) => {
-              // read pos config with id specified
               configureService({
                 operation: getDataSet({ context }).createRead({
                   modelName: "product.template",
@@ -58,10 +57,6 @@ const posProductMutations = new GraphQLObjectType({
                   if (result.length) {
                     const camelizedReadResult = camelizeKeys(result[0]);
                     createResult.posProduct = camelizedReadResult;
-
-                    // const util = require("util");
-                    // console.log(util.inspect(createResult, false, null, true /* enable colors */));
-
                     res(createResult);
                   }
 
