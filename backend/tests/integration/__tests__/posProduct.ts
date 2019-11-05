@@ -21,18 +21,6 @@ describe("Query", () => {
 });
 
 describe("Mutation", () => {
-  // Needs to be followed with update, then delete
-  it("create pos product", async () => {
-    const server = await createTestServerWithSessionToken({
-      signInGql: posProductRequests.SIGN_IN
-    });
-    const { query } = createTestClient(server);
-    const createResult = (await query({
-      query: posProductRequests.CREATE_POS_PRODUCT
-    })).data.createPosProduct;
-    expect(createResult.id).not.toBeNull();
-  });
-
   it("update pos product without session token give error", async () => {
     const server = createTestServer();
     const { mutate } = createTestClient(server);
