@@ -154,11 +154,11 @@ const filterPosConfigQueryBothAndOr = gql`
 `;
 
 // Function that returns the posConfig query based on the id given
-function getPosConfigQuery(id: number) {
+function getPosConfigQuery(id: string) {
   return gql`
     query {
       posConfig(input: {
-        id:${id}
+        id: "${id}"
       }) {
         id
         name
@@ -202,9 +202,7 @@ const SIGN_IN_WITH_INVALID_DB = gql`
 `;
 const CREATE_WITH_CORRECT_INPUT = gql`
   mutation {
-    createPosConfig(
-      input: { name: "createdFromTest", pickingTypeId: 2, journalIds: [11] }
-    ) {
+    createPosConfig(input: { name: "createdFromTest" }) {
       posConfig {
         id
         name
@@ -251,10 +249,10 @@ const GET_STOCK_LOCATIONS = gql`
     }
   }
 `;
-const getDeletePosConfigQuery = (id: number) => gql`
+const getDeletePosConfigQuery = (id: string) => gql`
   mutation {
     deletePosConfig(input: {
-      id: ${id}
+      id: "${id}"
     }) {
       success
       posConfig {
