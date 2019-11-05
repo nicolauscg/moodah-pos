@@ -51,7 +51,7 @@ const CREATE_POS_CATEGORY = gql`
     }
   }
 `;
-const getUpdatePostCategoryQuery = (fieldsToUpate: string) => gql`
+const getUpdatePosCategoryQuery = (fieldsToUpate: string) => gql`
     mutation {
       updatePosCategory(input: ${fieldsToUpate}) {
         success
@@ -87,7 +87,7 @@ export default {
   SIGN_IN,
   GET_POS_CATEGORIES_WITH_ALL_FIELDS,
   CREATE_POS_CATEGORY,
-  getUpdatePostCategoryQuery,
+  getUpdatePosCategoryQuery,
   getDeletePosCategoryQuery,
   GET_READ_POS_CATEGORY
 };

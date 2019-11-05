@@ -63,7 +63,7 @@ describe("Mutation", () => {
     const { mutate } = createTestClient(server);
     const createdPosCategoryId = createResult.id;
     const updateResult: any = await mutate({
-      mutation: posCategoryRequests.getUpdatePostCategoryQuery(`{
+      mutation: posCategoryRequests.getUpdatePosCategoryQuery(`{
         id: "${createdPosCategoryId}",
         name: "${UPDATED_POS_CATEGORY_NAME}"
       }`)
@@ -84,7 +84,7 @@ describe("Mutation", () => {
     const server = createTestServer();
     const { mutate } = createTestClient(server);
     const result: any = await mutate({
-      mutation: posCategoryRequests.getUpdatePostCategoryQuery(`{
+      mutation: posCategoryRequests.getUpdatePosCategoryQuery(`{
           id: -1,
           name: "new name"
         }`)
