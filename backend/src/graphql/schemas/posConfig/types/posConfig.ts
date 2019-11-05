@@ -2,13 +2,68 @@ import {
   GraphQLObjectType,
   GraphQLBoolean,
   GraphQLString,
+  GraphQLInt,
   GraphQLFloat,
   GraphQLList
 } from "graphql";
 import { globalIdField } from "graphql-relay";
 import { IfaceTaxIncludedType } from "./ifaceTaxIncluded";
-import { configureService, getDataSet } from "../../utility/nodoo";
-import { ApolloError } from "apollo-server-core";
+
+const PosConfigDiscountProductType = new GraphQLObjectType({
+  name: "PosConfig_DiscountProduct",
+  fields: () => ({
+    id: {
+      type: GraphQLInt,
+      resolve: parent => parent[0]
+    },
+    name: {
+      type: GraphQLString,
+      resolve: parent => parent[1]
+    }
+  })
+});
+
+const PosConfigPriceListType = new GraphQLObjectType({
+  name: "PosConfig_Pricelist",
+  fields: () => ({
+    id: {
+      type: GraphQLInt,
+      resolve: parent => parent[0]
+    },
+    name: {
+      type: GraphQLString,
+      resolve: parent => parent[1]
+    }
+  })
+});
+
+const PosConfigStockLocationType = new GraphQLObjectType({
+  name: "PosConfig_StockLocation",
+  fields: () => ({
+    id: {
+      type: GraphQLInt,
+      resolve: parent => parent[0]
+    },
+    name: {
+      type: GraphQLString,
+      resolve: parent => parent[1]
+    }
+  })
+});
+
+const PosConfigPickingTypeType = new GraphQLObjectType({
+  name: "PosConfig_PickingType",
+  fields: () => ({
+    id: {
+      type: GraphQLInt,
+      resolve: parent => parent[0]
+    },
+    name: {
+      type: GraphQLString,
+      resolve: parent => parent[1]
+    }
+  })
+});
 
 const PosConfigType = new GraphQLObjectType({
   name: "PosConfig",
@@ -27,16 +82,7 @@ const PosConfigType = new GraphQLObjectType({
       type: GraphQLBoolean
     },
     discountProduct: {
-      type: new GraphQLObjectType({
-        name: "PosConfig_DiscountProduct",
-        fields: () => ({
-          id: globalIdField("product.product", parent => parent[0]),
-          name: {
-            type: GraphQLString,
-            resolve: parent => parent[1]
-          }
-        })
-      }),
+      type: PosConfigDiscountProductType,
       resolve: parent => parent.discountProductId
     },
     discountPc: {
@@ -45,125 +91,34 @@ const PosConfigType = new GraphQLObjectType({
     usePricelist: {
       type: GraphQLBoolean
     },
-    availablePricelists: {
-      type: GraphQLList(
-        new GraphQLObjectType({
-          name: "PosConfig_AvailablePricelistIds",
-          fields: () => ({
-            id: globalIdField("product.pricelist"),
-            name: {
-              type: GraphQLString
-            }
-          })
-        })
-      ),
-      resolve: (parent, _0, context) =>
-        new Promise((res, rej) => {
-          configureService({
-            operation: getDataSet({
-              context
-            }).createRead({
-              modelName: "product.pricelist",
-              ids: parent.availablePricelistIds,
-              fields: ["id", "name"]
-            }),
-            onError: error => {
-              rej(
-                new ApolloError("Application Error", "APPLICATION_ERROR", {
-                  errorMessage: error.message
-                })
-              );
-            },
-            onResult: result => res(result)
-          });
-        })
+    availablePricelistIds: {
+      type: GraphQLList(GraphQLInt)
     },
     pricelist: {
-      type: new GraphQLObjectType({
-        name: "PosConfig_Pricelist",
-        fields: () => ({
-          id: globalIdField("product.pricelist", parent => parent[0]),
-          name: {
-            type: GraphQLString,
-            resolve: parent => parent[1]
-          }
-        })
-      }),
+      type: PosConfigPriceListType,
       resolve: parent => parent.pricelistId
     },
     restrictPriceControl: {
       type: GraphQLBoolean
     },
-    paymentMethods: {
-      type: GraphQLList(
-        new GraphQLObjectType({
-          name: "PosConfig_JournalIds",
-          fields: () => ({
-            id: globalIdField("account.journal"),
-            name: {
-              type: GraphQLString
-            }
-          })
-        })
-      ),
-      resolve: (parent, _0, context) =>
-        new Promise((res, rej) => {
-          configureService({
-            operation: getDataSet({
-              context
-            }).createRead({
-              modelName: "account.journal",
-              ids: parent.journalIds,
-              fields: ["id", "name"]
-            }),
-            onError: error => {
-              rej(
-                new ApolloError("Application Error", "APPLICATION_ERROR", {
-                  errorMessage: error.message
-                })
-              );
-            },
-            onResult: result => res(result)
-          });
-        })
+    journalIds: {
+      type: GraphQLList(GraphQLInt)
     },
     isHeaderOrFooter: {
       type: GraphQLBoolean
     },
     receiptHeader: {
-      type: GraphQLString,
-      resolve: parent =>
-        parent.receiptHeader === false ? null : parent.receiptHeader
+      type: GraphQLString
     },
     receiptFooter: {
-      type: GraphQLString,
-      resolve: parent =>
-        parent.receiptFooter === false ? null : parent.receiptFooter
+      type: GraphQLString
     },
     stockLocation: {
-      type: new GraphQLObjectType({
-        name: "PosConfig_StockLocation",
-        fields: () => ({
-          id: globalIdField("stock.location", parent => parent[0]),
-          name: {
-            type: GraphQLString,
-            resolve: parent => parent[1]
-          }
-        })
-      }),
+      type: PosConfigStockLocationType,
       resolve: parent => parent.stockLocationId
     },
     pickingType: {
-      type: new GraphQLObjectType({
-        name: "PosConfig_PickingType",
-        fields: () => ({
-          id: globalIdField("stock.picking.type", parent => parent[0]),
-          name: {
-            type: GraphQLString,
-            resolve: parent => parent[1]
-          }
-        })
-      }),
+      type: PosConfigPickingTypeType,
       resolve: parent => parent.pickingTypeId
     }
   })
