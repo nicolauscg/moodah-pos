@@ -18,6 +18,17 @@ describe("Query", () => {
     expect(res.data.posProducts.length).not.toBeNull();
     expect(res.data.posProducts.records).not.toBeNull();
   });
+
+  it("query fetch pos product with specific id", async () => {
+    const server = await createTestServerWithSessionToken({
+      signInGql: posProductRequests.SIGN_IN
+    });
+    const { query } = createTestClient(server);
+    const res = await query({
+      query: posProductRequests.GET_POS_PRODUCT_WITH_ID
+    });
+    expect(res.data.posProduct).not.toBeNull();
+  });
 });
 
 describe("Mutation", () => {
