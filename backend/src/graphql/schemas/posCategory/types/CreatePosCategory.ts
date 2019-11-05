@@ -1,12 +1,11 @@
-import { GraphQLInt, GraphQLObjectType } from "graphql";
+import { GraphQLObjectType } from "graphql";
 import { PosCategoryType } from "./posCategory";
+import { globalIdField } from "graphql-relay";
 
 const CreatePosCategoryType = new GraphQLObjectType({
   name: "CreatePosCategoryType",
   fields: () => ({
-    id: {
-      type: GraphQLInt
-    },
+    id: globalIdField("pos.category"),
     posCategory: {
       type: PosCategoryType
     }
