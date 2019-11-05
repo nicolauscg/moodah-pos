@@ -1,11 +1,10 @@
-import { GraphQLObjectType, GraphQLInt, GraphQLString } from "graphql";
+import { GraphQLObjectType, GraphQLString } from "graphql";
+import { globalIdField } from "graphql-relay";
 
 const AvailablePriceListType = new GraphQLObjectType({
   name: "AvailablePriceList",
   fields: () => ({
-    id: {
-      type: GraphQLInt
-    },
+    id: globalIdField("product.pricelist"),
     name: {
       type: GraphQLString
     },
@@ -13,10 +12,7 @@ const AvailablePriceListType = new GraphQLObjectType({
       type: new GraphQLObjectType({
         name: "AvailablePriceList_Currency",
         fields: () => ({
-          id: {
-            type: GraphQLInt,
-            resolve: parent => parent[0]
-          },
+          id: globalIdField("res.currency", parent => parent[0]),
           name: {
             type: GraphQLString,
             resolve: parent => parent[1]

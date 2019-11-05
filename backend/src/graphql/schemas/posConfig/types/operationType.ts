@@ -1,11 +1,10 @@
-import { GraphQLObjectType, GraphQLInt, GraphQLString } from "graphql";
+import { GraphQLObjectType, GraphQLString } from "graphql";
+import { globalIdField } from "graphql-relay";
 
 const OperationTypesType = new GraphQLObjectType({
   name: "OperationTypesType",
   fields: () => ({
-    id: {
-      type: GraphQLInt
-    },
+    id: globalIdField("stock.picking.type"),
     name: {
       type: GraphQLString
     }

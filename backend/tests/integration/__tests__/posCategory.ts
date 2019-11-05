@@ -60,12 +60,11 @@ describe("Mutation", () => {
       query: posCategoryRequests.CREATE_POS_CATEGORY
     })).data.createPosCategory;
     expect(createResult.id).not.toBeNull();
-
     const { mutate } = createTestClient(server);
     const createdPosCategoryId = createResult.id;
     const updateResult: any = await mutate({
-      mutation: posCategoryRequests.getUpdatePostCategoryQuery(`{
-        id: ${createdPosCategoryId},
+      mutation: posCategoryRequests.getUpdatePosCategoryQuery(`{
+        id: "${createdPosCategoryId}",
         name: "${UPDATED_POS_CATEGORY_NAME}"
       }`)
     });
@@ -85,7 +84,7 @@ describe("Mutation", () => {
     const server = createTestServer();
     const { mutate } = createTestClient(server);
     const result: any = await mutate({
-      mutation: posCategoryRequests.getUpdatePostCategoryQuery(`{
+      mutation: posCategoryRequests.getUpdatePosCategoryQuery(`{
           id: -1,
           name: "new name"
         }`)
@@ -98,7 +97,7 @@ describe("Mutation", () => {
     const server = createTestServer();
     const { mutate } = createTestClient(server);
     const result: any = await mutate({
-      mutation: posCategoryRequests.getDeletePosCategoryQuery(-1)
+      mutation: posCategoryRequests.getDeletePosCategoryQuery("-1")
     });
 
     expect(result.errors).toEqual(expect.anything());

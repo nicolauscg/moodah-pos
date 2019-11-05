@@ -1,16 +1,17 @@
 import { GraphQLString, GraphQLInputObjectType, GraphQLInt } from "graphql";
+import { GlobalIdInput } from "../../utility/types/globalIdInput";
 
 const CreateOrUpdatePosCategoryInputType = new GraphQLInputObjectType({
   name: "CreateOrUpdatePosCategoryInput",
   fields: () => ({
     id: {
-      type: GraphQLInt
+      type: GlobalIdInput
     },
     name: {
       type: GraphQLString
     },
     parentId: {
-      type: GraphQLInt
+      type: GlobalIdInput
     },
     image: {
       type: GraphQLString

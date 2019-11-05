@@ -1,8 +1,7 @@
 import {
   GraphQLString,
   GraphQLInputObjectType,
-  GraphQLObjectType,
-  GraphQLInt
+  GraphQLObjectType
 } from "graphql";
 import { ApolloError } from "apollo-server-lambda";
 import { camelizeKeys } from "humps";
@@ -24,6 +23,7 @@ import { StockLocationType } from "./types/stockLocation";
 import { DiscountProductType } from "./types/discountProduct";
 import posConfigFields from "./fields";
 import posConfigsFilter from "./filter";
+import { GlobalIdInput } from "../utility/types/globalIdInput";
 
 const posConfigQueries = new GraphQLObjectType({
   name: "posConfigQueries",
@@ -95,7 +95,7 @@ const posConfigQueries = new GraphQLObjectType({
             name: "PosConfigInput",
             fields: () => ({
               id: {
-                type: GraphQLInt
+                type: GlobalIdInput
               }
             })
           })
@@ -229,7 +229,7 @@ const posConfigQueries = new GraphQLObjectType({
               paginateOperationParam(
                 {
                   modelName: "stock.picking.type",
-                  fields: posConfigFields.posConfig,
+                  fields: ["id", "name"],
                   domain: []
                 },
                 args
@@ -266,7 +266,7 @@ const posConfigQueries = new GraphQLObjectType({
               paginateOperationParam(
                 {
                   modelName: "stock.location",
-                  fields: posConfigFields.posConfig,
+                  fields: ["id", "name"],
                   domain: []
                 },
                 args

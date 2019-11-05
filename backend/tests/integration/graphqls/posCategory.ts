@@ -31,7 +31,11 @@ const GET_POS_CATEGORIES_WITH_ALL_FIELDS = gql`
 const CREATE_POS_CATEGORY = gql`
   mutation {
     createPosCategory(
-      input: { name: "createdFromTest", parentId: 3, sequence: 0 }
+      input: {
+        name: "createdFromTest"
+        parentId: "cG9zLmNhdGVnb3J5OjM="
+        sequence: 0
+      }
     ) {
       id
       posCategory {
@@ -47,7 +51,7 @@ const CREATE_POS_CATEGORY = gql`
     }
   }
 `;
-const getUpdatePostCategoryQuery = (fieldsToUpate: string) => gql`
+const getUpdatePosCategoryQuery = (fieldsToUpate: string) => gql`
     mutation {
       updatePosCategory(input: ${fieldsToUpate}) {
         success
@@ -58,10 +62,10 @@ const getUpdatePostCategoryQuery = (fieldsToUpate: string) => gql`
       }
     }
   `;
-const getDeletePosCategoryQuery = (id: number) => gql`
+const getDeletePosCategoryQuery = (id: string) => gql`
   mutation {
     deletePosCategory(input: {
-      id: ${id}
+      id: "${id}"
     }) {
       success
       posCategory {
@@ -83,7 +87,7 @@ export default {
   SIGN_IN,
   GET_POS_CATEGORIES_WITH_ALL_FIELDS,
   CREATE_POS_CATEGORY,
-  getUpdatePostCategoryQuery,
+  getUpdatePosCategoryQuery,
   getDeletePosCategoryQuery,
   GET_READ_POS_CATEGORY
 };
