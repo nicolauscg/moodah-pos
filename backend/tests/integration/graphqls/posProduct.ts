@@ -40,6 +40,19 @@ const GET_POS_PRODUCT = gql`
     }
   }
 `;
+const GET_POS_PRODUCT_WITH_ID = gql`
+  query {
+    posProduct(input: { id: 1 }) {
+      id
+      name
+      canBeSold
+      cost
+      sales
+      salesPrice
+      barcode
+    }
+  }
+`;
 
 const CREATE_POS_PRODUCT = gql`
   mutation {
@@ -70,6 +83,29 @@ const CREATE_POS_PRODUCT = gql`
     }
   }
 `;
+const getUpdatePosProductQuery = (fieldsToUpdate: string) => gql`
+    mutation {
+      updatePosProduct(input: ${fieldsToUpdate}) {
+        success
+        posProduct {
+          id
+          name
+        }
+      }
+    }
+  `;
+const getDeletePosProductQuery = (id: number) => gql`
+  mutation {
+    deletePosProduct (input: {
+      id: ${id}
+    }) {
+      success
+      posProduct {
+        id
+        name
+      }
+    }
+  }`;
 
 const GET_PRODUCT_CATEGORES = gql`
   query {
@@ -87,5 +123,8 @@ export default {
   SIGN_IN,
   GET_POS_PRODUCT,
   CREATE_POS_PRODUCT,
-  GET_PRODUCT_CATEGORES
+  GET_PRODUCT_CATEGORES,
+  getUpdatePosProductQuery,
+  getDeletePosProductQuery,
+  GET_POS_PRODUCT_WITH_ID
 };
