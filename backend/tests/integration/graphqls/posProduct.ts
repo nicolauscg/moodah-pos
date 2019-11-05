@@ -107,10 +107,23 @@ const getDeletePosProductQuery = (id: number) => gql`
     }
   }`;
 
+const GET_PRODUCT_CATEGORES = gql`
+  query {
+    categories {
+      length
+      records {
+        id
+        name
+      }
+    }
+  }
+`;
+
 export default {
   SIGN_IN,
   GET_POS_PRODUCT,
   CREATE_POS_PRODUCT,
+  GET_PRODUCT_CATEGORES,
   getUpdatePosProductQuery,
   getDeletePosProductQuery,
   GET_POS_PRODUCT_WITH_ID
