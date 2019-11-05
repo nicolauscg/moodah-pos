@@ -42,7 +42,7 @@ const GET_POS_PRODUCT = gql`
 `;
 const GET_POS_PRODUCT_WITH_ID = gql`
   query {
-    posProduct(input: { id: 8 }) {
+    posProduct(input: { id: 1 }) {
       id
       name
       canBeSold
@@ -83,10 +83,35 @@ const CREATE_POS_PRODUCT = gql`
     }
   }
 `;
+const getUpdatePosProductQuery = (fieldsToUpdate: string) => gql`
+    mutation {
+      updatePosProduct(input: ${fieldsToUpdate}) {
+        success
+        posProduct {
+          id
+          name
+        }
+      }
+    }
+  `;
+const getDeletePosProductQuery = (id: number) => gql`
+  mutation {
+    deletePosProduct (input: {
+      id: ${id}
+    }) {
+      success
+      posProduct {
+        id
+        name
+      }
+    }
+  }`;
 
 export default {
   SIGN_IN,
   GET_POS_PRODUCT,
   CREATE_POS_PRODUCT,
+  getUpdatePosProductQuery,
+  getDeletePosProductQuery,
   GET_POS_PRODUCT_WITH_ID
 };
