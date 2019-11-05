@@ -42,7 +42,7 @@ const GET_POS_PRODUCT = gql`
 `;
 const GET_POS_PRODUCT_WITH_ID = gql`
   query {
-    posProduct(input: { id: 8 }) {
+    posProduct(input: { id: 1 }) {
       id
       name
       canBeSold
