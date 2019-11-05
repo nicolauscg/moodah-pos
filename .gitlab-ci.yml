@@ -138,6 +138,7 @@ deploy dev backend:
     - serverless deploy --stage $STAGE --verbose
   environment:
     name: development
+  when: manual
   only:
     changes:
       - backend/serverless.yml
