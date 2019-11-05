@@ -3,16 +3,16 @@ import {
   GraphQLInputObjectType,
   GraphQLBoolean,
   GraphQLFloat,
-  GraphQLInt,
   GraphQLList
 } from "graphql";
 import { IfaceTaxIncludedType } from "./ifaceTaxIncluded";
+import { GlobalIdInput } from "../../utility/types/globalIdInput";
 
 const CreateOrUpdatePosConfigInputType = new GraphQLInputObjectType({
   name: "CreateOrUpdatePosConfigInputType",
   fields: () => ({
     id: {
-      type: GraphQLInt
+      type: GlobalIdInput
     },
     name: {
       type: GraphQLString
@@ -27,7 +27,7 @@ const CreateOrUpdatePosConfigInputType = new GraphQLInputObjectType({
       type: GraphQLBoolean
     },
     discountProductId: {
-      type: GraphQLInt
+      type: GlobalIdInput
     },
     discountPc: {
       type: GraphQLFloat
@@ -36,16 +36,16 @@ const CreateOrUpdatePosConfigInputType = new GraphQLInputObjectType({
       type: GraphQLBoolean
     },
     availablePricelistIds: {
-      type: GraphQLList(GraphQLInt)
+      type: GraphQLList(GlobalIdInput)
     },
     pricelistId: {
-      type: GraphQLInt
+      type: GlobalIdInput
     },
     restrictPriceControl: {
       type: GraphQLBoolean
     },
     journalIds: {
-      type: GraphQLList(GraphQLInt)
+      type: GraphQLList(GlobalIdInput)
     },
     isHeaderOrFooter: {
       type: GraphQLBoolean
@@ -57,10 +57,10 @@ const CreateOrUpdatePosConfigInputType = new GraphQLInputObjectType({
       type: GraphQLString
     },
     stockLocationId: {
-      type: GraphQLInt
+      type: GlobalIdInput
     },
     pickingTypeId: {
-      type: GraphQLInt
+      type: GlobalIdInput
     }
   })
 });

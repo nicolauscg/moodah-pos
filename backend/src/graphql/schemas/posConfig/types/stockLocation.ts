@@ -1,11 +1,10 @@
-import { GraphQLObjectType, GraphQLInt, GraphQLString } from "graphql";
+import { GraphQLObjectType, GraphQLString } from "graphql";
+import { globalIdField } from "graphql-relay";
 
 const StockLocationType = new GraphQLObjectType({
   name: "StockLocationType",
   fields: () => ({
-    id: {
-      type: GraphQLInt
-    },
+    id: globalIdField("stock.location"),
     name: {
       type: GraphQLString
     }
