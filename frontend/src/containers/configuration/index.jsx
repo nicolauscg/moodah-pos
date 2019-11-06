@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react'
+import React from 'react'
 import { debounce } from 'lodash'
 import { compose, withState, withPropsOnChange, withHandlers } from 'recompose'
 
@@ -12,6 +12,8 @@ import offsetToCursor from '../../utils/offsetToCursor'
 import Breadcrumb from '../../shared/components/Breadcrumb'
 
 import ConfigurationTable from './components/ConfigurationTable'
+
+import { PosConfigs } from '../../generated-pos-models'
 
 const SearchInput = ({ field, form, handleSetValue, ...props }) => {
   const { onChange, ...restField } = field
@@ -117,25 +119,38 @@ const defaultFilters = {
   }
 
 const enhance = compose(
-    withState('filters', 'setFilters', defaultFilters),
-    withState('offset', 'setOffset', 0),
-    withHandlers({
-      handleSetValue: ({ filters, setFilters, setOffset }) => value => {
-        setFilters({
-          ...filters,
-          name_contains: value,
-        })
-        setOffset(0)
-      },
-      refetchQueries: ({ filters, offset }) => () => [
-        {
-          variables: {
-            filters,
-            ...(offset > 0 ? { offset: offsetToCursor(offset) } : {}),
-          },
+  PosConfigs.HOC({
+    name: 'getPosConfigs',
+    options: {
+      context: {
+        clientName: "pos"
+      }
+    }
+  }),
+  withPropsOnChange(['getPosConfigs'], ({ getPosConfigs }) => {
+    if (!getPosConfigs.loading) {
+      console.log("getPosConfigs", getPosConfigs);
+    }
+  }),
+  withState('filters', 'setFilters', defaultFilters),
+  withState('offset', 'setOffset', 0),
+  withHandlers({
+    handleSetValue: ({ filters, setFilters, setOffset }) => value => {
+      setFilters({
+        ...filters,
+        name_contains: value,
+      })
+      setOffset(0)
+    },
+    refetchQueries: ({ filters, offset }) => () => [
+      {
+        variables: {
+          filters,
+          ...(offset > 0 ? { offset: offsetToCursor(offset) } : {}),
         },
-      ],
-    })
-  )
+      },
+    ],
+  })
+)
   
   export default enhance(ConfigurationIndex)
