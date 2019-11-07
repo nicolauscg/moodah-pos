@@ -54,7 +54,7 @@ const GET_POS_PRODUCT_WITH_ID = gql`
   }
 `;
 
-const CREATE_POS_PRODUCT = gql`
+const CREATE_VALID_POS_PRODUCT = gql`
   mutation {
     createPosProduct(input: { name: "createdFromTest" }) {
       id
@@ -79,6 +79,17 @@ const CREATE_POS_PRODUCT = gql`
         onHand
         forecastedQuantity
         reorderingRules
+      }
+    }
+  }
+`;
+const CREATE_INVALID_POS_PRODUCT = gql`
+  mutation {
+    createPosProduct(input: { name: -1 }) {
+      id
+      posProduct {
+        id
+        name
       }
     }
   }
@@ -122,7 +133,8 @@ const GET_PRODUCT_CATEGORES = gql`
 export default {
   SIGN_IN,
   GET_POS_PRODUCT,
-  CREATE_POS_PRODUCT,
+  CREATE_VALID_POS_PRODUCT,
+  CREATE_INVALID_POS_PRODUCT,
   GET_PRODUCT_CATEGORES,
   getUpdatePosProductQuery,
   getDeletePosProductQuery,

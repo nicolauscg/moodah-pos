@@ -53,7 +53,18 @@ describe("Mutation", () => {
     const server = createTestServer();
     const { mutate } = createTestClient(server);
     const result: any = await mutate({
-      mutation: posProductRequests.CREATE_POS_PRODUCT
+      mutation: posProductRequests.CREATE_VALID_POS_PRODUCT
+    });
+    expect(result.errors).toEqual(expect.anything());
+  });
+
+  it("create pos cofig without valid input give error", async () => {
+    const server = await createTestServerWithSessionToken({
+      signInGql: posProductRequests.SIGN_IN
+    });
+    const { mutate } = createTestClient(server);
+    const result: any = await mutate({
+      mutation: posProductRequests.CREATE_INVALID_POS_PRODUCT
     });
     expect(result.errors).toEqual(expect.anything());
   });
@@ -87,7 +98,7 @@ describe("Mutation", () => {
     });
     const { query } = createTestClient(server);
     const createResult = (await query({
-      query: posProductRequests.CREATE_POS_PRODUCT
+      query: posProductRequests.CREATE_VALID_POS_PRODUCT
     })).data.createPosProduct;
     expect(createResult.id).not.toBeNull();
 
