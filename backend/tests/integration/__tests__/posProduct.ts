@@ -49,6 +49,15 @@ describe("Query", () => {
 });
 
 describe("Mutation", () => {
+  it("create pos cofig without session token give error", async () => {
+    const server = createTestServer();
+    const { mutate } = createTestClient(server);
+    const result: any = await mutate({
+      mutation: posProductRequests.CREATE_POS_PRODUCT
+    });
+    expect(result.errors).toEqual(expect.anything());
+  });
+
   it("update pos product without session token give error", async () => {
     const server = createTestServer();
     const { mutate } = createTestClient(server);
