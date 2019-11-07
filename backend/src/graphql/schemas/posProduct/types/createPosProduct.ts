@@ -1,12 +1,11 @@
-import { GraphQLInt, GraphQLObjectType } from "graphql";
+import { GraphQLObjectType } from "graphql";
 import { PosProductType } from "./posProduct";
+import { globalIdField } from "graphql-relay";
 
 const CreatePosProductType = new GraphQLObjectType({
   name: "CreatePosProductType",
   fields: () => ({
-    id: {
-      type: GraphQLInt
-    },
+    id: globalIdField("product.template"),
     posProduct: {
       type: PosProductType
     }

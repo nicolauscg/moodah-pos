@@ -1,11 +1,10 @@
-import { GraphQLInt, GraphQLObjectType, GraphQLString } from "graphql";
+import { GraphQLObjectType, GraphQLString } from "graphql";
+import { globalIdField } from "graphql-relay";
 
 const CategoryType = new GraphQLObjectType({
   name: "Category",
   fields: () => ({
-    id: {
-      type: GraphQLInt
-    },
+    id: globalIdField("product.template"),
     name: {
       type: GraphQLString
     }
