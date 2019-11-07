@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react'
+import React from 'react'
 import { debounce } from 'lodash'
 import { compose, withState, withPropsOnChange, withHandlers } from 'recompose'
 
@@ -7,7 +7,6 @@ import { Link } from 'react-router-dom'
 import SearchIcon from 'mdi-react/SearchIcon'
 import { withFormik, Form, Field } from 'formik'
 
-import { ResPartners } from '../../generated-models'
 import offsetToCursor from '../../utils/offsetToCursor'
 
 import Breadcrumb from '../../shared/components/Breadcrumb'
@@ -78,33 +77,32 @@ const ProductCategoryIndex = ({
           md={8}
           className="header__item d-flex align-items-center justify-content-end"
         >
-           <FormikSearch
+          <FormikSearch
             filters={filters}
             setFilters={setFilters}
             setOffset={setOffset}
             handleSetValue={handleSetValue}
-           />
+          />
 
           <Link
-          to={`/product_category/list`}
-          className="btn btn-primary btn-sm"
+            to={`/product_category/list`}
+            className="btn btn-primary btn-sm"
           >
-          Buat Baru
+            Buat Baru
           </Link>
 
           <Button size="sm" color="help" tag="a" href="mailto:support@rubyh.co">
-          Bantuan
+            Bantuan
           </Button>
-
         </Col>
       </Row>
       <Row>
         <ProductCategoryTable
-         filters={filters}
-         setFilters={setFilters}
-         offset={offset}
-         setOffset={setOffset}
-         />
+          filters={filters}
+          setFilters={setFilters}
+          offset={offset}
+          setOffset={setOffset}
+        />
       </Row>
 
     </Container>
@@ -118,25 +116,25 @@ const defaultFilters = {
   }
 
 const enhance = compose(
-    withState('filters', 'setFilters', defaultFilters),
-    withState('offset', 'setOffset', 0),
-    withHandlers({
-      handleSetValue: ({ filters, setFilters, setOffset }) => value => {
-        setFilters({
-          ...filters,
-          name_contains: value,
-        })
-        setOffset(0)
-      },
-      refetchQueries: ({ filters, offset }) => () => [
-        {
-          variables: {
-            filters,
-            ...(offset > 0 ? { offset: offsetToCursor(offset) } : {}),
-          },
+  withState('filters', 'setFilters', defaultFilters),
+  withState('offset', 'setOffset', 0),
+  withHandlers({
+    handleSetValue: ({ filters, setFilters, setOffset }) => value => {
+      setFilters({
+        ...filters,
+        name_contains: value,
+      })
+      setOffset(0)
+    },
+    refetchQueries: ({ filters, offset }) => () => [
+      {
+        variables: {
+          filters,
+          ...(offset > 0 ? { offset: offsetToCursor(offset) } : {}),
         },
-      ],
-    })
-  )
+      },
+    ],
+  })
+)
 
 export default enhance(ProductCategoryIndex)
