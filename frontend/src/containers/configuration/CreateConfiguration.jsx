@@ -54,9 +54,11 @@ const CreateConfigurationPage = enhance(({ onCreateSuccess }) => {
       <Row>
         <Col xs={12}>
           <Card>
-            <ConfigurationForm/>
+             <CardBody>
+               <ConfigurationForm />
+             </CardBody>
           </Card>
-           </Col>
+        </Col>
       </Row>
     </Container>
   )

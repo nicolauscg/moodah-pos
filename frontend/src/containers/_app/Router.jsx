@@ -20,6 +20,7 @@ import ProductCategoryIndex from '../product_category/index' // Routing Product 
 
 /*Routing Configuration */
 import ConfigurationIndex from '../configuration/index'
+import CreateConfigurationPage from '../configuration/CreateConfiguration'
 
 
 const RouteList = {
@@ -50,10 +51,10 @@ const RouteList = {
         path: '/configuration/list',
         component: ConfigurationIndex,
       },
-      /*{
+      {
         path: '/configuration/create',
-        component: CreateConfiguration,
-      },*/
+        component: CreateConfigurationPage,
+      },
       /*{
         path: '/configuration/details/:id',
         component: EditConfiguration,
