@@ -15,16 +15,18 @@ import {
 
 import Panel from '../../../shared/components/Panel'
 import FormikInput from '../../../shared/components/formik/TextInput'
-import FormCheckbox from '../../../shared/components/form-custom/FormCheckbox'
-import FormikCheckbox from '../../../shared/components/formik/Checkbox'
-import Select from '../../../shared/components/form-custom/DynamicSelect'
 
 const FormContent = ({
   onInputFocus,
   handleSubmit,
 }) => {
   return(
-    <Form>
+    <Form
+      onSubmit={e => {
+        e.stopPropagation()
+        handleSubmit(e)
+      }}
+    >
       <Row>
         <Panel
         xs ={12}
@@ -39,24 +41,25 @@ const FormContent = ({
                 </div>
               </Col>
               <Col>
-              <FastField
-              label = "Product Category Name"
-              name = "product_category_name"
-              onFocus = {onInputFocus}
-              // component={FormikInput}
-              />
-              <FastField
-              label = "Parent Category"
-              name = "parent_product_category"
-              onFocus = {onInputFocus}
-              // component={FormikInput}
-              />
-              <FastField
-              label = "Sequence"
-              name = "sequence"
-              onFocus = {onInputFocus}
-              // component={FormikInput}
-              />
+                <FastField
+                required
+                label = "Product Category Name"
+                name = "name"
+                onFocus = {onInputFocus}
+                component={FormikInput}
+                />
+                <FastField
+                label = "Parent Category"
+                name = "parentcategory"
+                onFocus = {onInputFocus}
+                component={FormikInput}
+                />
+                <FastField
+                label = "Sequence"
+                name = "sequence"
+                onFocus = {onInputFocus}
+                component={FormikInput}
+                />
               </Col>
             </Row>
           </div>
@@ -66,9 +69,19 @@ const FormContent = ({
   )
 }
 
+
 const ProductCategoryForm = compose(
   withRouter,
-)(FormContent)
+  withFormik({
+    mapsPropsToValue: props => {
+      return{
+        name:'',
+        parentcategory:'',
+        sequence: '',
+      }
+    },
+  })
+  )(FormContent)
 
 export default ProductCategoryForm
 
