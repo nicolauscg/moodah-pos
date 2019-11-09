@@ -10,6 +10,7 @@ import DataTable from '../../../shared/components/DataTable'
 const Table = ({
   data,
   offset,
+  limit,
   handlePageChange,
   onClickRow,
 }) => {
@@ -22,7 +23,7 @@ const Table = ({
     loading || !posCategories ? [] : posCategories.records;
   const totalCount = 
     loading || !posCategories ? 0 : posCategories.length;
-  const limit = 10;
+  console.log("LIMIT", limit)
 
   return (
     <Fragment>
@@ -63,6 +64,7 @@ const ProductCategoryTable = compose(
     onClickRow: ({ history }) => row => {
       history.push(`/product_category/details/${row.id}`)
     },
+    handlePageChange: ({ setOffset }) => offset => setOffset(offset)
   })
 )(Table)
 

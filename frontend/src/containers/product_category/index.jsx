@@ -1,6 +1,6 @@
 import React from 'react'
 import { debounce } from 'lodash'
-import { compose, withState, withPropsOnChange, withHandlers } from 'recompose'
+import { compose, withState, withPropsOnChange, withHandlers, withProps } from 'recompose'
 
 import { Col, Container, Row, Button } from 'reactstrap'
 import { Link } from 'react-router-dom'
@@ -64,6 +64,7 @@ const ProductCategoryIndex = ({
   offset,
   setOffset,
   handleSetValue,
+  limit
 }) => {
   return (
     <Container className="productcategory__list">
@@ -100,6 +101,7 @@ const ProductCategoryIndex = ({
           setFilters={setFilters}
           offset={offset}
           setOffset={setOffset}
+          limit={limit}
         />
       </Row>
 
@@ -112,6 +114,9 @@ const defaultFilters = {};
 const enhance = compose(
   withState('filters', 'setFilters', defaultFilters),
   withState('offset', 'setOffset', 0),
+  withProps({
+    limit: 10
+  }),
   withHandlers({
     handleSetValue: ({ filters, setFilters, setOffset }) => value => {
       setFilters({
