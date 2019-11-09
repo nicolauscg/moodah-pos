@@ -1,10 +1,13 @@
-import { GraphQLObjectType, GraphQLInputObjectType } from "graphql";
+import {
+  GraphQLObjectType,
+  GraphQLInputObjectType,
+  GraphQLString
+} from "graphql";
 import { camelizeKeys } from "humps";
 import { ApolloError } from "apollo-server-lambda";
 
 import { configureService, getDataSet } from "../utility/nodoo";
 import { PaginateType } from "../utility/types/paginateType";
-import { PagableInputType } from "../utility/types/pagableInput";
 import { PosCategoryType } from "./types/posCategory";
 import {
   paginateAndFilterOperationParam,
@@ -13,6 +16,7 @@ import {
 import posCategoryFields from "./fields";
 import posCategoryFilter from "./filter";
 import { GlobalIdInput } from "../utility/types/globalIdInput";
+import { FilterableAndPagableInputType } from "../utility/types/FilterableAndPageableInputType";
 
 const posCategoryQueries = new GraphQLObjectType({
   name: "posCategoryQueries",
@@ -21,7 +25,16 @@ const posCategoryQueries = new GraphQLObjectType({
       type: PaginateType(PosCategoryType),
       args: {
         input: {
-          type: PagableInputType,
+          type: FilterableAndPagableInputType(
+            new GraphQLInputObjectType({
+              name: "PosCategoriesInput",
+              fields: () => ({
+                name: {
+                  type: GraphQLString
+                }
+              })
+            })
+          ),
           defaultValue: {
             first: 10,
             offset: 0
