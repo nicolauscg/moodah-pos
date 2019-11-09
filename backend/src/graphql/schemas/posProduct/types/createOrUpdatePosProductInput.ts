@@ -1,7 +1,6 @@
 import {
   GraphQLString,
   GraphQLInputObjectType,
-  GraphQLInt,
   GraphQLFloat,
   GraphQLBoolean
 } from "graphql";
@@ -29,7 +28,7 @@ const CreateOrUpdatePosProductInputType = new GraphQLInputObjectType({
       type: GraphQLBoolean
     },
     category: {
-      type: GraphQLInt
+      type: GlobalIdInput
     },
     internalReference: {
       type: GraphQLString
