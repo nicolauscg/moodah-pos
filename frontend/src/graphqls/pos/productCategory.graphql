@@ -10,8 +10,16 @@ fragment posCategoryFields on PosCategory {
   sequence
 }
 
-query PosCategories {
-  posCategories {
+query PosCategories(
+  $filters: FilterablePosCategoriesInput_where,
+  $limit: Int,
+  $offset: Int
+) {
+  posCategories(input: {
+    where: $filters,
+    first: $limit,
+    offset: $offset
+  }) {
     length
     records {
       id

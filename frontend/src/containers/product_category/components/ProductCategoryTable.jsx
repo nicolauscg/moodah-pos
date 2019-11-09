@@ -47,11 +47,17 @@ const Table = ({
 const ProductCategoryTable = compose(
   withRouter,
   PosCategories.HOC({
-    options: {
+    options: ({ filters, offset, limit }) => ({
       context: {
         clientName: "pos"
-      }
-    }
+      },
+      variables: {
+        filters,
+        offset,
+        limit
+      },
+      fetchPolicy: 'network-only'
+    })
   }),
   withHandlers({
     onClickRow: ({ history }) => row => {

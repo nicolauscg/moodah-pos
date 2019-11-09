@@ -7,8 +7,6 @@ import { Link } from 'react-router-dom'
 import SearchIcon from 'mdi-react/SearchIcon'
 import { withFormik, Form, Field } from 'formik'
 
-import offsetToCursor from '../../utils/offsetToCursor'
-
 import Breadcrumb from '../../shared/components/Breadcrumb'
 import ProductCategoryTable from './components/ProductCategoryTable'
 
@@ -109,11 +107,7 @@ const ProductCategoryIndex = ({
   )
 }
 
-
-const defaultFilters = {
-    name_contains: '',
-    type: 'productcategory',
-  }
+const defaultFilters = {};
 
 const enhance = compose(
   withState('filters', 'setFilters', defaultFilters),
@@ -122,18 +116,10 @@ const enhance = compose(
     handleSetValue: ({ filters, setFilters, setOffset }) => value => {
       setFilters({
         ...filters,
-        name_contains: value,
+        OR: [{ name: value }]
       })
       setOffset(0)
-    },
-    refetchQueries: ({ filters, offset }) => () => [
-      {
-        variables: {
-          filters,
-          ...(offset > 0 ? { offset: offsetToCursor(offset) } : {}),
-        },
-      },
-    ],
+    }
   })
 )
 
