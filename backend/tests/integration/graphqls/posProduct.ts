@@ -42,7 +42,7 @@ const GET_POS_PRODUCT = gql`
 `;
 const GET_POS_PRODUCT_WITH_ID = gql`
   query {
-    posProduct(input: { id: 1 }) {
+    posProduct(input: { id: "cHJvZHVjdC50ZW1wbGF0ZTox" }) {
       id
       name
       canBeSold
@@ -105,10 +105,10 @@ const getUpdatePosProductQuery = (fieldsToUpdate: string) => gql`
       }
     }
   `;
-const getDeletePosProductQuery = (id: number) => gql`
+const getDeletePosProductQuery = (id: string) => gql`
   mutation {
     deletePosProduct (input: {
-      id: ${id}
+      id: "${id}"
     }) {
       success
       posProduct {

@@ -41,7 +41,7 @@ describe("Query", () => {
     expect(res.data.categories.length).toEqual(expect.any(Number));
     expect(res.data.categories.records).toContainEqual(
       expect.objectContaining({
-        id: expect.any(Number),
+        id: expect.any(String),
         name: expect.any(String)
       })
     );
@@ -74,7 +74,7 @@ describe("Mutation", () => {
     const { mutate } = createTestClient(server);
     const result: any = await mutate({
       mutation: posProductRequests.getUpdatePosProductQuery(`{
-          id: -1,
+          id: "-1",
           name: "new name"
         }`)
     });
@@ -85,7 +85,7 @@ describe("Mutation", () => {
     const server = createTestServer();
     const { mutate } = createTestClient(server);
     const result: any = await mutate({
-      mutation: posProductRequests.getDeletePosProductQuery(-1)
+      mutation: posProductRequests.getDeletePosProductQuery("-1")
     });
 
     expect(result.errors).toEqual(expect.anything());
@@ -106,7 +106,7 @@ describe("Mutation", () => {
     const createdPosProductId = createResult.id;
     const updateResult: any = await mutate({
       mutation: posProductRequests.getUpdatePosProductQuery(`{
-        id: ${createdPosProductId},
+        id: "${createdPosProductId}",
         name: "${UPDATED_POS_PRODUCT_NAME}"
       }`)
     });

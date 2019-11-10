@@ -7,12 +7,13 @@ import {
 } from "graphql";
 import { globalIdField } from "graphql-relay";
 import { ProductTypeType } from "./productType";
+import { GlobalIdInput } from "../../utility/types/globalIdInput";
 
 const CategoryProductType = new GraphQLObjectType({
   name: "CategoryProduct",
   fields: () => ({
     id: {
-      type: GraphQLInt,
+      type: GlobalIdInput,
       resolve: parent => parent[0]
     },
     name: {
