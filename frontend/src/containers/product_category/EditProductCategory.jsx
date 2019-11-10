@@ -32,7 +32,7 @@ const EditProductCategory = ({ data }) => {
           className="header__item d-flex justify-content-end align-items-center"
         >
           <div className="mr-3">
-            <Link to="/product_category/list" className="btn btn-info btn-sm">
+            <Link to="/product_category/list" className="btn btn-primary btn-sm">
               Save
             </Link>
           </div>

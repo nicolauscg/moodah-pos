@@ -13,7 +13,8 @@ import Select from '../../../shared/components/form-custom/DynamicSelect'
 const FormContent = ({
   onInputFocus,
   handleSubmit,
-  parents
+  parents,
+  productcategory
 }) => {
 
   return(
@@ -27,16 +28,22 @@ const FormContent = ({
         <Panel
           xs ={12}
           title="Product Category"
-          subhead="Buat baru kategori product"
           isForm
         >
           <div className="material-form">
             <Row>
-              <Col xs={12} md={6}>
-                <div className = "image-field">
+              <Col xs={12} md={3}>
+                <div className="dropzone-image-field">
+                  { productcategory.image && (
+                    <img 
+                      src={`data:image/png;base64,${productcategory.image}`}
+                      className=".image-field"
+                      alt="category-pic"
+                    />
+                  )}
                 </div>
               </Col>
-              <Col>
+              <Col xs={12} md={5}>
                 <FastField
                   required
                   label = "Product Category Name"
