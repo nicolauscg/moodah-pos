@@ -1,25 +1,11 @@
 import React from 'react'
-import { connect } from 'react-redux'
-import { compose, withHandlers, lifecycle, getContext } from 'recompose'
+import { compose, withHandlers } from 'recompose'
 
-import { Col, Container, Row, Button, Card, CardBody } from 'reactstrap'
+import { Col, Container, Row, Card } from 'reactstrap'
 import { Link } from 'react-router-dom'
-import BlockUi from 'react-block-ui'
-
-import { ErrorHandlerContext } from '../../utils/transformers/general'
-import { addNotif } from '../../redux/modules/general'
 
 import Breadcrumb from '../../shared/components/Breadcrumb'
 import ProductCategoryForm from './components/ProductCategoryForm'
-
-// =============================================================================
-// Create Res Partner Form
-// =============================================================================
-
-
-// =============================================================================
-// Create Res Partner Full Page
-// =============================================================================
 
 const enhance = compose(
   withHandlers({
