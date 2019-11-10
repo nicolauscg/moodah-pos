@@ -84,7 +84,7 @@ const ProductCategoryIndex = ({
           />
 
           <Link
-            to={`/product_category/list`}
+            to={`/product_category/create`}
             className="btn btn-primary btn-sm"
           >
             Buat Baru

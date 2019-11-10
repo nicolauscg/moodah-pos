@@ -1,25 +1,21 @@
-import React, {Fragment} from 'react'
+import React from 'react'
 import {withRouter} from 'react-router-dom'
-import {prop} from 'ramda'
-import {connect} from 'react-redux'
 
-import {Row, Col, Button} from 'reactstrap'
-import {withFormik, Form, FastField, Field} from 'formik'
-import {
-    compose,
-    withState,
-    withHandlers,
-    withStateHandlers,
-    withPropsOnChange,
-  } from 'recompose'
+import { Row, Col } from 'reactstrap'
+import { withFormik, Form, FastField } from 'formik'
+import { compose } from 'recompose'
 
+import { PosCategories } from '../../../generated-pos-models'
 import Panel from '../../../shared/components/Panel'
 import FormikInput from '../../../shared/components/formik/TextInput'
+import Select from '../../../shared/components/form-custom/DynamicSelect'
 
 const FormContent = ({
   onInputFocus,
   handleSubmit,
+  parents
 }) => {
+
   return(
     <Form
       onSubmit={e => {
@@ -29,10 +25,10 @@ const FormContent = ({
     >
       <Row>
         <Panel
-        xs ={12}
-        title="Product Category"
-        subhead="Buat baru kategori product"
-        isForm
+          xs ={12}
+          title="Product Category"
+          subhead="Buat baru kategori product"
+          isForm
         >
           <div className="material-form">
             <Row>
@@ -42,23 +38,30 @@ const FormContent = ({
               </Col>
               <Col>
                 <FastField
-                required
-                label = "Product Category Name"
-                name = "name"
-                onFocus = {onInputFocus}
-                component={FormikInput}
+                  required
+                  label = "Product Category Name"
+                  name="name"
+                  onFocus = {onInputFocus}
+                  component={FormikInput}
+                />
+                <Select
+                  dataState={!parents.loading ? 
+                    parents.posCategories.records.map(({id, displayName})=>(
+                      {label: displayName, value: id}
+                    )) : 
+                    []
+                  }
+                  field="parent"
+                  label="Parent Category"
+                  onFocus={onInputFocus}
+                  queryKey={[]}
+                  hasMoreKey={[]}
                 />
                 <FastField
-                label = "Parent Category"
-                name = "parentcategory"
-                onFocus = {onInputFocus}
-                component={FormikInput}
-                />
-                <FastField
-                label = "Sequence"
-                name = "sequence"
-                onFocus = {onInputFocus}
-                component={FormikInput}
+                  label = "Sequence"
+                  name="sequence"
+                  onFocus = {onInputFocus}
+                  component={FormikInput}
                 />
               </Col>
             </Row>
@@ -69,19 +72,45 @@ const FormContent = ({
   )
 }
 
-
 const ProductCategoryForm = compose(
   withRouter,
+  PosCategories.HOC({
+    name: "parents",
+    options: () => ({
+      context: {
+        clientName: "pos"
+      },
+      variables: {
+        filters: {},
+        offset: 0,
+        limit: 20
+      }
+    })
+  }),
   withFormik({
-    mapsPropsToValue: props => {
-      return{
-        name:'',
-        parentcategory:'',
+    mapPropsToValues: props => {
+      const { productcategory } = props;
+      if (productcategory) {
+        return {
+          ...productcategory,
+          parent: productcategory.parent ?
+            ({
+              ...productcategory.parent,
+              label: productcategory.parent.displayName,
+              value: productcategory.parent.id
+            }) :
+            null
+        };
+      }
+
+      return {
+        name: '',
+        parent: null,
         sequence: '',
       }
     },
   })
-  )(FormContent)
+)(FormContent)
 
 export default ProductCategoryForm
 

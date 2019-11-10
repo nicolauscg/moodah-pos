@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react'
 import { Route, Switch } from 'react-router-dom'
-import { compose, withHandlers, withContext } from 'recompose'
+import { compose, withHandlers } from 'recompose'
 import { Helmet } from 'react-helmet'
 
 import Layout from '../_layout/index'
@@ -16,11 +16,11 @@ import EditPartner from '../partners/EditPartner'
 import AccountSettings from '../account_settings/index'
 import withTracker from '../../shared/components/withTracker'
 import withStandardPlanHandler from '../../shared/components/withStandardPlanHandler'
-import ProductCategoryIndex from '../product_category/index' // Routing Product Category
 
-/*Routing Configuration */
+import ProductCategoryIndex from '../product_category/index'
 import ConfigurationIndex from '../configuration/index'
 import CreateProductCategory from '../product_category/CreateProductCategory'
+import EditProductCategory from '../product_category/EditProductCategory'
 
 
 const RouteList = {
@@ -50,15 +50,7 @@ const RouteList = {
       {
         path: '/configuration/list',
         component: ConfigurationIndex,
-      },
-      /*{
-        path: '/configuration/create',
-        component: CreateConfiguration,
-      },*/
-      /*{
-        path: '/configuration/details/:id',
-        component: EditConfiguration,
-      },*/
+      }
     ],
   },
 
@@ -73,6 +65,10 @@ const RouteList = {
          {
           path: '/product_category/create',
           component: CreateProductCategory,
+        },
+        {
+          path: '/product_category/details/:id',
+          component: EditProductCategory,
         },
       ],
   },
