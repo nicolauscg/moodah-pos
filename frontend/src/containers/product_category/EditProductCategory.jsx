@@ -163,7 +163,6 @@ const enhance = compose(
       id
     ) => {
       const { deleteId } = deleteState
-
       const vals = {
         id: deleteId || id
       }
@@ -182,7 +181,6 @@ const enhance = compose(
       const message = "Product category successfully deleted"
 
       history.push(`/product_category/list`)
-
       triggerNotif({
         message,
         type: 'success',

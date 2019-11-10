@@ -34,7 +34,7 @@ const FormContent = ({
             <Row>
               <Col xs={12} md={3}>
                 <div className="dropzone-image-field">
-                  { productcategory.image ? (
+                  { productcategory && productcategory.image ? (
                     <img 
                       src={`data:image/png;base64,${productcategory.image}`}
                       className=".image-field"
