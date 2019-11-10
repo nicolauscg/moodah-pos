@@ -3,12 +3,14 @@ import { GraphQLSchema, GraphQLObjectType } from "graphql";
 import auth from "./auth";
 import posConfig from "./posConfig";
 import posCategory from "./posCategory";
+import posProduct from "./posProduct";
 
 const rootType = new GraphQLObjectType({
   name: "Query",
   fields: () => ({
     ...posConfig.query,
-    ...posCategory.query
+    ...posCategory.query,
+    ...posProduct.query
   })
 });
 
@@ -17,7 +19,8 @@ const mutationType = new GraphQLObjectType({
   fields: () => ({
     ...auth.mutation,
     ...posConfig.mutation,
-    ...posCategory.mutation
+    ...posCategory.mutation,
+    ...posProduct.mutation
   })
 });
 
