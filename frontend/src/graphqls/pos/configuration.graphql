@@ -14,13 +14,19 @@ fragment posConfigFields on PosConfig {
   }
   discountPc
   usePricelist
-  availablePricelistIds
+  availablePricelists {
+    id
+    name
+  }
   pricelist{
     id
     name
   }
   restrictPriceControl
-  journalIds
+  paymentMethods {
+    id
+    name
+  }
   isHeaderOrFooter
   receiptHeader
   receiptFooter
