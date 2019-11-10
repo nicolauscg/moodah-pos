@@ -38,7 +38,6 @@ const DeleteModal = ({ toggle, isOpen, confirm }) => {
 
 const EditProductCategory = ({
   data,
-
   match,
   deleteState,
   onEditSuccess,
@@ -80,11 +79,6 @@ const EditProductCategory = ({
                       md={6}
                       className="header__item d-flex justify-content-end align-items-center"
                     >
-                      <div className="mr-3">
-                        <Link to="/product_category/list" className="btn btn-primary btn-sm">
-                          Save
-                        </Link>
-                      </div>
                       <Button
                         color="danger"
                         size="sm"
@@ -102,7 +96,10 @@ const EditProductCategory = ({
                   <Row>
                     <Col xs={12}>
                       <Card>
-                        <ProductCategoryForm productcategory={posCategory} />
+                        <ProductCategoryForm
+                          productcategory={posCategory}
+                          handleSubmit={updatePosCategory}
+                        />
                       </Card>
                     </Col>
                   </Row>

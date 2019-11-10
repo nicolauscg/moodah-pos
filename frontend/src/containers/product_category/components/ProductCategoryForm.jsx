@@ -1,7 +1,7 @@
 import React from 'react'
 import {withRouter} from 'react-router-dom'
 
-import { Row, Col } from 'reactstrap'
+import { Row, Col, Button } from 'reactstrap'
 import { withFormik, Form, FastField } from 'formik'
 import { compose } from 'recompose'
 
@@ -34,9 +34,15 @@ const FormContent = ({
             <Row>
               <Col xs={12} md={3}>
                 <div className="dropzone-image-field">
-                  { productcategory.image && (
+                  { productcategory.image ? (
                     <img 
                       src={`data:image/png;base64,${productcategory.image}`}
+                      className=".image-field"
+                      alt="category-pic"
+                    />
+                  ) : (
+                    <img 
+                      src={`${process.env.PUBLIC_URL}/img/pos/categoryPlaceholder.svg`}
                       className=".image-field"
                       alt="category-pic"
                     />
@@ -75,6 +81,9 @@ const FormContent = ({
           </div>
         </Panel>
       </Row>
+      <Button color="primary" size="sm" type="submit">
+        Save
+      </Button>
     </Form>
   )
 }
@@ -116,6 +125,32 @@ const ProductCategoryForm = compose(
         sequence: '',
       }
     },
+    handleSubmit: (values, { props }) => {
+      if (values.name) {
+        props.handleSubmit({
+          context: {
+            clientName: "pos"
+          },
+          variables: {
+            input: {
+              id: values.id,
+              name: values.name,
+              parentId: values.parent ? values.parent.value : null,
+              sequence: parseInt(values.sequence)
+            }
+          }
+        })
+      } else {
+        props.triggerNotif({
+          message:
+            'Product Category Name is required!',
+          type: 'warning',
+        })
+      }
+    },
+    validateOnChange: false,
+    validateOnBlur: false,
+    enableReinitialize: true,
   })
 )(FormContent)
 
