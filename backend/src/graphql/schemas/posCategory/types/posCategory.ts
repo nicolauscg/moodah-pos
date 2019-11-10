@@ -4,10 +4,7 @@ import { globalIdField } from "graphql-relay";
 const PosCategoryParentType = new GraphQLObjectType({
   name: "PosCategoryParent",
   fields: () => ({
-    id: {
-      type: GraphQLInt,
-      resolve: parent => parent[0]
-    },
+    id: globalIdField("pos.category", parent => parent[0]),
     name: {
       type: GraphQLString,
       resolve: parent => parent[1]
@@ -22,15 +19,19 @@ const PosCategoryType = new GraphQLObjectType({
     name: {
       type: GraphQLString
     },
-    image: {
+    displayName: {
       type: GraphQLString
+    },
+    image: {
+      type: GraphQLString,
+      resolve: parent => (parent.image === false ? null : parent.image)
     },
     parent: {
       type: PosCategoryParentType,
-      resolve: parent => parent.parentId
+      resolve: parent => (parent.parentId === false ? null : parent.parentId)
     },
     sequence: {
-      type: GraphQLString
+      type: GraphQLInt
     }
   })
 });

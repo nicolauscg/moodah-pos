@@ -1,11 +1,10 @@
-import { GraphQLObjectType, GraphQLString, GraphQLInt } from "graphql";
+import { GraphQLObjectType, GraphQLString } from "graphql";
+import { globalIdField } from "graphql-relay";
 
 const PaymentMethodType = new GraphQLObjectType({
   name: "PaymentMethod",
   fields: () => ({
-    id: {
-      type: GraphQLInt
-    },
+    id: globalIdField("account.journal"),
     name: {
       type: GraphQLString
     },
@@ -13,10 +12,7 @@ const PaymentMethodType = new GraphQLObjectType({
       type: new GraphQLObjectType({
         name: "PaymentMethod_Company",
         fields: () => ({
-          id: {
-            type: GraphQLInt,
-            resolve: parent => parent[0]
-          },
+          id: globalIdField("res.company", parent => parent[0]),
           name: {
             type: GraphQLString,
             resolve: parent => parent[1]
