@@ -65,7 +65,7 @@ const paginateAndFilterOperationParam = (
   // Add the domain to the paginate param
   const result = {
     ...paginateOperationParam(params, args),
-    domain: filterDomain
+    domain: filterDomain || []
   };
 
   return result;
