@@ -23,7 +23,6 @@ const Table = ({
     loading || !posCategories ? [] : posCategories.records;
   const totalCount = 
     loading || !posCategories ? 0 : posCategories.length;
-  console.log("LIMIT", limit)
 
   return (
     <Fragment>

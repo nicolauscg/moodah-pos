@@ -6,6 +6,7 @@ fragment posCategoryFields on PosCategory {
   parent {
     id
     name
+    displayName
   }
   sequence
 }
