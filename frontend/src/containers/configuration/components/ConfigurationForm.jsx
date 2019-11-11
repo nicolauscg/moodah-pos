@@ -182,6 +182,10 @@ const FormContent = ({
                  <div class="text-muted">
                    Stock location used for the inventory
                  </div>
+
+                 <div>
+                   <FormInput type="text" variant="outlined"/>
+                 </div>
              </div>
             </Col>
 
@@ -225,6 +229,10 @@ const FormContent = ({
 
                  <div class="text-muted">
                    Payment Methods Available
+                 </div>
+
+                 <div>
+                   <FormInput type="text" variant="outlined"/>
                  </div>
              </div>
             </Col>
