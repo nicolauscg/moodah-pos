@@ -3,8 +3,8 @@ fragment posConfigFields on PosConfig {
   name
   active
   stockLocation{
-      id
-      name
+    id
+    name
   }
   ifaceTaxIncluded
   globalDiscount
@@ -14,13 +14,19 @@ fragment posConfigFields on PosConfig {
   }
   discountPc
   usePricelist
-  availablePricelistIds
+  availablePricelists {
+    id
+    name
+  }
   pricelist{
     id
     name
   }
   restrictPriceControl
-  journalIds
+  paymentMethods {
+    id
+    name
+  }
   isHeaderOrFooter
   receiptHeader
   receiptFooter
