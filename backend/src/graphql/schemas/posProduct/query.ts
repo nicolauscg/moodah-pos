@@ -1,4 +1,8 @@
-import { GraphQLObjectType, GraphQLInputObjectType } from "graphql";
+import {
+  GraphQLObjectType,
+  GraphQLInputObjectType,
+  GraphQLString
+} from "graphql";
 import { ApolloError } from "apollo-server-lambda";
 import { camelizeKeys } from "humps";
 
@@ -15,6 +19,7 @@ import posProductFilter from "./filter";
 import { CategoryType } from "./types/category";
 import { paginateOperationParam } from "../utility/paginate";
 import { GlobalIdInput } from "../utility/types/globalIdInput";
+import { FilterableAndPagableInputType } from "../utility/types/FilterableAndPageableInputType";
 
 const posProductQueries = new GraphQLObjectType({
   name: "posProductQueries",
@@ -23,7 +28,19 @@ const posProductQueries = new GraphQLObjectType({
       type: PaginateType(PosProductType),
       args: {
         input: {
-          type: PagableInputType,
+          type: FilterableAndPagableInputType(
+            new GraphQLInputObjectType({
+              name: "PosProductsInput",
+              fields: () => ({
+                name: {
+                  type: GraphQLString
+                },
+                barcode: {
+                  type: GraphQLString
+                }
+              })
+            })
+          ),
           defaultValue: {
             first: 10,
             offset: 0
