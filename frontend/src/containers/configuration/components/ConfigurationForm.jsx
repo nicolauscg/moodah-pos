@@ -231,7 +231,9 @@ const FormContent = ({
                    Payment Methods Available
                  </div>
 
-                 
+                 <div>
+                   <FormInput type="text" variant="outlined"/>
+                 </div>
              </div>
             </Col>
       </Row>
