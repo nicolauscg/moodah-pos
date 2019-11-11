@@ -15,15 +15,15 @@ import Modal from '../../../shared/components/form-custom/Modal'
 const RemoveImageModal = ({ toggle, isOpen, confirm }) => {
   return (
     <Modal
-      type="dialog"
-      title="Remove Product Category Image"
-      body="Are you sure you want to remove this image?"
+      type='dialog'
+      title='Remove Product Category Image'
+      body='Are you sure you want to remove this image?'
       action={
         <Fragment>
-          <Button color="primary" size="sm" onClick={confirm}>
+          <Button color='primary' size='sm' onClick={confirm}>
             Yes
           </Button>
-          <Button color="danger" size="sm" onClick={toggle}>
+          <Button color='danger' size='sm' onClick={toggle}>
             No
           </Button>
         </Fragment>
@@ -47,13 +47,13 @@ const ImageField = ({
       <Fragment>
           <img
             src={`data:image/png;base64,${imageField}`}
-            className=".image-field"
-            alt="category-pic"
+            className='.image-field'
+            alt='category-pic'
           />
-          <Button color="warning" size="sm" onClick={() => setIsInUpdateImage(true)}>
+          <Button color='warning' size='sm' onClick={() => setIsInUpdateImage(true)}>
             Change
           </Button>
-          <Button color="danger" size="sm" onClick={toggleRemoveImage}>
+          <Button color='danger' size='sm' onClick={toggleRemoveImage}>
             Remove
           </Button>
       </Fragment>
@@ -69,7 +69,7 @@ const ImageField = ({
           }}  
         />
         {isInUpdateImage && (
-          <Button color="danger" size="sm" onClick={() => setIsInUpdateImage(false)}>
+          <Button color='danger' size='sm' onClick={() => setIsInUpdateImage(false)}>
             Cancel
           </Button>
         )}
@@ -86,6 +86,7 @@ const FormContent = ({
   toggleRemoveImage,
   removeImageModalIsOpen,
   removeImageConfirm,
+  refetchParents,
   ...props
 }) => {
   return(
@@ -98,10 +99,10 @@ const FormContent = ({
       <Row>
         <Panel
           xs ={12}
-          title="Product Category"
+          title='Product Category'
           isForm
         >
-          <div className="material-form">
+          <div className='material-form'>
             <Row>
               <Col xs={12} md={3}>
                 <ImageField toggleRemoveImage={toggleRemoveImage} {...props} />
@@ -109,8 +110,8 @@ const FormContent = ({
               <Col xs={12} md={5}>
                 <FastField
                   required
-                  label = "Product Category Name"
-                  name="name"
+                  label = 'Product Category Name'
+                  name='name'
                   onFocus = {onInputFocus}
                   component={FormikInput}
                 />
@@ -118,18 +119,19 @@ const FormContent = ({
                   dataState={!parents.loading ? 
                     parents.posCategories.records.map(({id, displayName})=>(
                       {label: displayName, value: id}
-                    )).concat({label: "Clear Parent Category", value: null}) : 
+                    )).concat({label: 'Clear Parent Category', value: null}) : 
                     []
                   }
-                  field="parent"
-                  label="Parent Category"
+                  field='parent'
+                  label='Parent Category'
+                  refetch={refetchParents}
                   onFocus={onInputFocus}
                   queryKey={[]}
-                  hasMoreKey={[]}
+                  hasMoreKey={['parents']}
                 />
                 <FastField
-                  label = "Sequence"
-                  name="sequence"
+                  label = 'Sequence'
+                  name='sequence'
                   onFocus = {onInputFocus}
                   component={FormikInput}
                 />
@@ -138,7 +140,7 @@ const FormContent = ({
           </div>
         </Panel>
       </Row>
-      <Button color="primary" size="sm" type="submit">
+      <Button color='primary' size='sm' type='submit'>
         Save
       </Button>
       <RemoveImageModal
@@ -153,27 +155,30 @@ const FormContent = ({
 const ProductCategoryForm = compose(
   withRouter,
   PosCategories.HOC({
-    name: "parents",
-    options: () => ({
+    name: 'parents',
+    options: ({
+      parentFilters
+    }) => ({
       context: {
-        clientName: "pos"
+        clientName: 'pos'
       },
       variables: {
-        filters: {},
+        filters: parentFilters,
         offset: 0,
-        limit: 20
+        limit: 10
       }
     })
   }),
-  withState("isInUpdateImage", "setIsInUpdateImage", false),
+  withState('isInUpdateImage', 'setIsInUpdateImage', false),
   withState(
-    "imageField",
-    "setImageField",
+    'imageField',
+    'setImageField',
     ({ productcategory }) => productcategory !== undefined && !productcategory.loading ? 
       productcategory.posCategory.image :
       null
   ),
-  withState("removeImageModalIsOpen", "setRemoveImageModalIsOpen", false),
+  withState('removeImageModalIsOpen', 'setRemoveImageModalIsOpen', false),
+  withState('parentFilters', 'setParentFilters', {}),
   withHandlers({
     toggleUpdatingImageState: ({ isInUpdateImage, setIsInUpdateImage }) => 
       () => setIsInUpdateImage(!isInUpdateImage),
@@ -184,6 +189,11 @@ const ProductCategoryForm = compose(
     removeImageConfirm: ({ setImageField, toggleRemoveImage }) => () => {
       setImageField(null);
       toggleRemoveImage();
+    },
+    refetchParents: ({ setParentFilters }) => input => {
+      setParentFilters({
+        OR: [{ 'name': input }]
+      })
     },
   }),
   withFormik({
@@ -212,7 +222,7 @@ const ProductCategoryForm = compose(
       if (values.name) {
         props.handleSubmit({
           context: {
-            clientName: "pos"
+            clientName: 'pos'
           },
           variables: {
             input: {
@@ -226,8 +236,7 @@ const ProductCategoryForm = compose(
         })
       } else {
         props.triggerNotif({
-          message:
-            'Product Category Name is required!',
+          message: 'Product Category Name is required!',
           type: 'warning',
         })
       }
