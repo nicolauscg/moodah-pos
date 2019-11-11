@@ -97,7 +97,7 @@ const EditProductCategory = ({
                     <Col xs={12}>
                       <Card>
                         <ProductCategoryForm
-                          productcategory={posCategory}
+                          productcategory={data}
                           handleSubmit={updatePosCategory}
                         />
                       </Card>

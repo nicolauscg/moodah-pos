@@ -1,22 +1,93 @@
-import React from 'react'
+import React, { Fragment } from 'react'
 import {withRouter} from 'react-router-dom'
 
+import { DropzoneGQL } from '../../../shared/components/Dropzone.jsx'
 import { Row, Col, Button } from 'reactstrap'
 import { withFormik, Form, FastField } from 'formik'
-import { compose } from 'recompose'
+import { compose, withState, withHandlers } from 'recompose'
 
 import { PosCategories } from '../../../generated-pos-models'
 import Panel from '../../../shared/components/Panel'
 import FormikInput from '../../../shared/components/formik/TextInput'
 import Select from '../../../shared/components/form-custom/DynamicSelect'
+import Modal from '../../../shared/components/form-custom/Modal'
+
+const RemoveImageModal = ({ toggle, isOpen, confirm }) => {
+  return (
+    <Modal
+      type="dialog"
+      title="Remove Product Category Image"
+      body="Are you sure you want to remove this image?"
+      action={
+        <Fragment>
+          <Button color="primary" size="sm" onClick={confirm}>
+            Yes
+          </Button>
+          <Button color="danger" size="sm" onClick={toggle}>
+            No
+          </Button>
+        </Fragment>
+      }
+      toggle={toggle}
+      isOpen={isOpen}
+      centered
+    />
+  )
+}
+
+const ImageField = ({
+  imageField,
+  setImageField,
+  isInUpdateImage,
+  toggleRemoveImage,
+  setIsInUpdateImage
+}) => {
+  if (!isInUpdateImage && imageField) {
+    return (
+      <Fragment>
+          <img
+            src={`data:image/png;base64,${imageField}`}
+            className=".image-field"
+            alt="category-pic"
+          />
+          <Button color="warning" size="sm" onClick={() => setIsInUpdateImage(true)}>
+            Change
+          </Button>
+          <Button color="danger" size="sm" onClick={toggleRemoveImage}>
+            Remove
+          </Button>
+      </Fragment>
+    )
+  } else {
+    return (
+      <Fragment>
+        <DropzoneGQL
+          loading={false}
+          uploader={(encodedImage) => {
+            setImageField(encodedImage);
+            setIsInUpdateImage(false);
+          }}  
+        />
+        {isInUpdateImage && (
+          <Button color="danger" size="sm" onClick={() => setIsInUpdateImage(false)}>
+            Cancel
+          </Button>
+        )}
+      </Fragment>
+    )
+  }
+}
 
 const FormContent = ({
   onInputFocus,
   handleSubmit,
   parents,
-  productcategory
+  productcategory,
+  toggleRemoveImage,
+  removeImageModalIsOpen,
+  removeImageConfirm,
+  ...props
 }) => {
-
   return(
     <Form
       onSubmit={e => {
@@ -33,21 +104,7 @@ const FormContent = ({
           <div className="material-form">
             <Row>
               <Col xs={12} md={3}>
-                <div className="dropzone-image-field">
-                  { productcategory && productcategory.image ? (
-                    <img 
-                      src={`data:image/png;base64,${productcategory.image}`}
-                      className=".image-field"
-                      alt="category-pic"
-                    />
-                  ) : (
-                    <img 
-                      src={`${process.env.PUBLIC_URL}/img/pos/categoryPlaceholder.svg`}
-                      className=".image-field"
-                      alt="category-pic"
-                    />
-                  )}
-                </div>
+                <ImageField toggleRemoveImage={toggleRemoveImage} {...props} />
               </Col>
               <Col xs={12} md={5}>
                 <FastField
@@ -61,7 +118,7 @@ const FormContent = ({
                   dataState={!parents.loading ? 
                     parents.posCategories.records.map(({id, displayName})=>(
                       {label: displayName, value: id}
-                    )) : 
+                    )).concat({label: "Clear Parent Category", value: null}) : 
                     []
                   }
                   field="parent"
@@ -84,6 +141,11 @@ const FormContent = ({
       <Button color="primary" size="sm" type="submit">
         Save
       </Button>
+      <RemoveImageModal
+        toggle={toggleRemoveImage}
+        isOpen={removeImageModalIsOpen}
+        confirm={removeImageConfirm}
+      />
     </Form>
   )
 }
@@ -103,17 +165,38 @@ const ProductCategoryForm = compose(
       }
     })
   }),
+  withState("isInUpdateImage", "setIsInUpdateImage", false),
+  withState(
+    "imageField",
+    "setImageField",
+    ({ productcategory }) => productcategory !== undefined && !productcategory.loading ? 
+      productcategory.posCategory.image :
+      null
+  ),
+  withState("removeImageModalIsOpen", "setRemoveImageModalIsOpen", false),
+  withHandlers({
+    toggleUpdatingImageState: ({ isInUpdateImage, setIsInUpdateImage }) => 
+      () => setIsInUpdateImage(!isInUpdateImage),
+    toggleRemoveImage: ({ removeImageModalIsOpen, setRemoveImageModalIsOpen }) =>
+      () => setRemoveImageModalIsOpen(!removeImageModalIsOpen)
+  }),
+  withHandlers({
+    removeImageConfirm: ({ setImageField, toggleRemoveImage }) => () => {
+      setImageField(null);
+      toggleRemoveImage();
+    },
+  }),
   withFormik({
     mapPropsToValues: props => {
-      const { productcategory } = props;
-      if (productcategory) {
+      const { productcategory: { posCategory } } = props;
+      if (posCategory) {
         return {
-          ...productcategory,
-          parent: productcategory.parent ?
+          ...posCategory,
+          parent: posCategory.parent ?
             ({
-              ...productcategory.parent,
-              label: productcategory.parent.displayName,
-              value: productcategory.parent.id
+              ...posCategory.parent,
+              label: posCategory.parent.displayName,
+              value: posCategory.parent.id
             }) :
             null
         };
@@ -135,6 +218,7 @@ const ProductCategoryForm = compose(
             input: {
               id: values.id,
               name: values.name,
+              image: props.imageField,
               parentId: values.parent ? values.parent.value : null,
               sequence: parseInt(values.sequence)
             }
