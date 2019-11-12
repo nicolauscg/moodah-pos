@@ -199,7 +199,7 @@ const ProductCategoryForm = compose(
   withFormik({
     mapPropsToValues: props => {
       const { productcategory } = props;
-      const posCategory = productcategory !== undefined && productcategory.loading ? 
+      const posCategory = productcategory !== undefined && !productcategory.loading ? 
         productcategory.posCategory : null
 
       if (posCategory) {
