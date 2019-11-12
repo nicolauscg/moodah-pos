@@ -1,0 +1,63 @@
+fragment posCategoryFields on PosCategory {
+  id
+  name
+  displayName
+  image
+  parent {
+    id
+    name
+    displayName
+  }
+  sequence
+}
+
+query PosCategories(
+  $filters: FilterablePosCategoriesInput_where,
+  $limit: Int,
+  $offset: Int
+) {
+  posCategories(input: {
+    where: $filters,
+    first: $limit,
+    offset: $offset
+  }) {
+    length
+    records {
+      id
+      displayName
+    }
+  }
+}
+
+query PosCategory($input: PosCategoryInput!) {
+  posCategory(input: $input) {
+    ...posCategoryFields
+  }
+}
+
+mutation CreatePosCategory($input: CreateOrUpdatePosCategoryInput!) {
+  createPosCategory(input: $input) {
+    id
+    posCategory {
+      ...posCategoryFields
+    }
+  }
+}
+
+mutation UpdatePosCategory($input: CreateOrUpdatePosCategoryInput!) {
+  updatePosCategory(input: $input) {
+    success
+    posCategory {
+      ...posCategoryFields
+    }
+  }
+}
+
+mutation DeletePosCategory($input: DeletePosCategoryInputType!){
+  deletePosCategory(input: $input){
+    success
+    posCategory {
+      ...posCategoryFields
+    }
+  }
+}

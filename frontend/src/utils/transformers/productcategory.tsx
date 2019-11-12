@@ -2,6 +2,6 @@
 // Constants
 // ====================================================
 export const ProductCategoryColumns = [
-  { name: 'posname', title: 'Display Name' },
+  { name: 'displayName', title: 'Display Name' },
 ]
 
