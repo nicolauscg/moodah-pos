@@ -19,6 +19,7 @@ import withStandardPlanHandler from '../../shared/components/withStandardPlanHan
 
 import ProductCategoryIndex from '../product_category/index'
 import ConfigurationIndex from '../configuration/index'
+import CreateConfigurationPage from '../configuration/CreateConfiguration'
 import CreateProductCategory from '../product_category/CreateProductCategory'
 import EditProductCategory from '../product_category/EditProductCategory'
 
@@ -50,7 +51,15 @@ const RouteList = {
       {
         path: '/configuration/list',
         component: ConfigurationIndex,
-      }
+      },
+      {
+        path: '/configuration/create',
+        component: CreateConfigurationPage,
+      },
+      /*{
+        path: '/configuration/details/:id',
+        component: EditConfiguration,
+      },*/
     ],
   },
 
