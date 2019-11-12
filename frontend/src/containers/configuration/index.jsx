@@ -88,7 +88,7 @@ const ConfigurationIndex = ({
            />
 
           <Link
-          to={`/configuration/list`}
+          to={`/configuration/create`}
           className="btn btn-primary btn-sm"
           >
           Buat Baru

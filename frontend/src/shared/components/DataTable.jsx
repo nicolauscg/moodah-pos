@@ -149,7 +149,7 @@ const colorType = {
 }
 
 const getColor = stateVals => {
-  let state = stateVals.toLowerCase()
+  let state = String(stateVals).toLowerCase()
   let color = colorType['gray']
 
   if (
