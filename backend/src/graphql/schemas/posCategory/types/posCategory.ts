@@ -1,5 +1,8 @@
 import { GraphQLObjectType, GraphQLString, GraphQLInt } from "graphql";
 import { globalIdField } from "graphql-relay";
+import { configureService, getDataSet } from "../../utility/nodoo";
+import { ApolloError } from "apollo-server-core";
+import { camelizeKeys } from "humps";
 
 const PosCategoryParentType = new GraphQLObjectType({
   name: "PosCategoryParent",
@@ -8,6 +11,30 @@ const PosCategoryParentType = new GraphQLObjectType({
     name: {
       type: GraphQLString,
       resolve: parent => parent[1]
+    },
+    displayName: {
+      type: GraphQLString,
+      resolve: (parent, _0, context) =>
+        new Promise((res, rej) => {
+          configureService({
+            operation: getDataSet({
+              context
+            }).createRead({
+              modelName: "pos.category",
+              ids: [parent[0]],
+              fields: ["display_name"]
+            }),
+            onError: error => {
+              rej(
+                new ApolloError("Application Error", "APPLICATION_ERROR", {
+                  errorMessage: error.message
+                })
+              );
+            },
+            onResult: result =>
+              res((camelizeKeys(result[0]) as any).displayName)
+          });
+        })
     }
   })
 });
