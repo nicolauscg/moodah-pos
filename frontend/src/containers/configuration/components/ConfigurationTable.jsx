@@ -2,6 +2,10 @@ import React, { Fragment } from 'react'
 import { compose, withHandlers } from 'recompose'
 import { withRouter } from 'react-router-dom'
 
+import classnames from 'classnames'
+import Skeleton from 'react-loading-skeleton'
+import NumberFormat from 'react-number-format'
+
 import { PosConfigs } from '../../../generated-pos-models'
 
 import { ConfigurationColumns } from '../../../utils/transformers/configuration'
