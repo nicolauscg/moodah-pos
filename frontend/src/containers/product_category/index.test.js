@@ -13,4 +13,5 @@ it('renders index without crashing', () => {
     </Router>
   , div);
   ReactDOM.unmountComponentAtNode(div);
+  console.log(div);
 });
