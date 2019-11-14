@@ -244,6 +244,17 @@ const ProductCategoryForm = compose(
         })
       }
     },
+    validate: values => {
+      let errors = {}
+      if (!values.name) {
+        errors.name = "Name is required"
+      }
+      if (isNaN(values.sequence)) {
+        errors.sequence = "Sequence should be a number"
+      }
+
+      return errors
+    },
     validateOnChange: false,
     validateOnBlur: false,
     enableReinitialize: true,
