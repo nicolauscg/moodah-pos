@@ -16,6 +16,11 @@ import EditPartner from '../partners/EditPartner'
 import AccountSettings from '../account_settings/index'
 import withTracker from '../../shared/components/withTracker'
 import withStandardPlanHandler from '../../shared/components/withStandardPlanHandler'
+<<<<<<< Updated upstream
+=======
+import ProductCategoryIndex from '../product_category/index' // Routing Product Category
+import DashboardIndex from '../dashboard/index'
+>>>>>>> Stashed changes
 
 import ProductCategoryIndex from '../product_category/index'
 import ConfigurationIndex from '../configuration/index'
@@ -81,6 +86,17 @@ const RouteList = {
         },
       ],
   },
+
+  Dashboard: {
+        path: '/dashboard',
+        title: 'Dashboard',
+        component: [
+          {
+            path: '/dashboard/list',
+            component: DashboardIndex,
+          },
+        ],
+    },
 
   AccountSettings: {
     path: '/account_settings',

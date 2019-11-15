@@ -14,4 +14,9 @@ export default {
       route: '/product_category/list',
       icon: 'product',
     },
+    'moodah_general_menu.menu_dashboard2': {
+      name: 'Dashboard',
+      route: '/dashboard/list',
+      icon: 'dasbor',
+    },
 }
