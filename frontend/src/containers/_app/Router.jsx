@@ -17,14 +17,16 @@ import AccountSettings from '../account_settings/index'
 import withTracker from '../../shared/components/withTracker'
 import withStandardPlanHandler from '../../shared/components/withStandardPlanHandler'
 
-import ProductCategoryIndex from '../product_category/index' // Routing Product Category
 import DashboardIndex from '../dashboard/index'
 
-import ConfigurationIndex from '../configuration/index'
-import CreateConfigurationPage from '../configuration/CreateConfiguration'
+import ProductCategoryIndex from '../product_category/index' // Routing Product Category
 import CreateProductCategory from '../product_category/CreateProductCategory'
 import EditProductCategory from '../product_category/EditProductCategory'
 
+import CreateProduct from '../product/CreateProduct'
+
+import ConfigurationIndex from '../configuration/index'
+import CreateConfigurationPage from '../configuration/CreateConfiguration'
 
 const RouteList = {
   Partners: {
@@ -73,7 +75,7 @@ const RouteList = {
           path: '/product_category/list',
           component: ProductCategoryIndex,
         },
-         {
+        {
           path: '/product_category/create',
           component: CreateProductCategory,
         },
@@ -83,6 +85,25 @@ const RouteList = {
         },
       ],
   },
+
+  Product: {
+      path: '/product',
+      title: 'Product',
+      component: [
+        /*{
+          path: '/product/list',
+          component: ProductIndex,
+        },*/
+        {
+          path: '/product/create',
+          component: CreateProduct,
+        },
+        /*{
+          path: '/product/details/:id',
+          component: EditProduct,
+        },*/
+        ],
+    },
 
   Dashboard: {
         path: '/dashboard',
