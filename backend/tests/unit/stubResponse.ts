@@ -1,11 +1,12 @@
+import { toGlobalId } from "graphql-relay";
+
 export const posCategory = {
-  globalIdType: "pos.category",
-  id: 82,
+  id: toGlobalId("pos.category", String(82)),
   name: "Appetizer",
   displayName: "Food Menu / Appetizer",
   image: "64encodedImage",
   parent: {
-    id: 80,
+    id: toGlobalId("pos.category", String(80)),
     name: "Food Menu",
     displayName: "Food Menu"
   },

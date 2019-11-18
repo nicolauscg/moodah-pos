@@ -1,5 +1,4 @@
 import { createTestClient } from "apollo-server-testing";
-import { toGlobalId } from "graphql-relay";
 import { right } from "fp-ts/lib/Either";
 import { decamelizeKeys } from "humps";
 import xs from "xstream";
@@ -14,22 +13,13 @@ beforeEach(() => {
   stubbedCreateService.mockReset();
 });
 
-describe("Stub category tests", () => {
-  const completePosCategoryObject = {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    ...(({ globalIdType, ...rest }) => rest)(posCategory),
-    id: toGlobalId(posCategory.globalIdType, String(posCategory.id)),
-    parent: {
-      ...posCategory.parent,
-      id: toGlobalId(posCategory.globalIdType, String(posCategory.parent.id))
-    }
-  };
+describe("Category stub tests", () => {
   const simplePosCategoryObject = (({ id, name }) => ({
     id,
     name
-  }))(completePosCategoryObject);
+  }))(posCategory);
 
-  describe("query tests", () => {
+  describe("query", () => {
     it("test query all return correct value", async () => {
       stubbedCreateService
         .mockReturnValueOnce(
@@ -46,7 +36,7 @@ describe("Stub category tests", () => {
       })).data.posCategories;
 
       expect(result.length).toEqual(stubResponse.queryAll.records.length);
-      expect(result.records).toContainEqual(completePosCategoryObject);
+      expect(result.records).toContainEqual(posCategory);
     });
 
     it("test query read return correct value", async () => {
@@ -64,11 +54,11 @@ describe("Stub category tests", () => {
         query: posCategoryRequests.GET_READ_POS_CATEGORY
       })).data.posCategory;
 
-      expect(result).toEqual(completePosCategoryObject);
+      expect(result).toEqual(posCategory);
     });
   });
 
-  describe("Stub test mutation", () => {
+  describe("mutation", () => {
     it("test mutation create return correct value", async () => {
       stubbedCreateService
         .mockReturnValueOnce(
