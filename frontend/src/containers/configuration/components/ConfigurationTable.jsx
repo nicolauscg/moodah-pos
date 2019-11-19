@@ -2,9 +2,9 @@ import React, { Fragment } from 'react'
 import { compose, withHandlers } from 'recompose'
 import { withRouter } from 'react-router-dom'
 
-import classnames from 'classnames'
-import Skeleton from 'react-loading-skeleton'
-import NumberFormat from 'react-number-format'
+// import classnames from 'classnames'
+// import Skeleton from 'react-loading-skeleton'
+// import NumberFormat from 'react-number-format'
 
 import { PosConfigs } from '../../../generated-pos-models'
 
@@ -26,15 +26,20 @@ const Table = ({
   const { loading, posConfigs } = data;
   const rows = loading || !posConfigs ? [] : posConfigs.records;
   const totalCount = loading || !posConfigs ? 0 : posConfigs.length;
-
+  console.log(rows)
+  console.log("test")
   return (
     <Fragment>
       <DataTable
-        rows={rows}
+        rows={rows.map(el => ({
+          id:el.id,
+          name: el.name,
+          stockLocation: el.stockLocation.name
+        }))}
         columns={ConfigurationColumns}
         totalCount={totalCount}
         defaultSorting={[{ columnName: 'displayName', direction: 'asc' }]}
-        offset={offset}
+        offset={offset} 
         limit={limit}
         handlePageChange={handlePageChange}
         tableColumnExtensions={tableColumnExtensions}
