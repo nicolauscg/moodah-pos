@@ -26,8 +26,7 @@ const Table = ({
   const { loading, posConfigs } = data;
   const rows = loading || !posConfigs ? [] : posConfigs.records;
   const totalCount = loading || !posConfigs ? 0 : posConfigs.length;
-  console.log(rows)
-  console.log("test")
+  
   return (
     <Fragment>
       <DataTable
