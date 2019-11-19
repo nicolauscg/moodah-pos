@@ -98,6 +98,20 @@ const PosProductType = new GraphQLObjectType({
     reorderingRules: {
       type: GraphQLInt,
       resolve: parent => parent.nbrReorderingRules
+    },
+    posCategId: {
+      type: new GraphQLObjectType({
+        name: "PosProduct_PosCategId",
+        fields: () => ({
+          id: globalIdField("product.posCategId", parent => parent[0]),
+          name: {
+            type: GraphQLString,
+            resolve: parent => parent[1]
+          }
+        })
+      }),
+      resolve: parent =>
+        parent.posCategId === false ? null : parent.posCategId
     }
   })
 });

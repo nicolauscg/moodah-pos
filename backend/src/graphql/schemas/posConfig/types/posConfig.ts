@@ -175,7 +175,7 @@ const PosConfigType = new GraphQLObjectType({
       type: new GraphQLObjectType({
         name: "PosConfig_CurrentSessionId",
         fields: () => ({
-          id: globalIdField("product.pricelist", parent => parent[0]),
+          id: globalIdField("product.currentSessionId", parent => parent[0]),
           name: {
             type: GraphQLString,
             resolve: parent => parent[1]
