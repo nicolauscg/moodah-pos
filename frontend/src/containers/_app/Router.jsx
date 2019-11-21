@@ -82,6 +82,26 @@ const RouteList = {
       ],
   },
 
+  Session: {
+        path: '/pos_session',
+        title: 'POS Session',
+        /*component: [
+          {
+            path: '/pos_session/session_1',
+            component: Session1,
+          },
+           {
+            path: '/pos_session/session_2',
+            component: Session2,
+          },
+          {
+            path: '/pos_session/session_3/:id',
+            component: Session3,
+          },
+        ],*/
+    },
+
+
   AccountSettings: {
     path: '/account_settings',
     component: [

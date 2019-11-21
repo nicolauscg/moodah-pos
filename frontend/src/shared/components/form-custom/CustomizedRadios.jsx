@@ -75,9 +75,9 @@ function StyledRadio(props) {
 export default function CustomizedRadios() {
   return (
     <FormControl component="fieldset">
-      <RadioGroup defaultValue="female" aria-label="gender" name="customized-radios">
-        <FormControlLabel value="female" control={<StyledRadio />} label="Tax Included" />
-        <FormControlLabel value="male" control={<StyledRadio />} label="Tax Excluded" />
+      <RadioGroup defaultValue="" aria-label="gender" name="customized-radios">
+        <FormControlLabel value="" control={<StyledRadio />} label="Tax Included" />
+        <FormControlLabel value="" control={<StyledRadio />} label="Tax Excluded" />
       </RadioGroup>
     </FormControl>
   );

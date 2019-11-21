@@ -61,7 +61,7 @@ class SidebarContent extends Component {
 
     const availableMenus =
       [
-        /*{
+        {
             action: "",
             children: [],
             id: "",
@@ -90,7 +90,7 @@ class SidebarContent extends Component {
           sequence: 2,
           xmlid: "moodah_general_menu.menu_productcategory",
           __typename: "IrUiMenuType",
-        }*/
+        }
       ]
 
     const menus = availableMenus.filter(
