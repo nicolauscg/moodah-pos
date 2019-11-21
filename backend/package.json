@@ -11,7 +11,8 @@
     "lint:all": "eslint . --ext .js,.jsx,.ts,.tsx",
     "lint:graphql": "eslint src/**/*.ts handler.ts",
     "gen-docs": "rm -rf ./doc/schema && graphdoc -e http://localhost:3001/graphql -o ./doc/schema",
-    "deploy-docs-netlify": "npm run gen-docs && netlify deploy --prod --dir doc/schema"
+    "deploy-docs-netlify": "npm run gen-docs && netlify deploy --prod --dir doc/schema",
+    "deploy-gql-stag": "serverless deploy function --function graphql --stage stag --ENGINE_API_KEY $ENGINE_API_KEY && serverless deploy function --function playground --stage stag --ENGINE_API_KEY $ENGINE_API_KEY && serverless deploy function --function graphql-introspect --stage stag --ENGINE_API_KEY $ENGINE_API_KEY"
   },
   "dependencies": {
     "@types/graphql-relay": "^0.4.11",
