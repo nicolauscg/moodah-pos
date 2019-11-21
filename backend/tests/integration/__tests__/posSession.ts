@@ -37,6 +37,10 @@ describe("Query", () => {
       "cG9zLnNlc3Npb246MQ=="
     );
     const res = await query({ query: GET_POS_SESSION });
-    expect(res.data.resUser).not.toBeNull();
+    // eslint-disable-next-line no-unused-expressions
+    expect(res.data.resUser).not.toBeNull() &&
+      expect(res.data.resUser.company).not.toBeNull() &&
+      expect(res.data.resUser.company.id).not.toBeNull() &&
+      expect(res.data.resUser.company.name).not.toBeNull();
   });
 });
