@@ -1,248 +1,384 @@
 import React, { Fragment } from 'react'
 import { withRouter } from 'react-router-dom'
 import { prop } from 'ramda'
-import { connect } from 'react-redux'
-import { TextField } from '@material-ui/core';
-import { FormControlLabel } from '@material-ui/core';
 
-import { Row, Col, Button } from 'reactstrap'
-import StickyBox from 'react-sticky-box'
-import { withFormik, Form, FastField, Field } from 'formik'
+import { Row, Col } from 'reactstrap'
+import { withFormik, Form, FastField } from 'formik'
 import {
   compose,
   withState,
   withHandlers,
-  withStateHandlers,
   withPropsOnChange,
 } from 'recompose'
 
-import {
-  preparePartnerFormMasters,
-  prepareCountryStates,
-  transformPartnerForm,
-  prepareCountries,
-} from '../../../utils/transformers/partner'
-import { addNotif } from '../../../redux/modules/general'
-import {
-  PartnerFormQuery,
-  ResCountries,
-  ResCountryStates,
-} from '../../../generated-models'
+import { prepareAvailablePricelists, prepareDefaultPricelists } from '../../../utils/transformers/configuration'
+import { PosProductsSelect, AvailablePricelistsSelect } from '../../../generated-pos-models'
 
 import Panel from '../../../shared/components/Panel'
 import FormikInput from '../../../shared/components/formik/TextInput'
 import FormCheckbox from '../../../shared/components/form-custom/FormCheckbox'
 import FormikCheckbox from '../../../shared/components/formik/Checkbox'
 import Select from '../../../shared/components/form-custom/DynamicSelect'
-import CustomizedRadios from '../../../shared/components/form-custom/CustomizedRadios'
+import RadioSelect from '../../../shared/components/form-custom/CustomizedRadios'
+import { prepareProducts } from '../../../utils/transformers/product'
 
 
 import FormInput from '../../../shared/components/form-custom/FormInput'
 
-const InputAddress = ({ disabled, ...props }) =>
-  disabled ? (
-    <FastField {...props} disabled={disabled} component={FormikInput} />
-  ) : (
-    <FastField {...props} component={FormikInput} />
-  )
-
 const FormContent = ({
-    onInputFocus,
-    handleSubmit,
-    copyGeneral,
-    setGeneralAsShipping
+  onInputFocus,
+  handleSubmit,
+  copyGeneral,
+  setGeneralAsShipping,
+  values,
+  products,
+  refetchProducts,
+  globalDiscount,
+  setGlobalDiscount,
+  availablePricelists,
+  defaultPricelists
 }) => {
-    return (
-    <div aria-busy="false">
+  return (
+    <Form
+      onSubmit={e => {
+        e.stopPropagation()
+        handleSubmit(e)
+      }}
+    >
       <Row>
-            <Col md={4}>
-              <FormInput label="Point of Sale Name" defaultValue="Dummy" type="text" variant="outlined" />
-
-              <div className="material-form">
-               <FormCheckbox
-                 FormLabelProps={{
-                  label: 'Category Products',
-                 }}
-                 name="copyGeneral"
-                 CheckboxProps={{
-                  checked: copyGeneral,
-                  onChange: setGeneralAsShipping,
-                 }}
-                 />
-
-
-                 <div className="text-muted">
-                   Display pictures of product categories
-                 </div>
-               </div>
-               <div className="material-form">
+        <Panel
+          xs={12}
+          title='Product Category'
+          isForm
+        >
+          <div className="material-form">
+            <Row>
+              <Col xs={6}>
+                <FastField
+                  required
+                  label="Point of Sale Name"
+                  name="name"
+                  onFocus={onInputFocus}
+                  component={FormikInput}
+                  variant="outlined"
+                />
+              </Col>
+            </Row>
+            <Row>
+              <Col xs={4}>
                 <FormCheckbox
                   FormLabelProps={{
-                   label: 'Pricelist',
+                    label: (
+                      <div className="text-muted">
+                        Category Products<br />
+                        Display pictures of product categories
+                      </div>
+                    ),
                   }}
-                  name="copyGeneral"
                   CheckboxProps={{
-                   checked: copyGeneral,
-                   onChange: setGeneralAsShipping,
+                    disabled: true,
+                    checked: true
                   }}
                 />
-
-                  <div className="text-muted">
-                    Set shop-specific prices, seasonal discounts, etc.
-                  </div>
-
-                  <div>
-                    <FormInput type="text" variant="outlined"/>
-                  </div>
-
-                  <div>
-                    <FormInput type="text" variant="outlined"/>
-                  </div>
-               </div>
-            </Col>
-
-            <Col md={4}>
-             <div>
-               <div className="material-form">
-                 <FormCheckbox
-                   FormLabelProps={{
-                    label: 'Product Price',
-                   }}
-
-                   name="copyGeneral"
-                   CheckboxProps={{
-                    checked: copyGeneral,
-                    onChange: setGeneralAsShipping,
-                   }}
-                   />
-                   <div class="text-muted">
-                     Product prices on receipts
-                   </div>
-
-                   <div>
-                     <CustomizedRadios />
-                   </div>
-               </div>
-             </div>
-
-
-
-               <div className="material-form">
-                 <FormCheckbox
-                   FormLabelProps={{
+              </Col>
+              <Col xs={4}>
+                <RadioSelect 
+                  name="ifaceTaxIncluded"
+                  label={(
+                    <div>
+                      Product Price<br />
+                      Product prices on receipts
+                    </div>
+                  )}
+                  options={[
+                    {
+                      label: "Tax Included",
+                      value: "subtotal"
+                    },
+                    {
+                      label: "Tax Excluded",
+                      value: "total"
+                    },
+                  ]}
+                  values={values}
+                />
+              </Col>
+              <Col md={4}>
+                <FastField
+                  name="globalDiscount"
+                  FormLabelProps={{
+                    label: (
+                      <div>
+                        Global Discount<br />
+                        Allow global discounts on orders
+                      </div>
+                    )
+                  }}
+                  component={FormikCheckbox}
+                />
+                {values.globalDiscount && (
+                  <Fragment>
+                    <Select
+                      dataState={products}
+                      field='product'
+                      label='Discount Product'
+                      refetch={refetchProducts}
+                      onFocus={onInputFocus}
+                      queryKey={['posProducts', 'records']}
+                    />
+                    <FastField
+                      label='Discount'
+                      name='discountPc'
+                      onFocus={onInputFocus}
+                      component={FormikInput}
+                    />
+                  </Fragment>
+                )}
+              </Col>
+            </Row>
+            <Row>
+              <Col xs={4}>
+                <FastField
+                  name="usePricelist"
+                  FormLabelProps={{
+                    label: (
+                      <div>
+                        Pricelist<br />
+                        Set shop-specific prices, seasonal discounts, etc.
+                      </div>
+                    )
+                  }}
+                  component={FormikCheckbox}
+                />
+                {values.usePricelist && (
+                  <Fragment>
+                    <Select
+                      dataState={availablePricelists}
+                      field='availablePricelistIds'
+                      label='Available Pricelists'
+                      onFocus={onInputFocus}
+                      queryKey={['availablePriceLists', 'records']}
+                      multiple={true}
+                    />
+                    <Select
+                      dataState={defaultPricelists}
+                      field='pricelistId'
+                      label='Default Pricelist'
+                      onFocus={onInputFocus}
+                      queryKey={['defaultPricelists', 'records']}
+                    />
+                  </Fragment>
+                )}
+              </Col>
+              <Col xs={4}>
+                <FastField
+                  FormLabelProps={{
                     label: 'Price Control',
-                   }}
-                   name="copyGeneral"
-                   CheckboxProps={{
-                    checked: copyGeneral,
-                    onChange: setGeneralAsShipping,
-                   }}
-                   />
-                   <div class="text-muted">
-                     Restrict price modification to managers
-                   </div>
-               </div>
-
-               <div className="material-form">
-                 <FormCheckbox
-                   FormLabelProps={{
-                    label: 'Header & Footer',
-                   }}
-                   name="copyGeneral"
-                   CheckboxProps={{
-                    checked: copyGeneral,
-                    onChange: setGeneralAsShipping,
-                   }}
-                   />
-
-                   <div class="text-muted">
-                     Add a custom message to header and footer
-                   </div>
-
-                   <div>
-                     <FormInput type="text" variant="outlined"/>
-                   </div>
-
-                   <div>
-                     <FormInput type="text" variant="outlined"/>
-                   </div>
-               </div>
-
-             <div className="material-form">
-               <FormCheckbox
-                 FormLabelProps={{
-                  label: 'Stock Locations',
-                 }}
-                 name="copyGeneral"
-                 CheckboxProps={{
-                  checked: copyGeneral,
-                  onChange: setGeneralAsShipping,
-                 }}
-                 />
-                 <div class="text-muted">
-                   Stock location used for the inventory
-                 </div>
-
-                 <div>
-                   <FormInput type="text" variant="outlined"/>
-                 </div>
-             </div>
-            </Col>
-
-            <Col md={4}>
-              <div className="material-form">
+                  }}
+                  name="copyGeneral"
+                  component={FormikCheckbox}
+                />
+                <div class="text-muted">
+                  Restrict price modification to managers
+                </div>
+              </Col>
+              <Col xs={4}>
+                <div class="text-muted">
+                  Payment Methods<br />
+                  Payment Methods Available
+                </div>
+                <div>
+                  <FormInput type="text" variant="outlined"/>
+                </div>
+              </Col>
+            </Row>
+            <Row>
+              <Col xs={4}>
                 <FormCheckbox
                   FormLabelProps={{
-                   label: 'Global Discount',
+                    label: (
+                      <div className="text-muted">
+                        Prefill Cash Payment<br />
+                        Prefill amount paid with exact due amount
+                      </div>
+                    ),
+                  }}
+                  CheckboxProps={{
+                    disabled: true,
+                    checked: true
+                  }}
+                />
+              </Col>
+              <Col xs={4}>
+                <FormCheckbox
+                  FormLabelProps={{
+                    label: 'Header & Footer',
                   }}
                   name="copyGeneral"
                   CheckboxProps={{
-                   checked: copyGeneral,
-                   onChange: setGeneralAsShipping,
+                    checked: copyGeneral,
+                    onChange: setGeneralAsShipping,
                   }}
-                  />
-
-                  <div class="text-muted">
-                    Allow global discounts on orders
-                  </div>
-
-                  <div>
-                    <FormInput type="text" variant="outlined"/>
-                  </div>
-
-                  <div>
-                    <FormInput type="text" variant="outlined"/>
-                  </div>
-              </div>
-
-             <div className="material-form">
-               <FormCheckbox
-                 FormLabelProps={{
-                  label: 'Payment Methods',
-                 }}
-                 name="copyGeneral"
-                 CheckboxProps={{
-                  checked: copyGeneral,
-                  onChange: setGeneralAsShipping,
-                 }}
-                 />
-
-                 <div class="text-muted">
-                   Payment Methods Available
-                 </div>
-
-                 <div>
-                   <FormInput type="text" variant="outlined"/>
-                 </div>
-             </div>
-            </Col>
+                />
+                <div class="text-muted">
+                  Add a custom message to header and footer
+                </div>
+                <div>
+                  <FormInput type="text" variant="outlined"/>
+                </div>
+                <div>
+                  <FormInput type="text" variant="outlined"/>
+                </div>
+              </Col>
+            </Row>
+            <Row>
+              <Col xs={4}>
+                <FormCheckbox
+                  FormLabelProps={{
+                    label: (
+                      <div className="text-muted">
+                        Operation Type<br />
+                        Prefill amount paid with exact due amount
+                      </div>
+                    ),
+                  }}
+                  CheckboxProps={{
+                    disabled: true,
+                    checked: true
+                  }}
+                />
+              </Col>
+              <Col xs={4}>
+                <div class="text-muted">
+                  Stock Locations<br />
+                  Stock location used for the inventory
+                </div>
+                <div>
+                  <FormInput type="text" variant="outlined"/>
+                </div>
+              </Col>
+            </Row>
+          </div>
+        </Panel>
       </Row>
-    </div>
-    )
+    </Form>
+  )
 }
 
 const ConfigurationForm = compose(
   withRouter,
+  withState('productFilters', 'setProductFilters', {}),
+  withState('availablePricelistsFilters', 'setAvailablePricelistsFilters', {}),
+  withState('globalDiscount', 'setGlobalDiscount', false),
+  withHandlers({
+    refetchProducts: ({ setProductFilters }) => input => {
+      setProductFilters({
+        OR: [{ 'name': input }]
+      })
+    },
+    refetchAvailablePricelists: ({ setAvailablePricelistsFilters }) => input => {
+      setAvailablePricelistsFilters({
+        OR: [{ 'name': input }]
+      })
+    },
+  }),
+  PosProductsSelect.HOC({
+    name: 'products',
+    options: ({
+      productFilters
+    }) => ({
+      context: {
+        clientName: 'pos'
+      },
+      variables: {
+        filters: productFilters,
+        limit: 10
+      }
+    })
+  }),
+  AvailablePricelistsSelect.HOC({
+    name: 'availablePricelists',
+    options: ({
+      availablePricelistsFilters
+    }) => ({
+      context: {
+        clientName: 'pos'
+      },
+      variables: {
+        filters: availablePricelistsFilters,
+        limit: 10
+      }
+    })
+  }),
+  withPropsOnChange(['products'], ({ products: oldProducts }) => {
+    let products = oldProducts;
+
+    if (!products.loading) {
+      products = {
+        ...products,
+        ...prepareProducts(prop('posProducts', products)),
+      }
+    }
+
+    return { products }
+  }),
+  withPropsOnChange(['availablePricelists'], ({ availablePricelists: oldAvailablePricelists }) => {
+    let availablePricelists = oldAvailablePricelists;
+
+    if (!availablePricelists.loading) {
+      availablePricelists = {
+        ...availablePricelists,
+        ...prepareAvailablePricelists(prop('availablePricelists', availablePricelists)),
+      }
+    }
+
+    return { availablePricelists }
+  }),
+  withPropsOnChange(['availablePricelists'], ({ availablePricelists, values }) => {
+    let defaultPricelists =  availablePricelists;
+
+    if (!availablePricelists.loading) {
+      defaultPricelists = {
+        ...availablePricelists,
+        ...prepareDefaultPricelists(prop('availablePricelists', availablePricelists)),
+      }
+    }
+
+    return { defaultPricelists }
+  }),
+  withFormik({
+    mapPropsToValues: props => {
+      return {
+        name: '',
+        ifaceTaxIncluded: [],
+        globalDiscount: false,
+        globalDiscountId: null,
+        discountPc: 0.0,
+        usePriceList: false,
+        availablePricelistIds: [],
+        pricelistId: null,
+        restrictPriceControl: false,
+        journalIds: [],
+        isHeaderOrFooter: false,
+        receiptHeadr: '',
+        receiptFooter: '',
+        stockLocationId: null
+      }
+    },
+    handleSubmit: (values, { props }) => {
+      props.handleSubmit({
+        context: {
+          clientName: 'pos'
+        },
+        variables: {
+          input: {}
+        }
+      })
+    },
+    validateOnChange: false,
+    validateOnBlur: false,
+    enableReinitialize: true,
+  })
 )(FormContent)
 
 export default ConfigurationForm

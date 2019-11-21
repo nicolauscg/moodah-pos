@@ -1,0 +1,15 @@
+query PosProductsSelect(
+  $filters: FilterablePosProductsInput_where,
+  $limit: Int
+) {
+  posProducts(input: {
+    where: $filters,
+    first: $limit
+  }) {
+    length
+    records {
+      id
+      name
+    }
+  }
+}

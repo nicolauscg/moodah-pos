@@ -1,21 +1,11 @@
-import React, { Fragment } from 'react'
-import { connect } from 'react-redux'
-import { compose, withHandlers, lifecycle, getContext } from 'recompose'
+import React from 'react'
+import { compose, withHandlers } from 'recompose'
 
-import { Col, Container, Row, Button, Card, CardBody } from 'reactstrap'
+import { Col, Container, Row, Card, CardBody } from 'reactstrap'
 import { Link } from 'react-router-dom'
-import BlockUi from 'react-block-ui'
-
-import { ErrorHandlerContext } from '../../utils/transformers/general'
-import { addNotif } from '../../redux/modules/general'
 
 import ConfigurationForm from './components/ConfigurationForm'
 import Breadcrumb from '../../shared/components/Breadcrumb'
-
-
-// =============================================================================
-// Create Res Configuration Full Page
-// =============================================================================
 
 const enhance = compose(
   withHandlers({
@@ -46,7 +36,7 @@ const CreateConfigurationPage = enhance(({ onCreateSuccess }) => {
           </div>
           <div>
             <Link to="/configuration/list" className="btn btn-info btn-sm">
-            Back
+              Back
             </Link>
           </div>
         </Col>

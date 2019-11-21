@@ -80,3 +80,16 @@ mutation DeletePosConfig($input: DeletePosConfigInputType!){
     }
   }
 }
+
+query AvailablePriceListsSelect(
+  $filters: FilterablePosProductsInput_where,
+  $limit: Int
+) {
+  availablePriceLists {
+    length
+    records {
+      id
+      displayName
+    }
+  }
+}

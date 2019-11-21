@@ -6,7 +6,6 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormControl from '@material-ui/core/FormControl';
 
-
 const StyledRadio = withStyles({
   root: {
     '&:hover': {
@@ -54,23 +53,6 @@ const StyledRadio = withStyles({
     checkedIcon={<span className={clsx(classes.icon, classes.checkedIcon)} />}
     icon={<span className={classes.icon} />}
   />))
-
-// Inspired by blueprintjs
-/*
-function StyledRadio(props) {
-  const  {classes}  = props;
-  console.log(classes);
-  return (
-    <Radio
-      className={classes}
-      disableRipple
-      color="default"
-      //checkedIcon={<span className={clsx(radioProp.icon, radioProp.checkedIcon)} />}
-      icon={<span className={classes.icon} />}
-      {...props}
-    />
-  );
-}*/
 
 export default function CustomizedRadios() {
   return (
