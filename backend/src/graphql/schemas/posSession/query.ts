@@ -7,7 +7,6 @@ import { GlobalIdInput } from "../utility/types/globalIdInput";
 import { posSessionType } from "./types/posSession";
 import posSessionFields from "./field";
 
-// const posSessionQueries = new GraphQLObjectType(null);
 const posSessionQueries = new GraphQLObjectType({
   name: "posSessionQueries",
   fields: () => ({
