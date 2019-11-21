@@ -4,6 +4,7 @@ import auth from "./auth";
 import posConfig from "./posConfig";
 import posCategory from "./posCategory";
 import posProduct from "./posProduct";
+import posSession from "./posSession";
 
 const rootType = new GraphQLObjectType({
   name: "Query",
@@ -20,7 +21,8 @@ const mutationType = new GraphQLObjectType({
     ...auth.mutation,
     ...posConfig.mutation,
     ...posCategory.mutation,
-    ...posProduct.mutation
+    ...posProduct.mutation,
+    ...posSession.mutation
   })
 });
 
