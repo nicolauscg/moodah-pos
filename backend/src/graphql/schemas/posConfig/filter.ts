@@ -12,6 +12,20 @@ const posConfigFilter: FilterConfig = {
       conventionName: "stockLocationName",
       operator: "ilike"
     }
+  ],
+  paymentMethods: [
+    {
+      domainName: "name",
+      conventionName: "name",
+      operator: "ilike"
+    }
+  ],
+  availablePriceLists: [
+    {
+      domainName: "name",
+      conventionName: "name",
+      operator: "ilike"
+    }
   ]
 };
 

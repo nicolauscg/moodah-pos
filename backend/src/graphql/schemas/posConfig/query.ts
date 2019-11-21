@@ -145,11 +145,20 @@ const posConfigQueries = new GraphQLObjectType({
       },
       resolve: (_0, args, context) =>
         new Promise((res, rej) => {
+          if (!isFilterArgsValid(args)) {
+            rej(
+              new ApolloError("Application Error", "APPLICATION_ERROR", {
+                errorMessage:
+                  "invalid filter-related input, ensure each field object " +
+                  "has only 1 key and OR and AND are mutually exclusive"
+              })
+            );
+          }
           configureService({
             operation: getDataSet({
               context
             }).createSearchRead(
-              paginateOperationParam(
+              paginateAndFilterOperationParam(
                 {
                   modelName: "account.journal",
                   fields: ["id", "name", "company_id"],
@@ -158,6 +167,7 @@ const posConfigQueries = new GraphQLObjectType({
                     ["type", "in", ["bank", "cash"]]
                   ]
                 },
+                posConfigsFilter.paymentMethods,
                 args
               )
             ),
@@ -176,7 +186,16 @@ const posConfigQueries = new GraphQLObjectType({
       type: PaginateType(AvailablePriceListType),
       args: {
         input: {
-          type: PagableInputType,
+          type: FilterableAndPagableInputType(
+            new GraphQLInputObjectType({
+              name: "AvailablePriceListsInput",
+              fields: () => ({
+                name: {
+                  type: GraphQLString
+                }
+              })
+            })
+          ),
           defaultValue: {
             first: 10,
             offset: 0
@@ -185,16 +204,26 @@ const posConfigQueries = new GraphQLObjectType({
       },
       resolve: (_0, args, context) =>
         new Promise((res, rej) => {
+          if (!isFilterArgsValid(args)) {
+            rej(
+              new ApolloError("Application Error", "APPLICATION_ERROR", {
+                errorMessage:
+                  "invalid filter-related input, ensure each field object " +
+                  "has only 1 key and OR and AND are mutually exclusive"
+              })
+            );
+          }
           configureService({
             operation: getDataSet({
               context
             }).createSearchRead(
-              paginateOperationParam(
+              paginateAndFilterOperationParam(
                 {
                   modelName: "product.pricelist",
-                  fields: ["id", "name", "currency_id"],
+                  fields: ["id", "name", "currency_id", "display_name"],
                   domain: []
                 },
+                posConfigsFilter.availablePriceLists,
                 args
               )
             ),
