@@ -12,7 +12,7 @@ const SIGN_IN = gql`
   }
 `;
 
-function getPosSessionQuery(id: string) {
+function getUserQuery(id: string) {
   return gql`
     query {
       resUser(input: { id: "${id}" }) {
@@ -45,7 +45,7 @@ const CLOSE_SESSION = id => gql`
 
 export default {
   SIGN_IN,
-  getPosSessionQuery,
+  getUserQuery,
   OPEN_SESSION,
   CLOSE_SESSION
 };
