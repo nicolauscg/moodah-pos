@@ -6,7 +6,7 @@
   "main": "handler.js",
   "scripts": {
     "start": "sls offline --port 3001",
-    "test": "jest",
+    "test": "jest --testPathIgnorePatterns=integration/__tests__",
     "lint": "npm run lint:all",
     "lint:all": "eslint . --ext .js,.jsx,.ts,.tsx",
     "lint:graphql": "eslint src/**/*.ts handler.ts",
