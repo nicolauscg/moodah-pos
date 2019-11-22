@@ -1,39 +1,26 @@
-import {
-  GraphQLObjectType,
-  GraphQLInputObjectType,
-  GraphQLString
-} from "graphql";
+import { GraphQLObjectType, GraphQLInputObjectType, GraphQLInt } from "graphql";
 import { camelizeKeys } from "humps";
 import { ApolloError } from "apollo-server-lambda";
 
 import { configureService, getDataSet } from "../utility/nodoo";
-import { PaginateType } from "../utility/types/paginateType";
 import { PosSessionType } from "./types/posSession";
-import { FilterableAndPagableInputType } from "../utility/types/FilterableAndPageableInputType";
 import posSessionFields from "./fields";
-import { paginateOperationParam } from "../utility/paginate";
 
 const posSessionQueries = new GraphQLObjectType({
-  name: "posCategoryQueries",
+  name: "posSessionQueries",
   fields: () => ({
     posSession: {
-      type: PaginateType(PosSessionType),
+      type: PosSessionType,
       args: {
         input: {
-          type: FilterableAndPagableInputType(
-            new GraphQLInputObjectType({
-              name: "PosSessionInput",
-              fields: () => ({
-                name: {
-                  type: GraphQLString
-                }
-              })
+          type: new GraphQLInputObjectType({
+            name: "PosSessionInput",
+            fields: () => ({
+              id: {
+                type: GraphQLInt
+              }
             })
-          ),
-          defaultValue: {
-            first: 10,
-            offset: 0
-          }
+          })
         }
       },
       resolve: (_0, args, context) =>
@@ -41,16 +28,14 @@ const posSessionQueries = new GraphQLObjectType({
           configureService({
             operation: getDataSet({
               context
-            }).createSearchRead(
-              paginateOperationParam(
-                {
-                  modelName: "pos.session",
-                  fields: posSessionFields.posSession,
-                  domain: [["state", "=", "opened"], ["user_id", "=", 1]]
-                },
-                args
-              )
-            ),
+            }).createSearchRead({
+              modelName: "pos.session",
+              fields: posSessionFields.posSession,
+              domain: [
+                ["state", "=", "opened"],
+                ["user_id", "=", args.input.id]
+              ]
+            }),
             onError: error => {
               rej(
                 new ApolloError("Application Error", "APPLICATION_ERROR", {
@@ -58,7 +43,9 @@ const posSessionQueries = new GraphQLObjectType({
                 })
               );
             },
-            onResult: result => res(camelizeKeys(result))
+            onResult: result => {
+              res(camelizeKeys(result.records[0]));
+            }
           });
         })
     }
