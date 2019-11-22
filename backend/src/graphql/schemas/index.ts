@@ -11,7 +11,8 @@ const rootType = new GraphQLObjectType({
   fields: () => ({
     ...posConfig.query,
     ...posCategory.query,
-    ...posProduct.query
+    ...posProduct.query,
+    ...posSession.query
   })
 });
 

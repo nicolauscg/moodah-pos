@@ -12,6 +12,21 @@ const SIGN_IN = gql`
   }
 `;
 
+function getPosSessionQuery(id: string) {
+  return gql`
+    query {
+      resUser(input: { id: "${id}" }) {
+        id
+        name
+        company {
+          id
+          name
+        }
+      }
+    }
+  `;
+}
+
 const OPEN_SESSION = id => gql`
   mutation {
     openSession(input: {id: "${id}"}) {
@@ -30,6 +45,7 @@ const CLOSE_SESSION = id => gql`
 
 export default {
   SIGN_IN,
+  getPosSessionQuery,
   OPEN_SESSION,
   CLOSE_SESSION
 };

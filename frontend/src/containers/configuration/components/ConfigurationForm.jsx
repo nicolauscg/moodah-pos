@@ -62,6 +62,7 @@ const FormContent = ({
                <FormCheckbox
                  FormLabelProps={{
                   label: 'Category Products',
+
                  }}
                  name="copyGeneral"
                  CheckboxProps={{
@@ -69,11 +70,10 @@ const FormContent = ({
                   onChange: setGeneralAsShipping,
                  }}
                  />
-
-
-                 <div className="text-muted">
-                   Display pictures of product categories
+                 <div class="text-muted">
+                   Display pictures of products
                  </div>
+
                </div>
                <div className="material-form">
                 <FormCheckbox
@@ -87,7 +87,7 @@ const FormContent = ({
                   }}
                 />
 
-                  <div className="text-muted">
+                  <div class="text-muted">
                     Set shop-specific prices, seasonal discounts, etc.
                   </div>
 
