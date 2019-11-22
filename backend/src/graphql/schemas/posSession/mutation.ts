@@ -19,7 +19,7 @@ const posSessionMutations = new GraphQLObjectType({
         }
       },
       resolve: (_0, args, context) =>
-        new Promise((res, rej) => {
+        new Promise((promiseResolve, promiseReject) => {
           configureService({
             operation: getDataSet({ context }).createCallMethod({
               modelName: "pos.config",
@@ -27,15 +27,35 @@ const posSessionMutations = new GraphQLObjectType({
               args: [args.input.id]
             }),
             onError: error =>
-              rej(
+              promiseReject(
                 new ApolloError("Application Error", "APPLICATION_ERROR", {
                   errorMessage: error.message
                 })
               ),
-            onResult: result =>
-              res({ sessionId: (camelizeKeys(result) as any).resId })
+            onResult: () => promiseResolve()
           });
-        })
+        }).then(
+          () =>
+            new Promise((promiseResolve2, promiseReject2) => {
+              configureService({
+                operation: getDataSet({ context }).createCallMethod({
+                  modelName: "pos.config",
+                  methodName: "open_session_cb",
+                  args: [args.input.id]
+                }),
+                onError: error =>
+                  promiseReject2(
+                    new ApolloError("Application Error", "APPLICATION_ERROR", {
+                      errorMessage: error.message
+                    })
+                  ),
+                onResult: result =>
+                  promiseResolve2({
+                    sessionId: (camelizeKeys(result) as any).resId
+                  })
+              });
+            })
+        )
     },
     closeSession: {
       type: new GraphQLObjectType({
