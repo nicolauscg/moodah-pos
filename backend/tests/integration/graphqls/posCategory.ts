@@ -96,9 +96,17 @@ const getDeletePosCategoryQuery = (id: string) => gql`
   }`;
 const GET_READ_POS_CATEGORY = gql`
   query {
-    posCategory(input: { id: 1 }) {
+    posCategory(input: { id: "cG9zLmNhdGVnb3J5OjM=" }) {
       id
       name
+      displayName
+      image
+      parent {
+        id
+        name
+        displayName
+      }
+      sequence
     }
   }
 `;
