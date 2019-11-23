@@ -22,7 +22,8 @@ const mutationType = new GraphQLObjectType({
     ...auth.mutation,
     ...posConfig.mutation,
     ...posCategory.mutation,
-    ...posProduct.mutation
+    ...posProduct.mutation,
+    ...posSession.mutation
   })
 });
 

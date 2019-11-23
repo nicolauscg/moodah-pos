@@ -6,7 +6,7 @@ import {
 } from "../../utility/createTestServer";
 import posProductRequests from "../graphqls/posProduct";
 
-describe("Query", () => {
+describe("Pos Product Query", () => {
   it("query fetch all pos product", async () => {
     const server = await createTestServerWithSessionToken({
       signInGql: posProductRequests.SIGN_IN
@@ -68,11 +68,10 @@ describe("Query", () => {
         query({ query: posProductRequests.getPosProductQuery(id) })
       )
     ).then(posProductResults =>
-      posProductResults.forEach(
-        (posProductResult: any) =>
-          expect(posProductResult.data.posProduct).not.toBeNull() &&
-          expect(posProductResult.data.posProduct.name).not.toBeNull()
-      )
+      posProductResults.forEach((posProductResult: any) => {
+        expect(posProductResult.data.posProduct).not.toBeNull();
+        expect(posProductResult.data.posProduct.name).not.toBeNull();
+      })
     );
   });
 
@@ -90,7 +89,7 @@ describe("Query", () => {
   });
 });
 
-describe("Mutation", () => {
+describe("Pos Product Mutation", () => {
   it("create pos cofig without session token give error", async () => {
     const server = createTestServer();
     const { mutate } = createTestClient(server);

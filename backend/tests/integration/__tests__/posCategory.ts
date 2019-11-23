@@ -6,7 +6,7 @@ import {
 } from "../../utility/createTestServer";
 import posCategoryRequests from "../graphqls/posCategory";
 
-describe("Query", () => {
+describe("Pos Category Query", () => {
   it("query pos categories without session token give error", async () => {
     const server = createTestServer();
     const { query } = createTestClient(server);
@@ -60,12 +60,11 @@ describe("Query", () => {
         query({ query: posCategoryRequests.getPosCategoryQuery(id) })
       )
     ).then(posCategoryResults =>
-      posCategoryResults.forEach(
-        (posCategoryResult: any) =>
-          expect(posCategoryResult.data.posCategory).not.toBeNull() &&
-          expect(posCategoryResult.data.posCategory.id).not.toBeNull() &&
-          expect(posCategoryResult.data.posCategory.name).not.toBeNull()
-      )
+      posCategoryResults.forEach((posCategoryResult: any) => {
+        expect(posCategoryResult.data.posCategory).not.toBeNull();
+        expect(posCategoryResult.data.posCategory.id).not.toBeNull();
+        expect(posCategoryResult.data.posCategory.name).not.toBeNull();
+      })
     );
   });
 
@@ -83,7 +82,7 @@ describe("Query", () => {
   });
 });
 
-describe("Mutation", () => {
+describe("Pos Category Mutation", () => {
   it("query pos categories with session token", async () => {
     const server = createTestServer();
     const { query } = createTestClient(server);

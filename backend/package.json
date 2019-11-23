@@ -6,7 +6,8 @@
   "main": "handler.js",
   "scripts": {
     "start": "sls offline --port 3001",
-    "test": "jest",
+    "test": "jest --testPathIgnorePatterns=integration/__tests__",
+    "test:one": "jest",
     "lint": "npm run lint:all",
     "lint:all": "eslint . --ext .js,.jsx,.ts,.tsx",
     "lint:graphql": "eslint src/**/*.ts handler.ts",
@@ -35,7 +36,7 @@
     "@2fd/graphdoc": "^2.4.0",
     "@babel/preset-typescript": "^7.6.0",
     "@types/aws-lambda": "^8.10.17",
-    "@types/jest": "^24.0.18",
+    "@types/jest": "^24.0.23",
     "@types/node": "^10.12.18",
     "@typescript-eslint/eslint-plugin": "^2.3.2",
     "@typescript-eslint/parser": "^2.3.2",

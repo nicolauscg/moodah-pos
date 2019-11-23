@@ -1,33 +1,53 @@
 import gql from "graphql-tag";
 
 const SIGN_IN = gql`
-mutation {
-  signIn(input: {
-    db: "${process.env.odoo_db}",
-    username: "${process.env.odoo_username}",
-    password: "${process.env.odoo_password}"
-  }) {
-    sessionToken
+  mutation {
+    signIn(input: {
+      db: "${process.env.odoo_db}",
+      username: "${process.env.odoo_username}",
+      password: "${process.env.odoo_password}"
+    }) {
+      sessionToken
+    }
   }
-}
 `;
 
-function getPosSessionQuery(id: string) {
+function getUserQuery(id: string) {
   return gql`
     query {
-      resUser(input: { id: "${id}" }) {
+      getUserInfo(input: { id: "${id}" }) {
         id
         name
+        function
         company {
           id
           name
         }
+        image
       }
     }
   `;
 }
 
+const OPEN_SESSION = id => gql`
+  mutation {
+    openSession(input: {id: "${id}"}) {
+      sessionId
+    }
+  }
+`;
+
+const CLOSE_SESSION = id => gql`
+  mutation {
+    closeSession(input: {id: "${id}"}) {
+      success
+    }
+  }
+`;
+
 export default {
   SIGN_IN,
-  getPosSessionQuery
+  getUserQuery,
+  OPEN_SESSION,
+  CLOSE_SESSION
 };

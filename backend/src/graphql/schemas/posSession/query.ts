@@ -4,18 +4,18 @@ import { camelizeKeys } from "humps";
 
 import { configureService, getDataSet } from "../utility/nodoo";
 import { GlobalIdInput } from "../utility/types/globalIdInput";
-import { posSessionType } from "./types/posSession";
+import { UserType } from "./types/user";
 import posSessionFields from "./field";
 
 const posSessionQueries = new GraphQLObjectType({
   name: "posSessionQueries",
   fields: () => ({
-    resUser: {
-      type: posSessionType,
+    getUserInfo: {
+      type: UserType,
       args: {
         input: {
           type: new GraphQLInputObjectType({
-            name: "PosSessionInput",
+            name: "GetUserInfoInput",
             fields: () => ({
               id: {
                 type: GlobalIdInput
@@ -31,8 +31,8 @@ const posSessionQueries = new GraphQLObjectType({
               context
             }).createRead({
               ids: [args.input.id],
-              modelName: "pos.session",
-              fields: posSessionFields.posSession
+              modelName: "res.users",
+              fields: posSessionFields.userInfo
             }),
             onError: error => {
               rej(
