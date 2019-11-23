@@ -36,9 +36,9 @@ describe("Query", () => {
       "cG9zLnNlc3Npb246MQ=="
     );
     const res = await query({ query: GET_POS_SESSION });
-    expect(res.data.resUser).not.toBeNull();
-    if (res.data.resUser.company) {
-      expect(res.data.resUser.company).toEqual(
+    expect(res.data.getUserInfo).not.toBeNull();
+    if (res.data.getUserInfo.company) {
+      expect(res.data.getUserInfo.company).toEqual(
         expect.objectContaining({
           id: expect.any(String),
           name: expect.any(String)

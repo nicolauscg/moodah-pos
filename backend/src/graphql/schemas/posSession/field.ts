@@ -1,7 +1,7 @@
 import { FieldConfig } from "../utility/types/fields";
 
 const posSessionFields: FieldConfig = {
-  posSession: ["name", "company_id"]
+  userInfo: ["name", "company_id", "image", "function"]
 };
 
 export default posSessionFields;

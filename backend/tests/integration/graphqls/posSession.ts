@@ -15,13 +15,15 @@ const SIGN_IN = gql`
 function getUserQuery(id: string) {
   return gql`
     query {
-      resUser(input: { id: "${id}" }) {
+      getUserInfo(input: { id: "${id}" }) {
         id
         name
+        function
         company {
           id
           name
         }
+        image
       }
     }
   `;
