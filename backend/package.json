@@ -7,6 +7,7 @@
   "scripts": {
     "start": "sls offline --port 3001",
     "test": "jest --testPathIgnorePatterns=integration/__tests__",
+    "test:one": "jest",
     "lint": "npm run lint:all",
     "lint:all": "eslint . --ext .js,.jsx,.ts,.tsx",
     "lint:graphql": "eslint src/**/*.ts handler.ts",
