@@ -5,7 +5,7 @@ import {
 } from "../../utility/createTestServer";
 import posSessionRequests from "../graphqls/posSession";
 
-describe("Query", () => {
+describe("Pos Session Query", () => {
   it("query resUser without session token give error", async () => {
     const server = createTestServer();
     const { query } = createTestClient(server);
@@ -48,7 +48,7 @@ describe("Query", () => {
   });
 });
 
-describe("Mutation", () => {
+describe("Pos Session Mutation", () => {
   it("open session without session token give error", async () => {
     const server = createTestServer();
     const { mutate } = createTestClient(server);
