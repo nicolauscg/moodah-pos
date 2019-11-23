@@ -36,7 +36,43 @@ const GET_POS_SESSION = gql`
   }
 `;
 
+function getUserQuery(id: string) {
+  return gql`
+    query {
+      getUserInfo(input: { id: "${id}" }) {
+        id
+        name
+        function
+        company {
+          id
+          name
+        }
+        image
+      }
+    }
+  `;
+}
+
+const OPEN_SESSION = id => gql`
+  mutation {
+    openSession(input: {id: "${id}"}) {
+      sessionId
+    }
+  }
+`;
+
+const CLOSE_SESSION = id => gql`
+  mutation {
+    closeSession(input: {id: "${id}"}) {
+      success
+    }
+  }
+`;
+
 export default {
   SIGN_IN,
-  GET_POS_SESSION
+  GET_POS_SESSION,
+  getUserQuery,
+  OPEN_SESSION,
+  CLOSE_SESSION
 };

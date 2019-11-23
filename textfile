@@ -1,0 +1,217 @@
+1. links to your latest red unit test job and 
+green unit test job on working branch
+
+2. Testcases: show links to the unit tests file you're working on.
+
+3. Clean code: show links to your implementation code that you think 
+the cleanest, and the ones you think you need to improve.
+
+4. DRY functions: same as no. 3, but it specifically talks about functions.
+
+5. Exception handling: show links to your try-catch, if-else,
+promises, or other codes related to any kind of error handling that 
+you're working on. For frontend hackers, you can also show input 
+validations or error notifications (modals?).
+
+6. Layout formatting: no need to add comment.
+
+7. OO/Design Pattern: same as no. 3, but show me what kind of
+pattern you are using (attaching web references are allowed).
+
+8. Weekly code commit: tell what branches are you working 
+on, I'll see the commits history.
+
+9. Code review: show link to merge requests you've made this week, 
+and link to your comments on other merge requests.
+
+10. Security: tell about your initiatives in improving the security, 
+be it as a group or as an individual.
+
+const FragmentDoc = gql`
+    fragment posConfigFields on PosConfig {
+      id
+      name
+      active
+      stockLocation {
+        id
+        name
+      }
+      ifaceTaxIncluded
+      globalDiscount
+      discountProduct {
+        id
+        name
+      }
+      discountPc
+      usePricelist
+      availablePricelistIds
+      pricelist {
+        id
+        name
+      }
+      restrictPriceControl
+      journalIds
+      isHeaderOrFooter
+      receiptHeader
+      receiptFooter
+      pickingType {
+        id
+        name
+      }
+    }
+  `;
+  
+const util = require('util')
+
+const DocumentPosconfig = input => gql`
+    query {
+      posConfig(input: ${input}) {
+        ...posConfigFields
+      }
+    }
+
+    ${FragmentDoc}
+`;
+
+const callWithInput = (gqlReq, inputObj) => 
+  gqlReq(util.inspect(inputObj))
+
+
+const DocumentPosconfig = gql`
+    query PosConfig {
+      posConfig(input: {id: 1}) {
+        ...posConfigFields
+      }
+    }
+
+    ${FragmentDoc}
+`;
+
+
+# generates:
+#   ./src/graphl/schemas/generated-pos-models.tsx:
+#     schema: src/graphql/schemas/index.ts
+#     config: {}
+#     plugins:
+#       - 'typescript-common'
+#       - 'typescript-client'
+#       - 'typescript-react-apollo'
+# require:
+#   - ts-node/register
+https://j3li8dtqy4.execute-api.us-east-1.amazonaws.com/stag/playground
+./src/graphql/schemas/index.ts
+
+npm run test -- --testNamePattern=""
+npm run test -- namafile
+
+
+  const clientOptions = createSecureClientOptions({
+    host: "odoo.staging.moodah.id"
+  });
+  
+query {
+  posConfigs(first:20){
+    totalCount
+    edges {
+      node{
+        id
+        name
+      }
+      cursor
+    }
+    pageInfo {
+      endCursor
+      hasNextPage
+    }
+  }
+}
+
+# query {
+#   discountProducts {
+#     id
+#     name
+#   }
+# }
+
+# sign in
+mutation {
+  signIn(input:{
+    db: "demo.moodah@gmail.com",
+    username:"admin",
+    password: "password"
+  }) {
+    sessionToken
+  }
+}
+
+# get all pos config
+query {
+  posConfigs {
+    id
+    name
+    active
+  }
+}
+
+# delete pos config, gets success boolean and deleted pos config info
+mutation {
+  deletePosConfig(input: {
+    id: 73
+  }) {
+    success
+    posConfig {
+      id
+      name
+      active
+      ifaceTaxIncluded
+      globalDiscount
+      discountProduct {
+        id
+        name
+      }
+      discountPc
+      usePricelist
+      availablePricelistIds
+      pricelist {
+        id
+        name
+      }
+      restrictPriceControl
+      journalIds
+      isHeaderOrFooter
+      receiptHeader
+      receiptFooter
+      stockLocation {
+        id
+        name
+      }
+      pickingType {
+        id
+        name
+      }
+    }
+  }
+}
+
+Setting up oracle-java11-installer-local (11.0.5-1~linuxuprising0) ...
+Before installing this package,
+please download the Oracle JDK 11 .tar.gz file
+with the same version as this package (version 11.0.4),
+and place it in /var/cache/oracle-jdk11-installer-local,
+
+E.g.:
+sudo mkdir -p /var/cache/oracle-jdk11-installer-local
+sudo cp jdk-11.0.4_linux-x64_bin.tar.gz /var/cache/oracle-jdk11-installer-local/
+sha256sum mismatch jdk-11.0.5_linux-x64_bin.tar.gz
+Oracle JDK 11 is NOT installed.
+dpkg: error processing package oracle-java11-installer-local (--configure):
+ installed oracle-java11-installer-local package post-installation script subprocess returned error exit status 1
+Setting up copyq (3.9.2~bionic) ...
+Processing triggers for gnome-menus (3.13.3-11ubuntu1.1) ...
+Processing triggers for hicolor-icon-theme (0.17-2) ...
+Processing triggers for mime-support (3.60ubuntu1) ...
+Processing triggers for desktop-file-utils (0.23-1ubuntu3.18.04.2) ...
+Processing triggers for man-db (2.8.3-2ubuntu0.1) ...
+Errors were encountered while processing:
+ oracle-java11-installer-local
+E: Sub-process /usr/bin/dpkg returned an error code (1)
