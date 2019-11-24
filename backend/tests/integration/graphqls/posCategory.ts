@@ -44,6 +44,12 @@ const CREATE_POS_CATEGORY = gql`
         parent {
           id
           name
+          displayName
+        }
+        child {
+          id
+          name
+          displayName
         }
         image
         sequence
