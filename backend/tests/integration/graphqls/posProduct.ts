@@ -11,6 +11,17 @@ const SIGN_IN = gql`
     }
   }
 `;
+const GET_POS_PRODUCT_STUB = gql`
+  query {
+    posProducts {
+      length
+      records {
+        id
+        name
+      }
+    }
+  }
+`;
 const GET_POS_PRODUCT = gql`
   query {
     posProducts(input: { first: 40, offset: 0 }) {
@@ -133,6 +144,7 @@ const GET_PRODUCT_CATEGORES = gql`
 export default {
   SIGN_IN,
   GET_POS_PRODUCT,
+  GET_POS_PRODUCT_STUB,
   CREATE_VALID_POS_PRODUCT,
   CREATE_INVALID_POS_PRODUCT,
   GET_PRODUCT_CATEGORES,
