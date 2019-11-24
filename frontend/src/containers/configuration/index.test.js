@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import ConfigurationIndex from './index';
 import { BrowserRouter as Router } from 'react-router-dom';
-import renderer from 'react-test-renderer'
+// import renderer from 'react-test-renderer'
 
 jest.mock('./components/ConfigurationTable');
 
@@ -17,21 +17,21 @@ it('renders index without crashing', () => {
     console.log(div);
 });
 
-jest.mock('./components/ConfigurationTable');
-// jest.mock('react-router-dom/Link', () => 'Link')
+// jest.mock('./components/ConfigurationTable');
+// // jest.mock('react-router-dom/Link', () => 'Link')
 
-it('should render correctly', () => {
-    // eslint-disable-next-line react/react-in-jsx-scope
-    const component = renderer.create(<ConfigurationIndex />)
-    expect(component.toJSON()).toMatchSnapshot({
-        Table: expect.any(String),
-    })
-})
+// it('should render correctly', () => {
+//     // eslint-disable-next-line react/react-in-jsx-scope
+//     const component = renderer.create(<ConfigurationIndex />)
+//     expect(component.toJSON()).toMatchSnapshot({
+//         Table: expect.any(String),
+//     })
+// })
 
-it('should not render correctly', () => {
-    // eslint-disable-next-line react/react-in-jsx-scope
-    const component = renderer.create(<ConfigurationIndex />)
-    expect(component.toJSON()).not.toMatchSnapshot({
-        Table: 'invalid',
-    })
-})
+// it('should not render correctly', () => {
+//     // eslint-disable-next-line react/react-in-jsx-scope
+//     const component = renderer.create(<ConfigurationIndex />)
+//     expect(component.toJSON()).not.toMatchSnapshot({
+//         Table: 'invalid',
+//     })
+// })

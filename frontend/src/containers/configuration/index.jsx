@@ -7,13 +7,8 @@ import { Link } from 'react-router-dom'
 import SearchIcon from 'mdi-react/SearchIcon'
 import { withFormik, Form, Field } from 'formik'
 
-// import offsetToCursor from '../../utils/offsetToCursor'
-
 import Breadcrumb from '../../shared/components/Breadcrumb'
-
 import ConfigurationTable from './components/ConfigurationTable'
-
-// import { PosConfigs } from '../../generated-pos-models'
 
 const SearchInput = ({ field, form, handleSetValue, ...props }) => {
   const { onChange, ...restField } = field
