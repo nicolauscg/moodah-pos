@@ -115,6 +115,36 @@ const RouteList = {
         ],
     },
 
+  Product: {
+      path: '/product',
+      title: 'Product',
+      component: [
+        /*{
+          path: '/product/list',
+          component: ProductIndex,
+        },*/
+        {
+          path: '/product/create',
+          component: CreateProduct,
+        },
+        /*{
+          path: '/product/details/:id',
+          component: EditProduct,
+        },*/
+        ],
+    },
+
+  Dashboard: {
+        path: '/dashboard',
+        title: 'Dashboard',
+        component: [
+          {
+            path: '/dashboard/list',
+            component: DashboardIndex,
+          },
+        ],
+    },
+
   AccountSettings: {
     path: '/account_settings',
     component: [
