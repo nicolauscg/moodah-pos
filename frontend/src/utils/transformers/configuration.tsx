@@ -1,10 +1,14 @@
-import { toSuggestions, referenceToOdoo } from "./general";
+import {
+  toSuggestions,
+  referenceToOdoo,
+  toSuggestion,
+  referenceFromOdoo
+} from "./general";
 import { renameKeys, radioGroupToOdoo } from "./pos-general";
 import {
   AvailablePriceListsSelect,
   DiscountProductsSelect,
   StockLocationsSelect,
-  OperationTypesSelect,
   PaymentMethodsSelect,
   PosConfig
 } from "../../generated-pos-models";
@@ -21,11 +25,25 @@ export const ConfigurationColumns = [
 // ====================================================
 // Transformers
 // ====================================================
+export const preparePosConfig = (posConfig: PosConfig.PosConfig) => {
+  return R.pipe(
+    R.evolve({
+      stockLocation: referenceFromOdoo,
+      discountProduct: referenceFromOdoo,
+      availablePricelists: R.map(toSuggestion),
+      pricelist: referenceFromOdoo,
+      paymentMethods: R.map(referenceFromOdoo),
+      ifaceTaxIncluded: value => [value]
+    }),
+    R.dissoc("__typename")
+  )(posConfig);
+};
+
 export const transformPosConfigForm = values => {
   return R.pipe(
     renameKeys({
       discountProduct: "discountProductId",
-      availablePricelist: "availablePricelistIds",
+      availablePricelists: "availablePricelistIds",
       pricelist: "pricelistId",
       paymentMethods: "journalIds",
       stockLocation: "stockLocationId",

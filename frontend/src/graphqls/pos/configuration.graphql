@@ -1,7 +1,6 @@
 fragment posConfigFields on PosConfig {
   id
   name
-  active
   stockLocation {
     id
     name
@@ -30,10 +29,6 @@ fragment posConfigFields on PosConfig {
   isHeaderOrFooter
   receiptHeader
   receiptFooter
-  pickingType {
-    id
-    name
-  }
 }
 
 query PosConfigs {
@@ -63,6 +58,9 @@ mutation CreatePosConfig($input: CreateOrUpdatePosConfigInputType!) {
 mutation UpdatePosConfig($input: CreateOrUpdatePosConfigInputType!) {
   updatePosConfig(input: $input) {
     success
+    posConfig {
+      ...posConfigFields
+    }
   }
 }
 

@@ -48,7 +48,7 @@ const FormContent = ({
     }}
   >
     <Row>
-      <Panel xs={12} title="Product Category" isForm>
+      <Panel xs={12} title="Configuration" isForm>
         <div className="material-form">
           <Row>
             <Col xs={6}>
@@ -156,14 +156,14 @@ const FormContent = ({
                   <Select
                     dataState={availablePricelists}
                     refetch={refetchAvailablePricelists}
-                    field="availablePricelist"
+                    field="availablePricelists"
                     label="Available Pricelists"
                     onFocus={onInputFocus}
                     queryKey={["availablePriceLists", "records"]}
                     multiple={true}
                     handleSetValue={(_0, selectedAvailablePricelistIds) => {
                       setFieldValue(
-                        "availablePricelist",
+                        "availablePricelists",
                         selectedAvailablePricelistIds
                       );
                       if (
@@ -177,7 +177,7 @@ const FormContent = ({
                     }}
                   />
                   <Select
-                    dataState={values.availablePricelist}
+                    dataState={values.availablePricelists}
                     field="pricelist"
                     label="Default Pricelist"
                     onFocus={onInputFocus}
@@ -465,13 +465,8 @@ const ConfigurationForm = compose(
   withFormik({
     mapPropsToValues: props => {
       const { posConfig } = props;
-      const posConfigValues =
-        posConfig !== undefined && !posConfig.loading
-          ? posConfig.posConfig
-          : null;
-
-      if (posConfigValues) {
-        return posConfigValues;
+      if (posConfig) {
+        return posConfig;
       }
 
       return {
@@ -481,7 +476,7 @@ const ConfigurationForm = compose(
         discountProduct: null,
         discountPc: 0.0,
         usePricelist: true,
-        availablePricelist: [],
+        availablePricelists: [],
         pricelist: null,
         restrictPriceControl: false,
         paymentMethods: [],

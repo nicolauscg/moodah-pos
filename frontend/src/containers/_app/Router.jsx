@@ -21,8 +21,8 @@ import ProductCategoryIndex from '../product_category/index'
 import ConfigurationIndex from '../configuration/index'
 import CreateConfigurationPage from '../configuration/CreateConfiguration'
 import CreateProductCategory from '../product_category/CreateProductCategory'
+import EditConfigurationPage from '../configuration/EditConfiguration'
 import EditProductCategory from '../product_category/EditProductCategory'
-
 
 const RouteList = {
   Partners: {
@@ -50,32 +50,36 @@ const RouteList = {
     component: [
       {
         path: '/configuration/list',
-        component: ConfigurationIndex,
+        component: ConfigurationIndex
       },
       {
         path: '/configuration/create',
-        component: CreateConfigurationPage,
-      }
+        component: CreateConfigurationPage
+      },
+      {
+        path: '/configuration/details/:id',
+        component: EditConfigurationPage
+      },
     ],
   },
 
   ProductCategory: {
-      path: '/product_category',
-      title: 'Product Category',
-      component: [
-        {
-          path: '/product_category/list',
-          component: ProductCategoryIndex,
-        },
-         {
-          path: '/product_category/create',
-          component: CreateProductCategory,
-        },
-        {
-          path: '/product_category/details/:id',
-          component: EditProductCategory,
-        },
-      ],
+    path: '/product_category',
+    title: 'Product Category',
+    component: [
+      {
+        path: '/product_category/list',
+        component: ProductCategoryIndex,
+      },
+      {
+        path: '/product_category/create',
+        component: CreateProductCategory,
+      },
+      {
+        path: '/product_category/details/:id',
+        component: EditProductCategory,
+      },
+    ],
   },
 
   AccountSettings: {
