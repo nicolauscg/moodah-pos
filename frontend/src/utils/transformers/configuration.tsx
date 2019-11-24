@@ -1,35 +1,89 @@
-import { toSuggestions } from "./general"
-import { AvailablePriceListsSelect } from "../../generated-pos-models"
+import { toSuggestions, referenceToOdoo } from "./general";
+import { renameKeys, radioGroupToOdoo } from "./pos-general";
+import {
+  AvailablePriceListsSelect,
+  DiscountProductsSelect,
+  StockLocationsSelect,
+  OperationTypesSelect,
+  PaymentMethodsSelect,
+  PosConfig
+} from "../../generated-pos-models";
+import * as R from "ramda";
 
 // ====================================================
 // Constants
 // ====================================================
 export const ConfigurationColumns = [
-  { name: 'posname', title: 'Point of Sale Name' },
-  { name: 'stocklocations', title: 'Stock Locations' },
-]
+  { name: "posname", title: "Point of Sale Name" },
+  { name: "stocklocations", title: "Stock Locations" }
+];
 
 // ====================================================
 // Transformers
 // ====================================================
+export const transformPosConfigForm = values => {
+  return R.pipe(
+    renameKeys({
+      discountProduct: "discountProductId",
+      availablePricelist: "availablePricelistIds",
+      pricelist: "pricelistId",
+      paymentMethods: "journalIds",
+      stockLocation: "stockLocationId",
+      globalDiscount: "modulePosDiscount"
+    }),
+    R.evolve({
+      discountProductId: referenceToOdoo,
+      pricelistId: referenceToOdoo,
+      stockLocationId: referenceToOdoo,
+      availablePricelistIds: R.map(referenceToOdoo),
+      journalIds: R.map(referenceToOdoo),
+      ifaceTaxIncluded: radioGroupToOdoo,
+      discountPc: parseFloat
+    }),
+    R.reject(R.either(R.isEmpty, R.isNil))
+  )(values);
+};
+
 export const prepareAvailablePricelists = (
   availablePricelists: AvailablePriceListsSelect.AvailablePriceLists
 ) => {
   return {
-    availablePricelists: {
+    availablePriceLists: {
       ...availablePricelists,
-      records: toSuggestions(availablePricelists.records),
+      records: toSuggestions(availablePricelists.records)
     }
-  }
-}
+  };
+};
 
-export const prepareDefaultPricelists = (
-  availablePricelists: AvailablePriceListsSelect.AvailablePriceLists
+export const prepareDiscountProducts = (
+  discountProducts: DiscountProductsSelect.DiscountProducts
 ) => {
   return {
-    defaultPricelists: {
-      ...availablePricelists,
-      records: toSuggestions(availablePricelists.records),
+    discountProducts: {
+      ...discountProducts,
+      records: toSuggestions(discountProducts.records)
     }
-  }
-}
+  };
+};
+
+export const prepareStockLocations = (
+  stockLocations: StockLocationsSelect.StockLocations
+) => {
+  return {
+    stockLocations: {
+      ...stockLocations,
+      records: toSuggestions(stockLocations.records)
+    }
+  };
+};
+
+export const preparePaymentMethods = (
+  paymentMethods: PaymentMethodsSelect.PaymentMethods
+) => {
+  return {
+    paymentMethods: {
+      ...paymentMethods,
+      records: toSuggestions(paymentMethods.records)
+    }
+  };
+};
