@@ -26,6 +26,27 @@ const posConfigFilter: FilterConfig = {
       conventionName: "name",
       operator: "ilike"
     }
+  ],
+  operationTypes: [
+    {
+      domainName: "name",
+      conventionName: "name",
+      operator: "ilike"
+    }
+  ],
+  stockLocations: [
+    {
+      domainName: "name",
+      conventionName: "name",
+      operator: "ilike"
+    }
+  ],
+  discountProducts: [
+    {
+      domainName: "name",
+      conventionName: "name",
+      operator: "ilike"
+    }
   ]
 };
 
