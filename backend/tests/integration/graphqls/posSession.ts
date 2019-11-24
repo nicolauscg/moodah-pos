@@ -11,27 +11,24 @@ const SIGN_IN = gql`
     }
   }
 `;
-const GET_POS_SESSION = gql`
+const GET_POS_SESSION = id => gql`
   query {
-    posSession {
-      length
-      records {
+    posSession (input: { id: "${id}" }) {
+      id
+      name
+      startSession
+      journalId {
+        id
+      }
+      userId {
         id
         name
-        startSession
-        journalId {
-          id
-        }
-        userId {
-          id
-          name
-        }
-        configurationId {
-          id
-          name
-        }
-        sequenceNumber
       }
+      configurationId {
+        id
+        name
+      }
+      sequenceNumber
     }
   }
 `;

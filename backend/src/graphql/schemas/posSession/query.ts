@@ -30,13 +30,10 @@ const posSessionQueries = new GraphQLObjectType({
           configureService({
             operation: getDataSet({
               context
-            }).createSearchRead({
+            }).createRead({
+              ids: [args.input.id],
               modelName: "pos.session",
-              fields: posSessionFields.posSession,
-              domain: [
-                ["state", "=", "opened"],
-                ["user_id", "=", args.input.id]
-              ]
+              fields: posSessionFields.posSession
             }),
             onError: error => {
               rej(
@@ -46,7 +43,15 @@ const posSessionQueries = new GraphQLObjectType({
               );
             },
             onResult: result => {
-              res(camelizeKeys(result.records[0]));
+              if (result.length === 0) {
+                rej(
+                  new ApolloError("Application Error", "APPLICATION_ERROR", {
+                    errorMessage: result.message
+                  })
+                );
+              } else {
+                res(camelizeKeys(result[0]));
+              }
             }
           });
         })

@@ -6,16 +6,27 @@ import {
 import posSessionRequests from "../graphqls/posSession";
 
 describe("Pos Session Query", () => {
-  it("query fetch all pos product", async () => {
+  it("open session, fetch all pos product, then close it", async () => {
     const server = await createTestServerWithSessionToken({
       signInGql: posSessionRequests.SIGN_IN
     });
     const { query } = createTestClient(server);
-    const res = await query({
-      query: posSessionRequests.GET_POS_SESSION
+    const { mutate } = createTestClient(server);
+    const openSessionResult: any = await mutate({
+      mutation: posSessionRequests.OPEN_SESSION("cG9zLmNvbmZpZzo1")
     });
-    expect(res.data.posSession.length).not.toBeNull();
-    expect(res.data.posSession.records).not.toBeNull();
+    const id = openSessionResult.data.openSession.sessionId;
+    expect(id).toEqual(expect.any(String));
+
+    const res = await query({
+      query: posSessionRequests.GET_POS_SESSION(id)
+    });
+    expect(res.data.posSession).not.toBeNull();
+
+    const closeSessionResult: any = await mutate({
+      mutation: posSessionRequests.CLOSE_SESSION(id)
+    });
+    expect(closeSessionResult.data.closeSession.success).toEqual(true);
   });
 
   it("query resUser without session token give error", async () => {
