@@ -242,10 +242,10 @@ const initialProductTypes = [
 const ProductForm = compose(
   withRouter,
   withState("isInUpdateImage", "setIsInUpdateImage", false),
-  withState("imageField", "setImageField", ({ posProduct }) =>
-    posProduct !== undefined && !posProduct.loading
-      ? posProduct.posProduct.image
-      : null
+  withState(
+    "imageField",
+    "setImageField",
+    ({ posProduct }) => posProduct.image
   ),
   withState("removeImageModalIsOpen", "setRemoveImageModalIsOpen", false),
   withState("productTypes", "setProductTypes", initialProductTypes),
@@ -301,7 +301,12 @@ const ProductForm = compose(
     return { categories };
   }),
   withFormik({
-    mapPropsToValues: () => {
+    mapPropsToValues: props => {
+      const { posProduct } = props;
+      if (posProduct) {
+        return posProduct;
+      }
+
       return {
         name: "",
         canBeSold: false,
@@ -311,8 +316,8 @@ const ProductForm = compose(
         internalReference: "",
         barcode: "",
         HSCode: "",
-        salesPrice: 0,
-        cost: 0
+        salesPrice: 1.0,
+        cost: 0.0
       };
     },
     handleSubmit: (values, { props }) => {

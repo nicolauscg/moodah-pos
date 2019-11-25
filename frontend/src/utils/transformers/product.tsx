@@ -1,5 +1,14 @@
-import { PosProducts, CategoriesSelect } from "../../generated-pos-models";
-import { toSuggestions, referenceToOdoo } from "./general";
+import {
+  PosProducts,
+  CategoriesSelect,
+  PosProduct
+} from "../../generated-pos-models";
+import {
+  toSuggestions,
+  referenceToOdoo,
+  referenceFromOdoo,
+  toSuggestion
+} from "./general";
 import { renameKeys } from "./pos-general";
 import * as R from "ramda";
 
@@ -23,6 +32,25 @@ export const prepareProductRows = (rows: Array<PosProducts.Records>) => {
     ...row,
     internalCategory: row.category !== null ? row.category.name : row.category
   }));
+};
+
+const productTypeToSuggestion = (productType: string) => ({
+  label: productType,
+  value: {
+    consumable: "consu",
+    service: "service",
+    stockableProduct: "product"
+  }[productType]
+});
+
+export const preparePosProduct = (posProduct: PosProduct.PosProduct) => {
+  return R.pipe(
+    R.evolve({
+      category: referenceFromOdoo,
+      productType: productTypeToSuggestion
+    }),
+    R.dissoc("__typename")
+  )(posProduct);
 };
 
 export const transformPosProductForm = (values, imageField) => {

@@ -42,6 +42,14 @@ query PosProducts(
   }
 }
 
+query PosProduct(
+  $input: PosProductInput!
+) {
+  posProduct(input: $input) {
+    ...posProductFields
+  }
+}
+
 query CategoriesSelect(
   $filters: FilterableCategoriesInput_where,
   $limit: Int
@@ -60,5 +68,20 @@ query CategoriesSelect(
 mutation CreatePosProduct($input: CreateOrUpdatePosProductInput!) {
   createPosProduct(input: $input) {
     id
+  }
+}
+
+mutation UpdatePosProduct($input: CreateOrUpdatePosProductInput!) {
+  updatePosProduct(input: $input) {
+    success
+    posProduct {
+      ...posProductFields
+    }
+  }
+}
+
+mutation DeletePosProduct($input: DeletePosProductInputType!){
+  deletePosProduct(input: $input){
+    success
   }
 }
