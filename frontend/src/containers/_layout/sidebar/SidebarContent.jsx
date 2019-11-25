@@ -75,10 +75,10 @@ class SidebarContent extends Component {
             action: "",
             children: [],
             id: "",
-            name: "Product Category",
+            name: "Category",
             parentId: "",
             sequence: 2,
-            xmlid: "moodah_general_menu.menu_productcategory",
+            xmlid: "moodah_general_menu.menu_category",
             __typename: "IrUiMenuType",
         },
         {

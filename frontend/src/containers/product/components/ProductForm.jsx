@@ -1,7 +1,7 @@
 import React, { Fragment } from "react";
 import { withRouter } from "react-router-dom";
 
-import { prop } from "ramda";
+import { prop, propOr } from "ramda";
 import { Row, Col, Button } from "reactstrap";
 import { withFormik, Form, FastField } from "formik";
 import { compose, withState, withHandlers, withPropsOnChange } from "recompose";
@@ -242,10 +242,8 @@ const initialProductTypes = [
 const ProductForm = compose(
   withRouter,
   withState("isInUpdateImage", "setIsInUpdateImage", false),
-  withState(
-    "imageField",
-    "setImageField",
-    ({ posProduct }) => posProduct.image
+  withState("imageField", "setImageField", ({ posProduct }) =>
+    propOr(null, "image", posProduct)
   ),
   withState("removeImageModalIsOpen", "setRemoveImageModalIsOpen", false),
   withState("productTypes", "setProductTypes", initialProductTypes),
