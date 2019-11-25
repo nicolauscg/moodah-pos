@@ -6,7 +6,7 @@ import {
 } from "../../utility/createTestServer";
 import posProductRequests from "../graphqls/posProduct";
 
-describe("Query", () => {
+describe("Pos Product Query", () => {
   it("query fetch all pos product", async () => {
     const server = await createTestServerWithSessionToken({
       signInGql: posProductRequests.SIGN_IN
@@ -46,9 +46,50 @@ describe("Query", () => {
       })
     );
   });
+
+  it(`fetch singular pos product with session token via id from multiple 
+  pos configs fetch`, async () => {
+    const amountOfIdsToRead = 3;
+    const server = await createTestServerWithSessionToken({
+      signInGql: posProductRequests.SIGN_IN
+    });
+    const { query } = createTestClient(server);
+    // posProductRes will contain the id that will be used to check
+    // if the singular posConfig is working
+    const posProductRes = await query({
+      query: posProductRequests.GET_POS_PRODUCT
+    });
+    const idsToRead = posProductRes.data.posProducts.records
+      .slice(0, amountOfIdsToRead)
+      .map(posProduct => posProduct.id);
+    // concurrently read posProductRes
+    Promise.all(
+      idsToRead.map(id =>
+        query({ query: posProductRequests.getPosProductQuery(id) })
+      )
+    ).then(posProductResults =>
+      posProductResults.forEach((posProductResult: any) => {
+        expect(posProductResult.data.posProduct).not.toBeNull();
+        expect(posProductResult.data.posProduct.name).not.toBeNull();
+      })
+    );
+  });
+
+  it("fetch filtered pos without proper convention", async () => {
+    const server = await createTestServerWithSessionToken({
+      signInGql: posProductRequests.SIGN_IN
+    });
+    const { query } = createTestClient(server);
+    // Testing the created graphQL filter function
+    const result = await query({
+      query: posProductRequests.filterPosProductQueryError
+    });
+    // Manual javascript filter function
+    expect(result.errors).toEqual(expect.anything());
+  });
 });
 
-describe("Mutation", () => {
+describe("Pos Product Mutation", () => {
   it("create pos cofig without session token give error", async () => {
     const server = createTestServer();
     const { mutate } = createTestClient(server);

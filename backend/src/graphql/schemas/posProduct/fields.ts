@@ -19,7 +19,8 @@ const posProductFields: FieldConfig = {
     "active",
     "qty_available",
     "virtual_avaiable",
-    "nbr_reordering_rules"
+    "nbr_reordering_rules",
+    "pos_categ_id"
   ]
 };
 
