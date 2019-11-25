@@ -11,6 +11,27 @@ const SIGN_IN = gql`
     }
   }
 `;
+const GET_POS_SESSION = id => gql`
+  query {
+    posSession (input: { id: "${id}" }) {
+      id
+      name
+      startSession
+      journalId {
+        id
+      }
+      userId {
+        id
+        name
+      }
+      configurationId {
+        id
+        name
+      }
+      sequenceNumber
+    }
+  }
+`;
 
 function getUserQuery(id: string) {
   return gql`
@@ -47,6 +68,7 @@ const CLOSE_SESSION = id => gql`
 
 export default {
   SIGN_IN,
+  GET_POS_SESSION,
   getUserQuery,
   OPEN_SESSION,
   CLOSE_SESSION

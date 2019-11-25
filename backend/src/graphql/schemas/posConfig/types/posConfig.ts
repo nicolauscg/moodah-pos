@@ -166,6 +166,25 @@ const PosConfigType = new GraphQLObjectType({
         })
       }),
       resolve: parent => parent.pickingTypeId
+    },
+    currentSessionState: {
+      type: GraphQLString,
+      resolve: parent =>
+        parent.currentSessionState === false ? null : parent.currentSessionState
+    },
+    currentSessionId: {
+      type: new GraphQLObjectType({
+        name: "PosConfig_CurrentSessionId",
+        fields: () => ({
+          id: globalIdField("product.currentSessionId", parent => parent[0]),
+          name: {
+            type: GraphQLString,
+            resolve: parent => parent[1]
+          }
+        })
+      }),
+      resolve: parent =>
+        parent.currentSessionId === false ? null : parent.currentSessionId
     }
   })
 });
