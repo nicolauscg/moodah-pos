@@ -14,11 +14,6 @@ beforeEach(() => {
 });
 
 describe("Product stub tests", () => {
-  const simplePosProductObject = (({ id, name }) => ({
-    id,
-    name
-  }))(posProduct);
-
   describe("query", () => {
     it("test query all return correct value", async () => {
       stubbedCreateService.mockReturnValueOnce(
@@ -37,18 +32,4 @@ describe("Product stub tests", () => {
       expect(result.records).toContainEqual(posProduct);
     });
   });
-
-//   it("test query read return correct value", async () => {
-//     stubbedCreateService.mockReturnValueOnce(
-//       xs.of(right(decamelizeKeys(stubResponse.queryReadPosProduct)))
-//     );
-
-//     const server = createTestServer();
-//     const { query } = createTestClient(server);
-//     const result = (await query({
-//       query: posProductRequests.GET_READ_POS_PRODUCT_STUB
-//     })).data.posProduct;
-
-//     expect(result).toEqual(posProduct);
-//   });
 });

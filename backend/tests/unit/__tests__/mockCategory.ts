@@ -17,7 +17,6 @@ describe("Mock category tests", () => {
         .mockImplementationOnce(() =>
           xs.of(right(decamelizeKeys(stubResponse.queryAllPosProduct)))
         );
-      console.log(packageNodoo.createService);
 
       (customNodoo as any).configureService = jest
         .fn()
@@ -43,9 +42,7 @@ describe("Mock category tests", () => {
       const result = (await query({
         query: posProductRequests.GET_POS_PRODUCT_STUB
       })).data.posProducts;
-      
-      console.log(customNodoo.createService);
-      
+
       expect(packageNodoo.createService).toHaveBeenCalledTimes(1);
       expect(packageNodoo.createService).toHaveBeenNthCalledWith(
         1,
@@ -58,17 +55,6 @@ describe("Mock category tests", () => {
           })
         })
       );
-      // expect(packageNodoo.createService).toHaveBeenNthCalledWith(
-      //   2,
-      //   expect.objectContaining({
-      //     operation: expect.objectContaining({
-      //       kind: "read"
-      //     }),
-      //     clientOptions: expect.objectContaining({
-      //       kind: "secure"
-      //     })
-      //   })
-      // );
       expect(packageNodoo.createService).toHaveReturnedWith(expect.any(Stream));
 
       expect(customNodoo.configureService).toHaveBeenCalledTimes(1);
