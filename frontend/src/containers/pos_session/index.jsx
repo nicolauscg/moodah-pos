@@ -11,10 +11,6 @@ import offsetToCursor from '../../utils/offsetToCursor'
 
 import Breadcrumb from '../../shared/components/Breadcrumb'
 
-import ConfigurationTable from './components/ConfigurationTable'
-
-import { PosConfigs } from '../../generated-pos-models'
-
 const SearchInput = ({ field, form, handleSetValue, ...props }) => {
   const { onChange, ...restField } = field
   return (
@@ -39,7 +35,7 @@ const SearchForm = ({ handleSetValue }) => {
       <Field
         name="keyword"
         className="search-field"
-        placeholder="Search..."
+        placeholder="Search for items to order ..."
         handleSetValue={handleSetValue}
         component={SearchInput}
       />
@@ -63,7 +59,7 @@ const FormikSearch = compose(
   }))
 )(SearchForm)
 
-const ConfigurationIndex = ({
+const Pos_SessionIndex = ({
   filters,
   setFilters,
   offset,
@@ -74,7 +70,7 @@ const ConfigurationIndex = ({
     <Container className="configuration__list">
       <Row className="header">
         <Col md={4} className="header__item">
-          <Breadcrumb crumbs={[{ text: 'Configuration' }]} />
+          <Breadcrumb crumbs={[{ text: 'Pos Session' }]} />
         </Col>
         <Col
           md={8}
@@ -100,14 +96,6 @@ const ConfigurationIndex = ({
 
         </Col>
       </Row>
-      <Row>
-         <ConfigurationTable
-          filters={filters}
-          setFilters={setFilters}
-          offset={offset}
-          setOffset={setOffset}
-         />
-      </Row>
     </Container>
   )
 }
@@ -118,39 +106,4 @@ const defaultFilters = {
     type: 'configuration',
   }
 
-const enhance = compose(
-  PosConfigs.HOC({
-    name: 'getPosConfigs',
-    options: {
-      context: {
-        clientName: "pos"
-      }
-    }
-  }),
-  withPropsOnChange(['getPosConfigs'], ({ getPosConfigs }) => {
-    if (!getPosConfigs.loading) {
-      console.log("getPosConfigs", getPosConfigs);
-    }
-  }),
-  withState('filters', 'setFilters', defaultFilters),
-  withState('offset', 'setOffset', 0),
-  withHandlers({
-    handleSetValue: ({ filters, setFilters, setOffset }) => value => {
-      setFilters({
-        ...filters,
-        name_contains: value,
-      })
-      setOffset(0)
-    },
-    refetchQueries: ({ filters, offset }) => () => [
-      {
-        variables: {
-          filters,
-          ...(offset > 0 ? { offset: offsetToCursor(offset) } : {}),
-        },
-      },
-    ],
-  })
-)
-
-export default enhance(ConfigurationIndex)
+export default (Pos_SessionIndex)

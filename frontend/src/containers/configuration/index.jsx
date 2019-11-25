@@ -42,10 +42,11 @@ const SearchForm = ({ handleSetValue }) => {
         placeholder="Search..."
         handleSetValue={handleSetValue}
         component={SearchInput}
+
       />
-      <button className="search-btn" type="submit">
+      <Button className="search-btn" type="submit">
         <SearchIcon />
-      </button>
+      </Button>
     </Form>
   )
 }

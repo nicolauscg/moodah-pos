@@ -19,10 +19,10 @@ import withStandardPlanHandler from '../../shared/components/withStandardPlanHan
 
 import ProductCategoryIndex from '../product_category/index'
 import ConfigurationIndex from '../configuration/index'
+import Pos_SessionIndex from '../pos_session/index'
 import CreateConfigurationPage from '../configuration/CreateConfiguration'
 import CreateProductCategory from '../product_category/CreateProductCategory'
 import EditProductCategory from '../product_category/EditProductCategory'
-
 
 const RouteList = {
   Partners: {
@@ -85,20 +85,12 @@ const RouteList = {
   Session: {
         path: '/pos_session',
         title: 'POS Session',
-        /*component: [
+        component: [
           {
-            path: '/pos_session/session_1',
-            component: Session1,
+            path: '/pos_session/list',
+            component: Pos_SessionIndex,
           },
-           {
-            path: '/pos_session/session_2',
-            component: Session2,
-          },
-          {
-            path: '/pos_session/session_3/:id',
-            component: Session3,
-          },
-        ],*/
+        ],
     },
 
 
