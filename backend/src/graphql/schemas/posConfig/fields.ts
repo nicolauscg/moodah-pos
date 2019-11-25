@@ -20,7 +20,9 @@ const posConfigFields: FieldConfig = {
     "stock_location_id",
     "picking_type_id",
     "current_session_id",
-    "current_session_state"
+    "current_session_state",
+    "pos_session_state",
+    "pos_session_username"
   ]
 };
 

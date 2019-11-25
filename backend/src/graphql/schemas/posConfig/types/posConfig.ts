@@ -185,6 +185,16 @@ const PosConfigType = new GraphQLObjectType({
       }),
       resolve: parent =>
         parent.currentSessionId === false ? null : parent.currentSessionId
+    },
+    posSessionState: {
+      type: GraphQLString,
+      resolve: parent =>
+        parent.posSessionState === false ? null : parent.posSessionState
+    },
+    posSessionUsername: {
+      type: GraphQLString,
+      resolve: parent =>
+        parent.posSessionUsername === false ? null : parent.posSessionUsername
     }
   })
 });
