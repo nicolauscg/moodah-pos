@@ -77,9 +77,9 @@ const EditPosConfig = ({
                         crumbs={[
                           {
                             text: "Configuration",
-                            path: "/product_category/list"
+                            path: "/configuration/list"
                           },
-                          { text: posConfig.displayName }
+                          { text: posConfig.name }
                         ]}
                       />
                     </Col>

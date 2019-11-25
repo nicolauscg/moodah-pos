@@ -31,14 +31,50 @@ fragment posConfigFields on PosConfig {
   receiptFooter
 }
 
-query PosConfigs {
-  posConfigs {
+query PosConfigs (
+  $filters: FilterablePosConfigsInput_where,
+  $limit: Int,
+  $offset: Int
+) {
+  posConfigs(input: {
+    where: $filters,
+    first: $limit,
+    offset: $offset
+  }) {
     length
     records {
+      id
       name
       stockLocation {
         name
       }
+    }
+  }
+}
+
+query PosConfigsDashboard (
+  $filters: FilterablePosConfigsInput_where,
+  $limit: Int,
+  $offset: Int
+) {
+  posConfigs(input: {
+    where: $filters,
+    first: $limit,
+    offset: $offset
+  }) {
+    records {
+      id
+      name
+      stockLocation {
+        name
+      }
+      currentSessionState
+      currentSessionId {
+        id
+        name
+      }
+      posSessionState
+      posSessionUsername
     }
   }
 }
