@@ -30,13 +30,13 @@ const CreateOrUpdatePosProductInputType = new GraphQLInputObjectType({
     category: {
       type: GlobalIdInput
     },
-    internalReference: {
+    defaultCode: {
       type: GraphQLString
     },
     barcode: {
       type: GraphQLString
     },
-    HSCode: {
+    hsCode: {
       type: GraphQLString
     },
     salesPrice: {
