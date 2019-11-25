@@ -52,6 +52,33 @@ query PosConfigs (
   }
 }
 
+query PosConfigsDashboard (
+  $filters: FilterablePosConfigsInput_where,
+  $limit: Int,
+  $offset: Int
+) {
+  posConfigs(input: {
+    where: $filters,
+    first: $limit,
+    offset: $offset
+  }) {
+    records {
+      id
+      name
+      stockLocation {
+        name
+      }
+      currentSessionState
+      currentSessionId {
+        id
+        name
+      }
+      posSessionState
+      posSessionUsername
+    }
+  }
+}
+
 query PosConfig($input: PosConfigInput!) {
   posConfig(input: $input) {
     ...posConfigFields

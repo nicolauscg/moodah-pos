@@ -1,16 +1,23 @@
 import React, { Fragment } from "react";
-import { compose, withHandlers } from "recompose";
+import { compose, withHandlers, getContext } from "recompose";
 import { withRouter } from "react-router-dom";
 
-import { PosConfigs } from "../../../generated-pos-models";
-
+import { PosConfigsDashboard } from "../../../generated-pos-models";
 import {
   DashboardColumns,
   preparePosConfigRows
 } from "../../../utils/transformers/dashboard";
 import DataTable from "../../../shared/components/DataTable";
 
-const Table = ({ data, offset, limit, handlePageChange, onClickRow }) => {
+const Table = ({
+  data,
+  offset,
+  limit,
+  handlePageChange,
+  onClickRow,
+  openSession,
+  closeSession
+}) => {
   const tableColumnExtensions = DashboardColumns.map(col => ({
     columnName: col.name,
     wordWrapEnabled: true
@@ -22,7 +29,7 @@ const Table = ({ data, offset, limit, handlePageChange, onClickRow }) => {
   return (
     <Fragment>
       <DataTable
-        rows={preparePosConfigRows(rows)}
+        rows={preparePosConfigRows(rows, openSession, closeSession)}
         columns={DashboardColumns}
         totalCount={totalCount}
         defaultSorting={[{ columnName: "name", direction: "asc" }]}
@@ -40,7 +47,7 @@ const Table = ({ data, offset, limit, handlePageChange, onClickRow }) => {
 
 const DashboardTable = compose(
   withRouter,
-  PosConfigs.HOC({
+  PosConfigsDashboard.HOC({
     options: ({ filters, offset, limit }) => ({
       context: {
         clientName: "pos"
