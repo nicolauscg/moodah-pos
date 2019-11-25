@@ -1,3 +1,21 @@
+fragment posProductFields on PosProductType {
+  id
+  name
+  image
+  canBeSold
+  canBePurchased
+  productType
+  category {
+    id
+    name
+  }
+  internalReference
+  barcode
+  HSCode
+  salesPrice
+  cost
+}
+
 query PosProducts(
   $filters: FilterablePosProductsInput_where,
   $limit: Int,
@@ -21,5 +39,26 @@ query PosProducts(
       }
       productType
     }
+  }
+}
+
+query CategoriesSelect(
+  $filters: FilterableCategoriesInput_where,
+  $limit: Int
+) {
+  categories(input: {
+    where: $filters,
+    first: $limit
+  }) {
+    records {
+      id
+      name
+    }
+  }
+}
+
+mutation CreatePosProduct($input: CreateOrUpdatePosProductInput!) {
+  createPosProduct(input: $input) {
+    id
   }
 }
