@@ -1,8 +1,7 @@
 fragment posConfigFields on PosConfig {
   id
   name
-  active
-  stockLocation{
+  stockLocation {
     id
     name
   }
@@ -18,7 +17,7 @@ fragment posConfigFields on PosConfig {
     id
     name
   }
-  pricelist{
+  pricelist {
     id
     name
   }
@@ -30,13 +29,9 @@ fragment posConfigFields on PosConfig {
   isHeaderOrFooter
   receiptHeader
   receiptFooter
-  pickingType{
-    id
-    name
-  }
 }
 
-query PosConfigs(
+query PosConfigs (
   $filters: FilterablePosConfigsInput_where,
   $limit: Int,
   $offset: Int
@@ -57,6 +52,33 @@ query PosConfigs(
   }
 }
 
+query PosConfigsDashboard (
+  $filters: FilterablePosConfigsInput_where,
+  $limit: Int,
+  $offset: Int
+) {
+  posConfigs(input: {
+    where: $filters,
+    first: $limit,
+    offset: $offset
+  }) {
+    records {
+      id
+      name
+      stockLocation {
+        name
+      }
+      currentSessionState
+      currentSessionId {
+        id
+        name
+      }
+      posSessionState
+      posSessionUsername
+    }
+  }
+}
+
 query PosConfig($input: PosConfigInput!) {
   posConfig(input: $input) {
     ...posConfigFields
@@ -66,9 +88,6 @@ query PosConfig($input: PosConfigInput!) {
 mutation CreatePosConfig($input: CreateOrUpdatePosConfigInputType!) {
   createPosConfig(input: $input) {
     id
-    posConfig {
-      ...posConfigFields
-    }
   }
 }
 
@@ -84,8 +103,69 @@ mutation UpdatePosConfig($input: CreateOrUpdatePosConfigInputType!) {
 mutation DeletePosConfig($input: DeletePosConfigInputType!){
   deletePosConfig(input: $input){
     success
-    posConfig {
-      ...posConfigFields
+  }
+}
+
+query AvailablePriceListsSelect(
+  $filters: FilterableAvailablePriceListsInput_where,
+  $limit: Int
+) {
+  availablePriceLists(input: {
+    where: $filters,
+    first: $limit
+  }) {
+    length
+    records {
+      id
+      displayName
+    }
+  }
+}
+
+query PaymentMethodsSelect(
+  $filters: FilterablePaymentMethodsInput_where,
+  $limit: Int
+) {
+  paymentMethods(input: {
+    where: $filters,
+    first: $limit
+  }) {
+    length
+    records {
+      id
+      displayName
+    }
+  }
+}
+
+query StockLocationsSelect(
+  $filters: FilterableStockLocationsInput_where,
+  $limit: Int
+) {
+  stockLocations(input: {
+    where: $filters,
+    first: $limit
+  }) {
+    length
+    records {
+      id
+      displayName
+    }
+  }
+}
+
+query DiscountProductsSelect(
+  $filters: FilterableDiscountProductsInput_where,
+  $limit: Int
+) {
+  discountProducts(input: {
+    where: $filters,
+    first: $limit
+  }) {
+    length
+    records {
+      id
+      displayName
     }
   }
 }
