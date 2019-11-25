@@ -13,7 +13,22 @@ export const posCategory = {
   sequence: 0
 };
 
+export const posProduct = {
+  id: toGlobalId("product.template", String(50)),
+  name: "Cake"
+};
+
 export default {
+  queryAllPosProduct: {
+    length: 1,
+    records: [
+      {
+        globalIdType: "product.template",
+        id: 50,
+        name: "Cake"
+      }
+    ]
+  },
   queryAll: {
     length: 1,
     records: [
@@ -37,6 +52,13 @@ export default {
       image: "64encodedImage",
       parentId: [80, "Food Menu"],
       sequence: 0
+    }
+  ],
+  queryReadPosProduct: [
+    {
+      globalIdType: "product.template",
+      id: 50,
+      name: "Cake"
     }
   ],
   nestedQueryParent: [
