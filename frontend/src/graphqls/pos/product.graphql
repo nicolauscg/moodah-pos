@@ -1,15 +1,87 @@
-query PosProductsSelect(
+fragment posProductFields on PosProductType {
+  id
+  name
+  image
+  canBeSold
+  canBePurchased
+  productType
+  category {
+    id
+    name
+  }
+  internalReference
+  barcode
+  HSCode
+  salesPrice
+  cost
+}
+
+query PosProducts(
   $filters: FilterablePosProductsInput_where,
-  $limit: Int
+  $limit: Int,
+  $offset: Int
 ) {
   posProducts(input: {
     where: $filters,
-    first: $limit
+    first: $limit,
+    offset: $offset
   }) {
     length
     records {
       id
+      internalReference
+      name
+      salesPrice
+      cost
+      category {
+        id
+        name
+      }
+      productType
+    }
+  }
+}
+
+query PosProduct(
+  $input: PosProductInput!
+) {
+  posProduct(input: $input) {
+    ...posProductFields
+  }
+}
+
+query CategoriesSelect(
+  $filters: FilterableCategoriesInput_where,
+  $limit: Int
+) {
+  categories(input: {
+    where: $filters,
+    first: $limit
+  }) {
+    records {
+      id
       name
     }
+  }
+}
+
+mutation CreatePosProduct($input: CreateOrUpdatePosProductInput!) {
+  createPosProduct(input: $input) {
+    id
+  }
+}
+
+mutation UpdatePosProduct($input: CreateOrUpdatePosProductInput!) {
+  updatePosProduct(input: $input) {
+    success
+    posProduct {
+      ...posProductFields
+    }
+  }
+}
+
+mutation DeletePosProduct($input: DeletePosProductInputType!){
+  deletePosProduct(input: $input){
+    success
   }
 }
