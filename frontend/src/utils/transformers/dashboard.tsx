@@ -39,7 +39,13 @@ export const preparePosConfigRows = (
         <></>
       ) : row.currentSessionState === "opened" ? (
         <Fragment>
-          <Button size="sm" color="primary" tag="a" className="text-white">
+          <Button
+            size="sm"
+            color="primary"
+            tag="a"
+            className="text-white"
+            onClick={event => event.stopPropagation()}
+          >
             resume session
           </Button>
           <Button

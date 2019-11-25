@@ -49,39 +49,45 @@ const ImageField = ({
       <Fragment>
         <img
           src={`data:image/png;base64,${imageField}`}
-          className=".image-field"
+          className="image-field mb-2"
           alt="category-pic"
         />
-        <Button
-          color="warning"
-          size="sm"
-          onClick={() => setIsInUpdateImage(true)}
-        >
-          Change
-        </Button>
-        <Button color="danger" size="sm" onClick={toggleRemoveImage}>
-          Remove
-        </Button>
+        <div className="d-flex justify-content-center">
+          <Button
+            color="warning"
+            size="sm"
+            onClick={() => setIsInUpdateImage(true)}
+          >
+            Change
+          </Button>
+          <Button color="danger" size="sm" onClick={toggleRemoveImage}>
+            Remove
+          </Button>
+        </div>
       </Fragment>
     );
   } else {
     return (
       <Fragment>
-        <DropzoneGQL
-          loading={false}
-          uploader={encodedImage => {
-            setImageField(encodedImage);
-            setIsInUpdateImage(false);
-          }}
-        />
+        <div className="mb-2">
+          <DropzoneGQL
+            loading={false}
+            uploader={encodedImage => {
+              setImageField(encodedImage);
+              setIsInUpdateImage(false);
+            }}
+          />
+        </div>
         {isInUpdateImage && (
-          <Button
-            color="danger"
-            size="sm"
-            onClick={() => setIsInUpdateImage(false)}
-          >
-            Cancel
-          </Button>
+          <div className="d-flex justify-content-center">
+            <Button
+              color="danger"
+              size="sm"
+              onClick={() => setIsInUpdateImage(false)}
+            >
+              Cancel
+            </Button>
+          </div>
         )}
       </Fragment>
     );
@@ -99,7 +105,6 @@ const FormContent = ({
   refetchParents,
   ...props
 }) => {
-  console.log("posCategory", posCategory);
   return (
     <Form
       onSubmit={e => {
@@ -111,10 +116,10 @@ const FormContent = ({
         <Panel xs={12} title="Category" isForm>
           <div className="material-form">
             <Row>
-              <Col xs={12} md={3}>
+              <Col sm={12} md={4}>
                 <ImageField toggleRemoveImage={toggleRemoveImage} {...props} />
               </Col>
-              <Col xs={12} md={5}>
+              <Col sm={12} md={5}>
                 <FastField
                   required
                   label="Category Name"
