@@ -18,7 +18,9 @@ const posConfigFields: FieldConfig = {
     "receipt_header",
     "receipt_footer",
     "stock_location_id",
-    "picking_type_id"
+    "picking_type_id",
+    "current_session_id",
+    "current_session_state"
   ]
 };
 
