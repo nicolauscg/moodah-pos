@@ -69,6 +69,41 @@ describe("Pos Session Query", () => {
       );
     }
   });
+
+  it("open session, fetch all session, get account bank statement, then close it", async () => {
+    const server = await createTestServerWithSessionToken({
+      signInGql: posSessionRequests.SIGN_IN
+    });
+    const { query } = createTestClient(server);
+    const { mutate } = createTestClient(server);
+    const openSessionResult: any = await mutate({
+      mutation: posSessionRequests.OPEN_SESSION("cG9zLmNvbmZpZzo1")
+    });
+    const id = openSessionResult.data.openSession.sessionId;
+    expect(id).toEqual(expect.any(String));
+
+    const res = await query({
+      query: posSessionRequests.GET_ACCOUNT_BANK_STATEMENT(id)
+    });
+    expect(res.data.accountBankStatement).not.toBeNull();
+
+    const closeSessionResult: any = await mutate({
+      mutation: posSessionRequests.CLOSE_SESSION(id)
+    });
+    expect(closeSessionResult.data.closeSession.success).toEqual(true);
+  });
+
+  it("get wrong account bank statement", async () => {
+    const server = await createTestServerWithSessionToken({
+      signInGql: posSessionRequests.SIGN_IN
+    });
+    const { query } = createTestClient(server);
+    const WRONG_ID = -1;
+    const res = await query({
+      query: posSessionRequests.GET_ACCOUNT_BANK_STATEMENT(WRONG_ID)
+    });
+    expect(res.errors).toEqual(expect.anything());
+  });
 });
 
 describe("Pos Session Mutation", () => {
