@@ -4,13 +4,15 @@ import {withRouter} from 'react-router-dom'
 import { DropzoneGQL } from '../../../shared/components/Dropzone.jsx'
 import { Row, Col, Button } from 'reactstrap'
 import { withFormik, Form, FastField } from 'formik'
-import { compose, withState, withHandlers } from 'recompose'
+import { compose, withState, withHandlers, withPropsOnChange } from 'recompose'
+import { prop } from 'ramda'
 
 import { PosCategories } from '../../../generated-pos-models'
 import Panel from '../../../shared/components/Panel'
 import FormikInput from '../../../shared/components/formik/TextInput'
 import Select from '../../../shared/components/form-custom/DynamicSelect'
 import Modal from '../../../shared/components/form-custom/Modal'
+import { prepareParents } from '../../../utils/transformers/productcategory'
 
 const RemoveImageModal = ({ toggle, isOpen, confirm }) => {
   return (
@@ -116,18 +118,12 @@ const FormContent = ({
                   component={FormikInput}
                 />
                 <Select
-                  dataState={!parents.loading ? 
-                    parents.posCategories.records.map(({id, displayName})=>(
-                      {label: displayName, value: id}
-                    )).concat({label: 'Clear Parent Category', value: null}) : 
-                    []
-                  }
+                  dataState={parents}
                   field='parent'
                   label='Parent Category'
                   refetch={refetchParents}
                   onFocus={onInputFocus}
-                  queryKey={[]}
-                  hasMoreKey={['parents']}
+                  queryKey={['posCategories', 'records']}
                 />
                 <FastField
                   label = 'Sequence'
@@ -154,21 +150,6 @@ const FormContent = ({
 
 const ProductCategoryForm = compose(
   withRouter,
-  PosCategories.HOC({
-    name: 'parents',
-    options: ({
-      parentFilters
-    }) => ({
-      context: {
-        clientName: 'pos'
-      },
-      variables: {
-        filters: parentFilters,
-        offset: 0,
-        limit: 10
-      }
-    })
-  }),
   withState('isInUpdateImage', 'setIsInUpdateImage', false),
   withState(
     'imageField',
@@ -195,6 +176,33 @@ const ProductCategoryForm = compose(
         OR: [{ 'name': input }]
       })
     },
+  }),
+  PosCategories.HOC({
+    name: 'parents',
+    options: ({
+      parentFilters
+    }) => ({
+      context: {
+        clientName: 'pos'
+      },
+      variables: {
+        filters: parentFilters,
+        offset: 0,
+        limit: 10
+      }
+    })
+  }),
+  withPropsOnChange(['parents'], ({ parents: oldParents }) => {
+    let parents = oldParents;
+
+    if (!parents.loading) {
+      parents = {
+        ...parents,
+        ...prepareParents(prop('posCategories', parents)),
+      }
+    }
+
+    return { parents }
   }),
   withFormik({
     mapPropsToValues: props => {

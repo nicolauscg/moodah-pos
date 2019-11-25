@@ -21,10 +21,9 @@ import DashboardIndex from '../dashboard/index'
 
 import ProductCategoryIndex from '../product_category/index' // Routing Product Category
 import CreateProductCategory from '../product_category/CreateProductCategory'
+import EditConfigurationPage from '../configuration/EditConfiguration'
 import EditProductCategory from '../product_category/EditProductCategory'
-
 import CreateProduct from '../product/CreateProduct'
-
 import ConfigurationIndex from '../configuration/index'
 import CreateConfigurationPage from '../configuration/CreateConfiguration'
 
@@ -54,37 +53,67 @@ const RouteList = {
     component: [
       {
         path: '/configuration/list',
-        component: ConfigurationIndex,
+        component: ConfigurationIndex
       },
       {
         path: '/configuration/create',
-        component: CreateConfigurationPage,
+        component: CreateConfigurationPage
       },
-      /*{
+      {
         path: '/configuration/details/:id',
-        component: EditConfiguration,
-      },*/
+        component: EditConfigurationPage
+      },
     ],
   },
 
   ProductCategory: {
-      path: '/product_category',
-      title: 'Product Category',
-      component: [
-        {
-          path: '/product_category/list',
-          component: ProductCategoryIndex,
-        },
-        {
-          path: '/product_category/create',
-          component: CreateProductCategory,
-        },
-        {
-          path: '/product_category/details/:id',
-          component: EditProductCategory,
-        },
-      ],
+    path: '/product_category',
+    title: 'Product Category',
+    component: [
+      {
+        path: '/product_category/list',
+        component: ProductCategoryIndex,
+      },
+      {
+        path: '/product_category/create',
+        component: CreateProductCategory,
+      },
+      {
+        path: '/product_category/details/:id',
+        component: EditProductCategory,
+      },
+    ],
   },
+
+  Product: {
+      path: '/product',
+      title: 'Product',
+      component: [
+        /*{
+          path: '/product/list',
+          component: ProductIndex,
+        },*/
+        {
+          path: '/product/create',
+          component: CreateProduct,
+        },
+        /*{
+          path: '/product/details/:id',
+          component: EditProduct,
+        },*/
+        ],
+    },
+
+  Dashboard: {
+        path: '/dashboard',
+        title: 'Dashboard',
+        component: [
+          {
+            path: '/dashboard/list',
+            component: DashboardIndex,
+          },
+        ],
+    },
 
   Product: {
       path: '/product',

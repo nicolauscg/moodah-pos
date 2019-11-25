@@ -24,7 +24,8 @@ const PosConfigType = new GraphQLObjectType({
       type: IfaceTaxIncludedType
     },
     globalDiscount: {
-      type: GraphQLBoolean
+      type: GraphQLBoolean,
+      resolve: parent => parent.modulePosDiscount
     },
     discountProduct: {
       type: new GraphQLObjectType({
