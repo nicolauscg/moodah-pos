@@ -1,0 +1,19 @@
+mutation OpenSession(
+  $id: GlobalIdInput
+) {
+  openSession (input:{
+    id: $id
+  }) {
+    sessionId
+  }
+}
+
+mutation CloseSession(
+  $id: GlobalIdInput
+) {
+  closeSession(input: {
+    id: $id
+  }) {
+    success
+  }
+}

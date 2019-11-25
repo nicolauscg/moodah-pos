@@ -1,30 +1,35 @@
-import React, { Fragment } from 'react'
-import { withRouter } from 'react-router-dom'
+import React, { Fragment } from "react";
+import { withRouter } from "react-router-dom";
 
-import { DropzoneGQL } from '../../../shared/components/Dropzone.jsx'
-import { Row, Col, Button } from 'reactstrap'
-import { withFormik, Form, FastField } from 'formik'
-import { compose, withState, withHandlers } from 'recompose'
+import { prop } from "ramda";
+import { Row, Col, Button } from "reactstrap";
+import { withFormik, Form, FastField } from "formik";
+import { compose, withState, withHandlers, withPropsOnChange } from "recompose";
 
-import Panel from '../../../shared/components/Panel'
-import FormikInput from '../../../shared/components/formik/TextInput'
-import FormInput from '../../../shared/components/form-custom/FormInput'
-import Select from '../../../shared/components/form-custom/DynamicSelect'
-import Modal from '../../../shared/components/form-custom/Modal'
-import FormCheckbox from '../../../shared/components/form-custom/FormCheckbox'
+import { DropzoneGQL } from "../../../shared/components/Dropzone.jsx";
+import {
+  prepareCategories,
+  transformPosProductForm
+} from "../../../utils/transformers/product";
+import { CategoriesSelect } from "../../../generated-pos-models";
+import Panel from "../../../shared/components/Panel";
+import FormikInput from "../../../shared/components/formik/TextInput";
+import FormikCheckbox from "../../../shared/components/formik/Checkbox";
+import Select from "../../../shared/components/form-custom/DynamicSelect";
+import Modal from "../../../shared/components/form-custom/Modal";
 
 const RemoveImageModal = ({ toggle, isOpen, confirm }) => {
   return (
     <Modal
-      type='dialog'
-      title='Remove Product Image'
-      body='Are you sure you want to remove this image?'
+      type="dialog"
+      title="Remove Product Image"
+      body="Are you sure you want to remove this image?"
       action={
         <Fragment>
-          <Button color='primary' size='sm' onClick={confirm}>
+          <Button color="primary" size="sm" onClick={confirm}>
             Yes
           </Button>
-          <Button color='danger' size='sm' onClick={toggle}>
+          <Button color="danger" size="sm" onClick={toggle}>
             No
           </Button>
         </Fragment>
@@ -33,8 +38,8 @@ const RemoveImageModal = ({ toggle, isOpen, confirm }) => {
       isOpen={isOpen}
       centered
     />
-  )
-}
+  );
+};
 
 const ImageField = ({
   imageField,
@@ -46,38 +51,46 @@ const ImageField = ({
   if (!isInUpdateImage && imageField) {
     return (
       <Fragment>
-          <img
-            src={`data:image/png;base64,${imageField}`}
-            className='.image-field'
-            alt='category-pic'
-          />
-          <Button color='warning' size='sm' onClick={() => setIsInUpdateImage(true)}>
-            Change
-          </Button>
-          <Button color='danger' size='sm' onClick={toggleRemoveImage}>
-            Remove
-          </Button>
+        <img
+          src={`data:image/png;base64,${imageField}`}
+          className=".image-field"
+          alt="category-pic"
+        />
+        <Button
+          color="warning"
+          size="sm"
+          onClick={() => setIsInUpdateImage(true)}
+        >
+          Change
+        </Button>
+        <Button color="danger" size="sm" onClick={toggleRemoveImage}>
+          Remove
+        </Button>
       </Fragment>
-    )
+    );
   } else {
     return (
       <Fragment>
         <DropzoneGQL
           loading={false}
-          uploader={(encodedImage) => {
+          uploader={encodedImage => {
             setImageField(encodedImage);
             setIsInUpdateImage(false);
           }}
         />
         {isInUpdateImage && (
-          <Button color='danger' size='sm' onClick={() => setIsInUpdateImage(false)}>
+          <Button
+            color="danger"
+            size="sm"
+            onClick={() => setIsInUpdateImage(false)}
+          >
             Cancel
           </Button>
         )}
       </Fragment>
-    )
+    );
   }
-}
+};
 
 const FormContent = ({
   onInputFocus,
@@ -85,227 +98,130 @@ const FormContent = ({
   toggleRemoveImage,
   removeImageModalIsOpen,
   removeImageConfirm,
-  copySold,
-  setGeneralAsSold,
-  copyPurchased,
-  setGeneralAsPurchased,
-  copyExpensed,
-  setGeneralAsExpensed,
+  productTypes,
+  refetchProductTypes,
+  categories,
+  refetchCategories,
   ...props
 }) => {
-  return(
+  return (
     <Form
       onSubmit={e => {
-        e.stopPropagation()
-        handleSubmit(e)
+        e.stopPropagation();
+        handleSubmit(e);
       }}
     >
       <Row>
-        <Panel
-          xs ={12}
-          title='Product'
-          isForm
-        >
-          <div className='material-form'>
+        <Panel xs={12} title="Product" isForm>
+          <div className="material-form">
             <Row>
               <Col xs={12} md={3}>
                 <ImageField toggleRemoveImage={toggleRemoveImage} {...props} />
               </Col>
-
               <Col xs={12} md={5}>
                 <FastField
                   required
-                  label = 'Product Name'
-                  name = 'name'
-                  onFocus = {onInputFocus}
-                  component = {FormikInput}
-                  variant = 'outlined'
-                />
-                <FormCheckbox
-                  className="material-form"
-                  FormLabelProps={{
-                    label: 'Can be sold',
-                  }}
-                  name="copySold"
-                  CheckboxProps={{
-                    checked: copySold,
-                    onChange: setGeneralAsSold,
-                  }}
+                  label="Product Name"
+                  name="name"
+                  onFocus={onInputFocus}
+                  component={FormikInput}
+                  variant="outlined"
                 />
                 <div>
-                  <FormCheckbox
-                    className="material-form"
+                  <FastField
+                    name="canBeSold"
                     FormLabelProps={{
-                      label: 'Can be purchased',
+                      label: "Can be sold"
                     }}
-                    name="copyPurchased"
-                    CheckboxProps={{
-                      checked: copyPurchased,
-                      onChange: setGeneralAsPurchased,
-                    }}
-                    />
+                    component={FormikCheckbox}
+                  />
                 </div>
-                <FormCheckbox
-                  className="material-form"
-                  FormLabelProps={{
-                    label: 'Can be Expensed',
-                  }}
-                  name="copyExpensed"
-                  CheckboxProps={{
-                    checked: copyExpensed,
-                    onChange: setGeneralAsExpensed,
-                  }}
+                <div>
+                  <FastField
+                    name="canBePurchased"
+                    FormLabelProps={{
+                      label: "Can be purchased"
+                    }}
+                    component={FormikCheckbox}
+                  />
+                </div>
+              </Col>
+            </Row>
+            <Row>
+              <Col md={4}>
+                <Select
+                  dataState={productTypes}
+                  field="productType"
+                  label="Product Type"
+                  refetch={refetchProductTypes}
+                  onFocus={onInputFocus}
+                  queryKey={[]}
+                />
+              </Col>
+              <Col md={4}>
+                <Select
+                  dataState={categories}
+                  field="category"
+                  label="Category"
+                  refetch={refetchCategories}
+                  onFocus={onInputFocus}
+                  queryKey={["categories", "records"]}
+                />
+              </Col>
+              <Col md={4}>
+                <FastField
+                  label="Internal Reference"
+                  name="internalReference"
+                  onFocus={onInputFocus}
+                  component={FormikInput}
+                  variant="outlined"
+                />
+              </Col>
+            </Row>
+            <Row>
+              <Col md={4}>
+                <FastField
+                  label="Barcode"
+                  name="barcode"
+                  onFocus={onInputFocus}
+                  component={FormikInput}
+                  variant="outlined"
+                />
+              </Col>
+              <Col md={4}>
+                <FastField
+                  label="HS Code"
+                  name="HSCode"
+                  onFocus={onInputFocus}
+                  component={FormikInput}
+                  variant="outlined"
+                />
+              </Col>
+              <Col md={4}>
+                <FastField
+                  label="Sales Price"
+                  name="salesPrice"
+                  onFocus={onInputFocus}
+                  component={FormikInput}
+                  variant="outlined"
+                />
+              </Col>
+            </Row>
+            <Row>
+              <Col md={4}>
+                <FastField
+                  label="Cost"
+                  name="cost"
+                  onFocus={onInputFocus}
+                  component={FormikInput}
+                  variant="outlined"
                 />
               </Col>
             </Row>
           </div>
-
-          <br />
-
-          <Row>
-            <Col md={4}>
-              <div>
-                <FastField
-                  label = 'Product Name'
-                  name = 'name'
-                  onFocus = {onInputFocus}
-                  component = {FormikInput}
-                  variant = 'outlined'
-                 />
-              </div>
-
-              <br />
-
-              <div>
-                <FastField
-                  label = 'Barcode'
-                  name = 'name'
-                  onFocus = {onInputFocus}
-                  component = {FormikInput}
-                  variant = 'outlined'
-                />
-              </div>
-
-              <br />
-
-            <div>
-              <FastField
-                label = 'Cost'
-                name = 'name'
-                onFocus = {onInputFocus}
-                component = {FormikInput}
-                variant = 'outlined'
-              />
-            </div>
-
-              <br />
-
-            <div>
-              <FastField
-                label = 'Purchase Unit of Measure'
-                name = 'name'
-                onFocus = {onInputFocus}
-                component = {FormikInput}
-                variant = 'outlined'
-              />
-            </div>
-
-              <br />
-
-            </Col>
-
-            <Col md={4}>
-              <div>
-                <FastField
-                  label = 'Category'
-                  name = 'name'
-                  onFocus = {onInputFocus}
-                  component = {FormikInput}
-                  variant = 'outlined'
-                />
-              </div>
-
-              <br />
-
-              <div>
-                <FastField
-                  label = 'HS Code'
-                  name = 'name'
-                  onFocus = {onInputFocus}
-                  component = {FormikInput}
-                  variant = 'outlined'
-                />
-              </div>
-
-              <br />
-
-              <div>
-                <FastField
-                  label = 'Company'
-                  name = 'name'
-                  onFocus = {onInputFocus}
-                  component = {FormikInput}
-                  variant = 'outlined'
-                />
-              </div>
-
-              <br />
-
-            </Col>
-
-            <Col md={4}>
-              <div>
-                <FastField
-                  label = 'Internal Reference'
-                  name = 'name'
-                  onFocus = {onInputFocus}
-                  component = {FormikInput}
-                  variant = 'outlined'
-                />
-              </div>
-
-              <br />
-
-              <div>
-                <FastField
-                  label = 'Sales Price'
-                  name = 'name'
-                  onFocus = {onInputFocus}
-                  component = {FormikInput}
-                  variant = 'outlined'
-                />
-              </div>
-
-              <br />
-
-             <div>
-               <FastField
-                 label = 'Unit of Measure'
-                 name = 'name'
-                 onFocus = {onInputFocus}
-                 component = {FormikInput}
-                 variant = 'outlined'
-               />
-             </div>
-
-             <br />
-
-             <div>
-               <FastField
-                 label = 'Purchase Unit of Measure'
-                 name = 'name'
-                 onFocus = {onInputFocus}
-                 component = {FormikInput}
-                 variant = 'outlined'
-               />
-             </div>
-
-             <br />
-            </Col>
-          </Row>
         </Panel>
       </Row>
-      <Button color='primary' size='sm' type='submit'>
+      <Button color="primary" size="sm" type="submit">
         Save
       </Button>
       <RemoveImageModal
@@ -314,20 +230,107 @@ const FormContent = ({
         confirm={removeImageConfirm}
       />
     </Form>
-  )
-}
+  );
+};
+
+const initialProductTypes = [
+  { label: "consumable", value: "consu" },
+  { label: "service", value: "service" },
+  { label: "stockable product", value: "product" }
+];
 
 const ProductForm = compose(
   withRouter,
-  withFormik({
-      mapsPropsToValue: props => {
-        return{
-          name:'',
-        }
+  withState("isInUpdateImage", "setIsInUpdateImage", false),
+  withState(
+    "imageField",
+    "setImageField",
+    ({ posProduct }) => posProduct.image
+  ),
+  withState("removeImageModalIsOpen", "setRemoveImageModalIsOpen", false),
+  withState("productTypes", "setProductTypes", initialProductTypes),
+  withState("categoryFilters", "setCategoryFilters", {}),
+  withHandlers({
+    toggleUpdatingImageState: ({ isInUpdateImage, setIsInUpdateImage }) => () =>
+      setIsInUpdateImage(!isInUpdateImage),
+    toggleRemoveImage: ({
+      removeImageModalIsOpen,
+      setRemoveImageModalIsOpen
+    }) => () => setRemoveImageModalIsOpen(!removeImageModalIsOpen)
+  }),
+  withHandlers({
+    removeImageConfirm: ({ setImageField, toggleRemoveImage }) => () => {
+      setImageField(null);
+      toggleRemoveImage();
+    },
+    refetchProductTypes: ({ setProductTypes, productTypes }) => input => {
+      setProductTypes(
+        productTypes.filter(
+          type => type.label.indexOf(input.toLowerCase()) !== -1
+        )
+      );
+    },
+    refetchCategories: ({ setCategoryFilters }) => input => {
+      setCategoryFilters({
+        OR: [{ name: input }]
+      });
+    }
+  }),
+  CategoriesSelect.HOC({
+    name: "categories",
+    options: ({ categoryFilters }) => ({
+      context: {
+        clientName: "pos"
       },
+      variables: {
+        filters: categoryFilters,
+        limit: 10
+      }
     })
+  }),
+  withPropsOnChange(["categories"], ({ categories: oldCategories }) => {
+    let categories = oldCategories;
 
-)(FormContent)
+    if (!categories.loading) {
+      categories = {
+        ...categories,
+        ...prepareCategories(prop("categories", categories))
+      };
+    }
 
-export default ProductForm
+    return { categories };
+  }),
+  withFormik({
+    mapPropsToValues: props => {
+      const { posProduct } = props;
+      if (posProduct) {
+        return posProduct;
+      }
 
+      return {
+        name: "",
+        canBeSold: false,
+        canBePurchased: false,
+        productType: null,
+        category: null,
+        internalReference: "",
+        barcode: "",
+        HSCode: "",
+        salesPrice: 1.0,
+        cost: 0.0
+      };
+    },
+    handleSubmit: (values, { props }) => {
+      props.handleSubmit({
+        context: {
+          clientName: "pos"
+        },
+        variables: {
+          input: transformPosProductForm(values, props.imageField)
+        }
+      });
+    }
+  })
+)(FormContent);
+
+export default ProductForm;
