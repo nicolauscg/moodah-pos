@@ -120,8 +120,8 @@ const enhance = compose(
     handleSetValue: ({ filters, setFilters, setOffset }) => value => {
       setFilters({
         ...filters,
-        OR: [{ name: value }]
-      })
+        OR: [{ name: value }, { stockLocationName: value }]
+      }),
       setOffset(0)
     }
   })
