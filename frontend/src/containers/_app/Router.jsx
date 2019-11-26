@@ -31,6 +31,8 @@ import CreateProduct from '../product/CreateProduct'
 import ProductIndex from '../product/index'
 import EditProduct from '../product/EditProduct'
 
+import Pos_SessionIndex from '../pos_session/index'
+
 const RouteList = {
   Partners: {
     path: '/partners',
@@ -118,6 +120,18 @@ const RouteList = {
       }
     ]
   },
+
+  Session: {
+        path: '/pos_session',
+        title: 'POS Session',
+        component: [
+          {
+            path: '/pos_session/list',
+            component: Pos_SessionIndex,
+          },
+        ],
+    },
+
 
   AccountSettings: {
     path: '/account_settings',
