@@ -1,19 +1,14 @@
 import React from 'react'
 import { debounce } from 'lodash'
-import { compose, withState, withPropsOnChange, withHandlers } from 'recompose'
+import { compose, withState, withProps, withPropsOnChange, withHandlers } from 'recompose'
 
 import { Col, Container, Row, Button } from 'reactstrap'
 import { Link } from 'react-router-dom'
 import SearchIcon from 'mdi-react/SearchIcon'
 import { withFormik, Form, Field } from 'formik'
 
-import offsetToCursor from '../../utils/offsetToCursor'
-
 import Breadcrumb from '../../shared/components/Breadcrumb'
-
 import ConfigurationTable from './components/ConfigurationTable'
-
-import { PosConfigs } from '../../generated-pos-models'
 
 const SearchInput = ({ field, form, handleSetValue, ...props }) => {
   const { onChange, ...restField } = field
@@ -42,10 +37,11 @@ const SearchForm = ({ handleSetValue }) => {
         placeholder="Search..."
         handleSetValue={handleSetValue}
         component={SearchInput}
+
       />
-      <button className="search-btn" type="submit">
+      <Button className="search-btn" type="submit">
         <SearchIcon />
-      </button>
+      </Button>
     </Form>
   )
 }
@@ -55,7 +51,7 @@ const FormikSearch = compose(
     mapPropsToValues: ({ filters }) => ({
       keyword: filters.name_contains,
     }),
-    handleSubmit: () => {},
+    handleSubmit: () => { },
     enableReinitialize: true,
   }),
   withPropsOnChange(['handleSetValue'], ({ handleSetValue }) => ({
@@ -69,6 +65,7 @@ const ConfigurationIndex = ({
   offset,
   setOffset,
   handleSetValue,
+  limit
 }) => {
   return (
     <Container className="configuration__list">
@@ -80,77 +77,55 @@ const ConfigurationIndex = ({
           md={8}
           className="header__item d-flex align-items-center justify-content-end"
         >
-           <FormikSearch
+          <FormikSearch
             filters={filters}
             setFilters={setFilters}
             setOffset={setOffset}
             handleSetValue={handleSetValue}
-           />
+          />
 
           <Link
-          to={`/configuration/create`}
-          className="btn btn-primary btn-sm"
+            to={`/configuration/create`}
+            className="btn btn-primary btn-sm"
           >
-          Buat Baru
+            Buat Baru
           </Link>
 
           <Button size="sm" color="help" tag="a" href="mailto:support@rubyh.co">
-          Bantuan
+            Bantuan
           </Button>
 
         </Col>
       </Row>
       <Row>
-         <ConfigurationTable
+        <ConfigurationTable
           filters={filters}
           setFilters={setFilters}
           offset={offset}
           setOffset={setOffset}
-         />
+          limit={limit}
+        />
       </Row>
     </Container>
   )
 }
 
-
-const defaultFilters = {
-    name_contains: '',
-    type: 'configuration',
-  }
-
+const defaultFilters = {};
 const enhance = compose(
-  PosConfigs.HOC({
-    name: 'getPosConfigs',
-    options: {
-      context: {
-        clientName: "pos"
-      }
-    }
-  }),
-  withPropsOnChange(['getPosConfigs'], ({ getPosConfigs }) => {
-    if (!getPosConfigs.loading) {
-      console.log("getPosConfigs", getPosConfigs);
-    }
-  }),
   withState('filters', 'setFilters', defaultFilters),
   withState('offset', 'setOffset', 0),
+  withProps({
+    limit: 10
+  }),
   withHandlers({
     handleSetValue: ({ filters, setFilters, setOffset }) => value => {
       setFilters({
         ...filters,
-        name_contains: value,
-      })
+        OR: [{ name: value }, { stockLocationName: value }]
+      }),
       setOffset(0)
-    },
-    refetchQueries: ({ filters, offset }) => () => [
-      {
-        variables: {
-          filters,
-          ...(offset > 0 ? { offset: offsetToCursor(offset) } : {}),
-        },
-      },
-    ],
+    }
   })
 )
-  
-  export default enhance(ConfigurationIndex)
+
+export default enhance(ConfigurationIndex)
