@@ -7,6 +7,9 @@ const OperationTypesType = new GraphQLObjectType({
     id: globalIdField("stock.picking.type"),
     name: {
       type: GraphQLString
+    },
+    displayName: {
+      type: GraphQLString
     }
   })
 });

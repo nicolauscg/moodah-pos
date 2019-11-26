@@ -17,12 +17,21 @@ import AccountSettings from '../account_settings/index'
 import withTracker from '../../shared/components/withTracker'
 import withStandardPlanHandler from '../../shared/components/withStandardPlanHandler'
 
-import ProductCategoryIndex from '../product_category/index'
+import DashboardIndex from '../dashboard/index'
+
+import CategoryIndex from '../category/index'
+import CreateCategory from '../category/CreateCategory'
+import EditCategory from '../category/EditCategory'
+
 import ConfigurationIndex from '../configuration/index'
+import CreateConfiguration from '../configuration/CreateConfiguration'
+import EditConfiguration from '../configuration/EditConfiguration'
+
+import CreateProduct from '../product/CreateProduct'
+import ProductIndex from '../product/index'
+import EditProduct from '../product/EditProduct'
+
 import Pos_SessionIndex from '../pos_session/index'
-import CreateConfigurationPage from '../configuration/CreateConfiguration'
-import CreateProductCategory from '../product_category/CreateProductCategory'
-import EditProductCategory from '../product_category/EditProductCategory'
 
 const RouteList = {
   Partners: {
@@ -44,42 +53,72 @@ const RouteList = {
     ],
   },
 
+  Dashboard: {
+    path: '/dashboard',
+    title: 'Dashboard',
+    component: [
+      {
+        path: '/dashboard/list',
+        component: DashboardIndex
+      }
+    ]
+  },
+
   Configuration: {
     path: '/configuration',
     title: 'Configuration',
     component: [
       {
         path: '/configuration/list',
-        component: ConfigurationIndex,
+        component: ConfigurationIndex
       },
       {
         path: '/configuration/create',
-        component: CreateConfigurationPage,
+        component: CreateConfiguration
       },
-      /*{
+      {
         path: '/configuration/details/:id',
-        component: EditConfiguration,
-      },*/
-    ],
+        component: EditConfiguration
+      }
+    ]
   },
 
-  ProductCategory: {
-      path: '/product_category',
-      title: 'Product Category',
-      component: [
-        {
-          path: '/product_category/list',
-          component: ProductCategoryIndex,
-        },
-         {
-          path: '/product_category/create',
-          component: CreateProductCategory,
-        },
-        {
-          path: '/product_category/details/:id',
-          component: EditProductCategory,
-        },
-      ],
+  Category: {
+    path: '/category',
+    title: 'Product Category',
+    component: [
+      {
+        path: '/category/list',
+        component: CategoryIndex
+      },
+      {
+        path: '/category/create',
+        component: CreateCategory
+      },
+      {
+        path: '/category/details/:id',
+        component: EditCategory
+      }
+    ]
+  },
+
+  Product: {
+    path: '/product',
+    title: 'Product',
+    component: [
+      {
+        path: '/product/list',
+        component: ProductIndex
+      },
+      {
+        path: '/product/create',
+        component: CreateProduct
+      },
+      {
+        path: '/product/details/:id',
+        component: EditProduct
+      }
+    ]
   },
 
   Session: {
