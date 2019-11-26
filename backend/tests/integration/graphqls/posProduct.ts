@@ -11,6 +11,17 @@ const SIGN_IN = gql`
     }
   }
 `;
+const GET_POS_PRODUCT_STUB = gql`
+  query {
+    posProducts {
+      length
+      records {
+        id
+        name
+      }
+    }
+  }
+`;
 const GET_POS_PRODUCT = gql`
   query {
     posProducts(input: { first: 40, offset: 0 }) {
@@ -18,6 +29,7 @@ const GET_POS_PRODUCT = gql`
       records {
         id
         name
+        image
         canBeSold
         canBePurchased
         productType
@@ -130,13 +142,52 @@ const GET_PRODUCT_CATEGORES = gql`
   }
 `;
 
+// Function that returns the posProduct query based on the id given
+function getPosProductQuery(id: string) {
+  return gql`
+    query {
+      posProduct(input: {
+        id: "${id}"
+      }) {
+        id
+        name
+      }
+    }
+  `;
+}
+
+const filterPosProductQueryError = gql`
+  query {
+    posProducts(
+      input: {
+        where: {
+          OR: [
+            {
+              name: "cannot place 2 keys inside object"
+              name: "or else will cause error"
+            }
+          ]
+        }
+      }
+    ) {
+      records {
+        id
+        name
+      }
+    }
+  }
+`;
+
 export default {
   SIGN_IN,
   GET_POS_PRODUCT,
+  GET_POS_PRODUCT_STUB,
   CREATE_VALID_POS_PRODUCT,
   CREATE_INVALID_POS_PRODUCT,
   GET_PRODUCT_CATEGORES,
   getUpdatePosProductQuery,
   getDeletePosProductQuery,
-  GET_POS_PRODUCT_WITH_ID
+  GET_POS_PRODUCT_WITH_ID,
+  getPosProductQuery,
+  filterPosProductQueryError
 };

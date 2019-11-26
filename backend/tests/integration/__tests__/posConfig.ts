@@ -6,7 +6,7 @@ import {
 } from "../../utility/createTestServer";
 import posConfigRequests from "../graphqls/posConfig";
 
-describe("Query", () => {
+describe("Pos Config Query", () => {
   it("fetch pos configs without session token", async () => {
     const server = createTestServer();
     const { query } = createTestClient(server);
@@ -113,12 +113,11 @@ describe("Query", () => {
         query({ query: posConfigRequests.getPosConfigQuery(id) })
       )
     ).then(posConfigResults =>
-      posConfigResults.forEach(
-        (posConfigResult: any) =>
-          expect(posConfigResult.data.posConfig).not.toBeNull() &&
-          expect(posConfigResult.data.posConfig.name).not.toBeNull() &&
-          expect(posConfigResult.data.posConfig.stockLocation).not.toBeNull()
-      )
+      posConfigResults.forEach((posConfigResult: any) => {
+        expect(posConfigResult.data.posConfig).not.toBeNull();
+        expect(posConfigResult.data.posConfig.name).not.toBeNull();
+        expect(posConfigResult.data.posConfig.stockLocation).not.toBeNull();
+      })
     );
   });
 
@@ -361,7 +360,7 @@ describe("Query", () => {
   });
 });
 
-describe("Mutations", () => {
+describe("Pos Config Mutations", () => {
   it("correct credentials returns session token", async () => {
     const server = createTestServer();
     const { mutate } = createTestClient(server);

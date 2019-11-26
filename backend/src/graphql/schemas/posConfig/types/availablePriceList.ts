@@ -8,6 +8,9 @@ const AvailablePriceListType = new GraphQLObjectType({
     name: {
       type: GraphQLString
     },
+    displayName: {
+      type: GraphQLString
+    },
     currency: {
       type: new GraphQLObjectType({
         name: "AvailablePriceList_Currency",

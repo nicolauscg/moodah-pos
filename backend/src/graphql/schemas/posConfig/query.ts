@@ -7,14 +7,12 @@ import { ApolloError } from "apollo-server-lambda";
 import { camelizeKeys } from "humps";
 
 import { configureService, getDataSet } from "../utility/nodoo";
-import { paginateOperationParam } from "../utility/paginate";
 import {
   paginateAndFilterOperationParam,
   isFilterArgsValid
 } from "../utility/filterAndPaginate";
 import { PaginateType } from "../utility/types/paginateType";
 import { FilterableAndPagableInputType } from "../utility/types/FilterableAndPageableInputType";
-import { PagableInputType } from "../utility/types/pagableInput";
 import { PosConfigType } from "./types/posConfig";
 import { PaymentMethodType } from "./types/paymentMethod";
 import { AvailablePriceListType } from "./types/availablePriceList";
@@ -136,7 +134,16 @@ const posConfigQueries = new GraphQLObjectType({
       type: PaginateType(PaymentMethodType),
       args: {
         input: {
-          type: PagableInputType,
+          type: FilterableAndPagableInputType(
+            new GraphQLInputObjectType({
+              name: "PaymentMethodsInput",
+              fields: () => ({
+                name: {
+                  type: GraphQLString
+                }
+              })
+            })
+          ),
           defaultValue: {
             first: 10,
             offset: 0
@@ -145,19 +152,29 @@ const posConfigQueries = new GraphQLObjectType({
       },
       resolve: (_0, args, context) =>
         new Promise((res, rej) => {
+          if (!isFilterArgsValid(args)) {
+            rej(
+              new ApolloError("Application Error", "APPLICATION_ERROR", {
+                errorMessage:
+                  "invalid filter-related input, ensure each field object " +
+                  "has only 1 key and OR and AND are mutually exclusive"
+              })
+            );
+          }
           configureService({
             operation: getDataSet({
               context
             }).createSearchRead(
-              paginateOperationParam(
+              paginateAndFilterOperationParam(
                 {
                   modelName: "account.journal",
-                  fields: ["id", "name", "company_id"],
+                  fields: ["id", "name", "display_name", "company_id"],
                   domain: [
                     ["journal_user", "=", true],
                     ["type", "in", ["bank", "cash"]]
                   ]
                 },
+                posConfigsFilter.paymentMethods,
                 args
               )
             ),
@@ -176,7 +193,16 @@ const posConfigQueries = new GraphQLObjectType({
       type: PaginateType(AvailablePriceListType),
       args: {
         input: {
-          type: PagableInputType,
+          type: FilterableAndPagableInputType(
+            new GraphQLInputObjectType({
+              name: "AvailablePriceListsInput",
+              fields: () => ({
+                name: {
+                  type: GraphQLString
+                }
+              })
+            })
+          ),
           defaultValue: {
             first: 10,
             offset: 0
@@ -185,16 +211,26 @@ const posConfigQueries = new GraphQLObjectType({
       },
       resolve: (_0, args, context) =>
         new Promise((res, rej) => {
+          if (!isFilterArgsValid(args)) {
+            rej(
+              new ApolloError("Application Error", "APPLICATION_ERROR", {
+                errorMessage:
+                  "invalid filter-related input, ensure each field object " +
+                  "has only 1 key and OR and AND are mutually exclusive"
+              })
+            );
+          }
           configureService({
             operation: getDataSet({
               context
             }).createSearchRead(
-              paginateOperationParam(
+              paginateAndFilterOperationParam(
                 {
                   modelName: "product.pricelist",
-                  fields: ["id", "name", "currency_id"],
+                  fields: ["id", "name", "currency_id", "display_name"],
                   domain: []
                 },
+                posConfigsFilter.availablePriceLists,
                 args
               )
             ),
@@ -213,7 +249,16 @@ const posConfigQueries = new GraphQLObjectType({
       type: PaginateType(OperationTypesType),
       args: {
         input: {
-          type: PagableInputType,
+          type: FilterableAndPagableInputType(
+            new GraphQLInputObjectType({
+              name: "OperationTypesInput",
+              fields: () => ({
+                name: {
+                  type: GraphQLString
+                }
+              })
+            })
+          ),
           defaultValue: {
             first: 10,
             offset: 0
@@ -222,16 +267,26 @@ const posConfigQueries = new GraphQLObjectType({
       },
       resolve: (_0, args, context) =>
         new Promise((res, rej) => {
+          if (!isFilterArgsValid(args)) {
+            rej(
+              new ApolloError("Application Error", "APPLICATION_ERROR", {
+                errorMessage:
+                  "invalid filter-related input, ensure each field object " +
+                  "has only 1 key and OR and AND are mutually exclusive"
+              })
+            );
+          }
           configureService({
             operation: getDataSet({
               context
             }).createSearchRead(
-              paginateOperationParam(
+              paginateAndFilterOperationParam(
                 {
                   modelName: "stock.picking.type",
-                  fields: ["id", "name"],
+                  fields: ["id", "name", "display_name"],
                   domain: []
                 },
+                posConfigsFilter.operationTypes,
                 args
               )
             ),
@@ -250,7 +305,16 @@ const posConfigQueries = new GraphQLObjectType({
       type: PaginateType(StockLocationType),
       args: {
         input: {
-          type: PagableInputType,
+          type: FilterableAndPagableInputType(
+            new GraphQLInputObjectType({
+              name: "StockLocationsInput",
+              fields: () => ({
+                name: {
+                  type: GraphQLString
+                }
+              })
+            })
+          ),
           defaultValue: {
             first: 10,
             offset: 0
@@ -259,16 +323,26 @@ const posConfigQueries = new GraphQLObjectType({
       },
       resolve: (_0, args, context) =>
         new Promise((res, rej) => {
+          if (!isFilterArgsValid(args)) {
+            rej(
+              new ApolloError("Application Error", "APPLICATION_ERROR", {
+                errorMessage:
+                  "invalid filter-related input, ensure each field object " +
+                  "has only 1 key and OR and AND are mutually exclusive"
+              })
+            );
+          }
           configureService({
             operation: getDataSet({
               context
             }).createSearchRead(
-              paginateOperationParam(
+              paginateAndFilterOperationParam(
                 {
                   modelName: "stock.location",
-                  fields: ["id", "name"],
-                  domain: []
+                  fields: ["id", "name", "display_name"],
+                  domain: [["usage", "=", "internal"]]
                 },
+                posConfigsFilter.stockLocations,
                 args
               )
             ),
@@ -287,7 +361,16 @@ const posConfigQueries = new GraphQLObjectType({
       type: PaginateType(DiscountProductType),
       args: {
         input: {
-          type: PagableInputType,
+          type: FilterableAndPagableInputType(
+            new GraphQLInputObjectType({
+              name: "DiscountProductsInput",
+              fields: () => ({
+                name: {
+                  type: GraphQLString
+                }
+              })
+            })
+          ),
           defaultValue: {
             first: 10,
             offset: 0
@@ -296,19 +379,29 @@ const posConfigQueries = new GraphQLObjectType({
       },
       resolve: (_0, args, context) =>
         new Promise((res, rej) => {
+          if (!isFilterArgsValid(args)) {
+            rej(
+              new ApolloError("Application Error", "APPLICATION_ERROR", {
+                errorMessage:
+                  "invalid filter-related input, ensure each field object " +
+                  "has only 1 key and OR and AND are mutually exclusive"
+              })
+            );
+          }
           configureService({
             operation: getDataSet({
               context
             }).createSearchRead(
-              paginateOperationParam(
+              paginateAndFilterOperationParam(
                 {
                   modelName: "product.product",
-                  fields: ["id", "name"],
+                  fields: ["id", "name", "display_name"],
                   domain: [
                     ["available_in_pos", "=", true],
                     ["sale_ok", "=", true]
                   ]
                 },
+                posConfigsFilter.discountProducts,
                 args
               )
             ),

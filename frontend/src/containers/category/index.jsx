@@ -1,32 +1,38 @@
-import React from 'react'
-import { debounce } from 'lodash'
-import { compose, withState, withPropsOnChange, withHandlers, withProps } from 'recompose'
+import React from "react";
+import { debounce } from "lodash";
+import {
+  compose,
+  withState,
+  withPropsOnChange,
+  withHandlers,
+  withProps
+} from "recompose";
 
-import { Col, Container, Row, Button } from 'reactstrap'
-import { Link } from 'react-router-dom'
-import SearchIcon from 'mdi-react/SearchIcon'
-import { withFormik, Form, Field } from 'formik'
+import { Col, Container, Row, Button } from "reactstrap";
+import { Link } from "react-router-dom";
+import SearchIcon from "mdi-react/SearchIcon";
+import { withFormik, Form, Field } from "formik";
 
-import Breadcrumb from '../../shared/components/Breadcrumb'
-import ProductCategoryTable from './components/ProductCategoryTable'
+import Breadcrumb from "../../shared/components/Breadcrumb";
+import CategoryTable from "./components/CategoryTable";
 
 const SearchInput = ({ field, form, handleSetValue, ...props }) => {
-  const { onChange, ...restField } = field
+  const { onChange, ...restField } = field;
   return (
     <input
       {...restField}
       {...props}
       onChange={e => {
-        form.setFieldValue(field.name, e.target.value)
+        form.setFieldValue(field.name, e.target.value);
 
         if (handleSetValue) {
-          handleSetValue(e.target.value)
+          handleSetValue(e.target.value);
         }
       }}
       type="text"
     />
-  )
-}
+  );
+};
 
 const SearchForm = ({ handleSetValue }) => {
   return (
@@ -42,23 +48,23 @@ const SearchForm = ({ handleSetValue }) => {
         <SearchIcon />
       </button>
     </Form>
-  )
-}
+  );
+};
 
 const FormikSearch = compose(
   withFormik({
     mapPropsToValues: ({ filters }) => ({
-      keyword: filters.name_contains,
+      keyword: filters.name_contains
     }),
     handleSubmit: () => {},
-    enableReinitialize: true,
+    enableReinitialize: true
   }),
-  withPropsOnChange(['handleSetValue'], ({ handleSetValue }) => ({
-    handleSetValue: debounce(handleSetValue, 1000),
+  withPropsOnChange(["handleSetValue"], ({ handleSetValue }) => ({
+    handleSetValue: debounce(handleSetValue, 1000)
   }))
-)(SearchForm)
+)(SearchForm);
 
-const ProductCategoryIndex = ({
+const CategoryIndex = ({
   filters,
   setFilters,
   offset,
@@ -67,10 +73,10 @@ const ProductCategoryIndex = ({
   limit
 }) => {
   return (
-    <Container className="productcategory__list">
+    <Container className="category__list">
       <Row className="header">
         <Col md={4} className="header__item">
-          <Breadcrumb crumbs={[{ text: 'Category' }]} />
+          <Breadcrumb crumbs={[{ text: "Category" }]} />
         </Col>
         <Col
           md={8}
@@ -82,21 +88,16 @@ const ProductCategoryIndex = ({
             setOffset={setOffset}
             handleSetValue={handleSetValue}
           />
-
-          <Link
-            to={`/product_category/create`}
-            className="btn btn-primary btn-sm"
-          >
+          <Link to={`/category/create`} className="btn btn-primary btn-sm">
             Buat Baru
           </Link>
-
           <Button size="sm" color="help" tag="a" href="mailto:support@rubyh.co">
             Bantuan
           </Button>
         </Col>
       </Row>
       <Row>
-        <ProductCategoryTable
+        <CategoryTable
           filters={filters}
           setFilters={setFilters}
           offset={offset}
@@ -104,16 +105,15 @@ const ProductCategoryIndex = ({
           limit={limit}
         />
       </Row>
-
     </Container>
-  )
-}
+  );
+};
 
 const defaultFilters = {};
 
 const enhance = compose(
-  withState('filters', 'setFilters', defaultFilters),
-  withState('offset', 'setOffset', 0),
+  withState("filters", "setFilters", defaultFilters),
+  withState("offset", "setOffset", 0),
   withProps({
     limit: 10
   }),
@@ -122,10 +122,10 @@ const enhance = compose(
       setFilters({
         ...filters,
         OR: [{ name: value }]
-      })
-      setOffset(0)
+      });
+      setOffset(0);
     }
   })
-)
+);
 
-export default enhance(ProductCategoryIndex)
+export default enhance(CategoryIndex);

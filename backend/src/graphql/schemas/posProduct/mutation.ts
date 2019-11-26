@@ -21,10 +21,19 @@ const posProductMutations = new GraphQLObjectType({
       },
       resolve: (_0, args, context) =>
         new Promise((res, rej) => {
+          const fieldsValues = args.input;
+          const PROPERTY_ACCOUNT_INCOME = {
+            id: 73,
+            name: "4-411001 Pendapatan"
+          };
+
+          // populate default values
+          fieldsValues.propertyAccountIncomeId = PROPERTY_ACCOUNT_INCOME.id;
+
           configureService({
             operation: getDataSet({ context }).createCreate({
               modelName: "product.template",
-              fieldsValues: decamelizeKeys(args.input),
+              fieldsValues: decamelizeKeys(fieldsValues),
               kwargs: {}
             }),
             onError: error => {

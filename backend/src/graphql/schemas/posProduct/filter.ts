@@ -12,6 +12,13 @@ const posProductFilter: FilterConfig = {
       conventionName: "barcode",
       operator: "ilike"
     }
+  ],
+  categories: [
+    {
+      domainName: "name",
+      conventionName: "name",
+      operator: "ilike"
+    }
   ]
 };
 
