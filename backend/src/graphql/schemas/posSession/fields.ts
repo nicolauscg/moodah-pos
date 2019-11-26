@@ -11,6 +11,15 @@ const posSessionFields: FieldConfig = {
     "stop_at",
     "sequence_number",
     "login_number"
+  ],
+  accountBankStatement: [
+    "account_id",
+    "currency_id",
+    "journal_id",
+    "state",
+    "name",
+    "user_id",
+    "pos_session_id"
   ]
 };
 

@@ -18,8 +18,8 @@ import * as R from "ramda";
 // Constants
 // ====================================================
 export const ConfigurationColumns = [
-  { name: "posname", title: "Point of Sale Name" },
-  { name: "stocklocations", title: "Stock Locations" }
+  { name: "name", title: "Point of Sale Name" },
+  { name: "stockLocation", title: "Stock Locations" }
 ];
 
 // ====================================================
