@@ -1,7 +1,7 @@
 import React, { Fragment } from "react";
 import { withRouter } from "react-router-dom";
 
-import { prop } from "ramda";
+import { prop, propOr } from "ramda";
 import { Row, Col, Button } from "reactstrap";
 import { withFormik, Form, FastField } from "formik";
 import { compose, withState, withHandlers, withPropsOnChange } from "recompose";
@@ -53,39 +53,45 @@ const ImageField = ({
       <Fragment>
         <img
           src={`data:image/png;base64,${imageField}`}
-          className=".image-field"
+          className="image-field mb-2"
           alt="category-pic"
         />
-        <Button
-          color="warning"
-          size="sm"
-          onClick={() => setIsInUpdateImage(true)}
-        >
-          Change
-        </Button>
-        <Button color="danger" size="sm" onClick={toggleRemoveImage}>
-          Remove
-        </Button>
+        <div className="d-flex justify-content-center">
+          <Button
+            color="warning"
+            size="sm"
+            onClick={() => setIsInUpdateImage(true)}
+          >
+            Change
+          </Button>
+          <Button color="danger" size="sm" onClick={toggleRemoveImage}>
+            Remove
+          </Button>
+        </div>
       </Fragment>
     );
   } else {
     return (
       <Fragment>
-        <DropzoneGQL
-          loading={false}
-          uploader={encodedImage => {
-            setImageField(encodedImage);
-            setIsInUpdateImage(false);
-          }}
-        />
+        <div className="mb-2">
+          <DropzoneGQL
+            loading={false}
+            uploader={encodedImage => {
+              setImageField(encodedImage);
+              setIsInUpdateImage(false);
+            }}
+          />
+        </div>
         {isInUpdateImage && (
-          <Button
-            color="danger"
-            size="sm"
-            onClick={() => setIsInUpdateImage(false)}
-          >
-            Cancel
-          </Button>
+          <div className="d-flex justify-content-center">
+            <Button
+              color="danger"
+              size="sm"
+              onClick={() => setIsInUpdateImage(false)}
+            >
+              Cancel
+            </Button>
+          </div>
         )}
       </Fragment>
     );
@@ -114,11 +120,11 @@ const FormContent = ({
       <Row>
         <Panel xs={12} title="Product" isForm>
           <div className="material-form">
-            <Row>
-              <Col xs={12} md={3}>
+            <Row className="mb-2">
+              <Col sm={12} md={4}>
                 <ImageField toggleRemoveImage={toggleRemoveImage} {...props} />
               </Col>
-              <Col xs={12} md={5}>
+              <Col sm={12} md={5}>
                 <FastField
                   required
                   label="Product Name"
@@ -147,8 +153,8 @@ const FormContent = ({
                 </div>
               </Col>
             </Row>
-            <Row>
-              <Col md={4}>
+            <Row className="mb-2">
+              <Col sm={12} md={4}>
                 <Select
                   dataState={productTypes}
                   field="productType"
@@ -158,7 +164,7 @@ const FormContent = ({
                   queryKey={[]}
                 />
               </Col>
-              <Col md={4}>
+              <Col sm={12} md={4}>
                 <Select
                   dataState={categories}
                   field="category"
@@ -168,7 +174,7 @@ const FormContent = ({
                   queryKey={["categories", "records"]}
                 />
               </Col>
-              <Col md={4}>
+              <Col sm={12} md={4}>
                 <FastField
                   label="Internal Reference"
                   name="internalReference"
@@ -178,8 +184,8 @@ const FormContent = ({
                 />
               </Col>
             </Row>
-            <Row>
-              <Col md={4}>
+            <Row className="mb-2">
+              <Col sm={12} md={4}>
                 <FastField
                   label="Barcode"
                   name="barcode"
@@ -188,7 +194,7 @@ const FormContent = ({
                   variant="outlined"
                 />
               </Col>
-              <Col md={4}>
+              <Col sm={12} md={4}>
                 <FastField
                   label="HS Code"
                   name="HSCode"
@@ -197,7 +203,7 @@ const FormContent = ({
                   variant="outlined"
                 />
               </Col>
-              <Col md={4}>
+              <Col sm={12} md={4}>
                 <FastField
                   label="Sales Price"
                   name="salesPrice"
@@ -207,8 +213,8 @@ const FormContent = ({
                 />
               </Col>
             </Row>
-            <Row>
-              <Col md={4}>
+            <Row className="mb-2">
+              <Col sm={12} md={4}>
                 <FastField
                   label="Cost"
                   name="cost"
@@ -242,10 +248,8 @@ const initialProductTypes = [
 const ProductForm = compose(
   withRouter,
   withState("isInUpdateImage", "setIsInUpdateImage", false),
-  withState(
-    "imageField",
-    "setImageField",
-    ({ posProduct }) => posProduct.image
+  withState("imageField", "setImageField", ({ posProduct }) =>
+    propOr(null, "image", posProduct)
   ),
   withState("removeImageModalIsOpen", "setRemoveImageModalIsOpen", false),
   withState("productTypes", "setProductTypes", initialProductTypes),

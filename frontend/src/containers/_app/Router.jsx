@@ -19,13 +19,15 @@ import withStandardPlanHandler from '../../shared/components/withStandardPlanHan
 
 import DashboardIndex from '../dashboard/index'
 
-import ProductCategoryIndex from '../product_category/index' // Routing Product Category
-import CreateProductCategory from '../product_category/CreateProductCategory'
-import EditConfigurationPage from '../configuration/EditConfiguration'
-import EditProductCategory from '../product_category/EditProductCategory'
-import CreateProduct from '../product/CreateProduct'
+import CategoryIndex from '../category/index'
+import CreateCategory from '../category/CreateCategory'
+import EditCategory from '../category/EditCategory'
+
 import ConfigurationIndex from '../configuration/index'
-import CreateConfigurationPage from '../configuration/CreateConfiguration'
+import CreateConfiguration from '../configuration/CreateConfiguration'
+import EditConfiguration from '../configuration/EditConfiguration'
+
+import CreateProduct from '../product/CreateProduct'
 import ProductIndex from '../product/index'
 import EditProduct from '../product/EditProduct'
 
@@ -70,30 +72,30 @@ const RouteList = {
       },
       {
         path: '/configuration/create',
-        component: CreateConfigurationPage
+        component: CreateConfiguration
       },
       {
         path: '/configuration/details/:id',
-        component: EditConfigurationPage
+        component: EditConfiguration
       }
     ]
   },
 
-  ProductCategory: {
-    path: '/product_category',
+  Category: {
+    path: '/category',
     title: 'Product Category',
     component: [
       {
-        path: '/product_category/list',
-        component: ProductCategoryIndex,
+        path: '/category/list',
+        component: CategoryIndex
       },
       {
-        path: '/product_category/create',
-        component: CreateProductCategory,
+        path: '/category/create',
+        component: CreateCategory
       },
       {
-        path: '/product_category/details/:id',
-        component: EditProductCategory,
+        path: '/category/details/:id',
+        component: EditCategory
       }
     ]
   },

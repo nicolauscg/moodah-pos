@@ -83,7 +83,7 @@ const DashboardIndex = ({
   }
 
   return (
-    <Container>
+    <Container className="configuration__list">
       <Row className="header">
         <Col md={4} className="header__item">
           <Breadcrumb crumbs={[{ text: "Dashboard" }]} />

@@ -73,7 +73,7 @@ const ProductIndex = ({
   limit
 }) => {
   return (
-    <Container className="productcategory__list">
+    <Container className="product__list">
       <Row className="header">
         <Col md={4} className="header__item">
           <Breadcrumb crumbs={[{ text: "Product" }]} />

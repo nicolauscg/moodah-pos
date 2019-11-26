@@ -70,7 +70,7 @@ const EditProduct = ({
 
             return (
               <Fragment>
-                <Container>
+                <Container className="product__form">
                   <Row className="header">
                     <Col md={6} className="header__item">
                       <Breadcrumb

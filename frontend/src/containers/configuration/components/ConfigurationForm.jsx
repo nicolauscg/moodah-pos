@@ -50,8 +50,8 @@ const FormContent = ({
     <Row>
       <Panel xs={12} title="Configuration" isForm>
         <div className="material-form">
-          <Row>
-            <Col xs={6}>
+          <Row className="mb-3">
+            <Col sm={12} md={6}>
               <FastField
                 required
                 label="Point of Sale Name"
@@ -62,8 +62,8 @@ const FormContent = ({
               />
             </Col>
           </Row>
-          <Row>
-            <Col xs={4}>
+          <Row className="mb-3">
+            <Col sm={12} md={4}>
               <FormCheckbox
                 FormLabelProps={{
                   label: (
@@ -80,7 +80,7 @@ const FormContent = ({
                 }}
               />
             </Col>
-            <Col xs={4}>
+            <Col sm={12} md={4}>
               <RadioSelect
                 name="ifaceTaxIncluded"
                 label={
@@ -102,7 +102,7 @@ const FormContent = ({
                 ]}
               />
             </Col>
-            <Col md={4}>
+            <Col sm={12} md={4}>
               <FastField
                 name="globalDiscount"
                 FormLabelProps={{
@@ -136,8 +136,8 @@ const FormContent = ({
               )}
             </Col>
           </Row>
-          <Row>
-            <Col xs={4}>
+          <Row className="mb-3">
+            <Col sm={12} md={4}>
               <FastField
                 name="usePricelist"
                 FormLabelProps={{
@@ -186,7 +186,7 @@ const FormContent = ({
                 </Fragment>
               )}
             </Col>
-            <Col xs={4}>
+            <Col sm={12} md={4}>
               <FastField
                 FormLabelProps={{
                   label: (
@@ -201,7 +201,7 @@ const FormContent = ({
                 component={FormikCheckbox}
               />
             </Col>
-            <Col xs={4}>
+            <Col sm={12} md={4}>
               <Select
                 dataState={paymentMethods}
                 refetch={refetchPaymentMethods}
@@ -213,8 +213,8 @@ const FormContent = ({
               />
             </Col>
           </Row>
-          <Row>
-            <Col xs={4}>
+          <Row className="mb-3">
+            <Col sm={12} md={4}>
               <FormCheckbox
                 FormLabelProps={{
                   label: (
@@ -231,7 +231,7 @@ const FormContent = ({
                 }}
               />
             </Col>
-            <Col xs={4}>
+            <Col sm={12} md={4}>
               <FastField
                 name="isHeaderOrFooter"
                 FormLabelProps={{
@@ -264,8 +264,7 @@ const FormContent = ({
                 </Fragment>
               )}
             </Col>
-
-            <Col xs={4}>
+            <Col sm={12} md={4}>
               <FormCheckbox
                 FormLabelProps={{
                   label: (
@@ -284,7 +283,7 @@ const FormContent = ({
             </Col>
           </Row>
           <Row>
-            <Col xs={4}>
+            <Col sm={12} md={4}>
               <FormCheckbox
                 FormLabelProps={{
                   label: (
@@ -301,7 +300,7 @@ const FormContent = ({
                 }}
               />
             </Col>
-            <Col xs={4}>
+            <Col sm={12} md={4}>
               <Select
                 dataState={stockLocations}
                 refetch={refetchStockLocations}
