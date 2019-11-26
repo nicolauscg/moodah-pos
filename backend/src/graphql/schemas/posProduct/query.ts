@@ -12,12 +12,10 @@ import {
   isFilterArgsValid
 } from "../utility/filterAndPaginate";
 import { PaginateType } from "../utility/types/paginateType";
-import { PagableInputType } from "../utility/types/pagableInput";
 import { PosProductType } from "./types/posProduct";
 import posProductFields from "./fields";
 import posProductFilter from "./filter";
 import { CategoryType } from "./types/category";
-import { paginateOperationParam } from "../utility/paginate";
 import { GlobalIdInput } from "../utility/types/globalIdInput";
 import { FilterableAndPagableInputType } from "../utility/types/FilterableAndPageableInputType";
 
@@ -137,7 +135,19 @@ const posProductQueries = new GraphQLObjectType({
       type: PaginateType(CategoryType),
       args: {
         input: {
-          type: PagableInputType,
+          type: FilterableAndPagableInputType(
+            new GraphQLInputObjectType({
+              name: "CategoriesInput",
+              fields: () => ({
+                name: {
+                  type: GraphQLString
+                },
+                barcode: {
+                  type: GraphQLString
+                }
+              })
+            })
+          ),
           defaultValue: {
             first: 10,
             offset: 0
@@ -146,16 +156,26 @@ const posProductQueries = new GraphQLObjectType({
       },
       resolve: (_0, args, context) =>
         new Promise((res, rej) => {
+          if (!isFilterArgsValid(args)) {
+            rej(
+              new ApolloError("Application Error", "APPLICATION_ERROR", {
+                errorMessage:
+                  "invalid filter-related input, ensure each field object " +
+                  "has only 1 key and OR and AND are mutually exclusive"
+              })
+            );
+          }
           configureService({
             operation: getDataSet({
               context
             }).createSearchRead(
-              paginateOperationParam(
+              paginateAndFilterOperationParam(
                 {
                   modelName: "product.category",
                   fields: ["id", "name"],
                   domain: []
                 },
+                posProductFilter.categories,
                 args
               )
             ),

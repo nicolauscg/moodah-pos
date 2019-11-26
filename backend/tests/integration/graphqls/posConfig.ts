@@ -22,14 +22,30 @@ const GET_POS_CONFIGS_ALL_FIELDS = gql`
         id
         name
         active
-        pricelist {
-          id
-          name
-        }
+        ifaceTaxIncluded
+        globalDiscount
         discountProduct {
           id
           name
         }
+        discountPc
+        usePricelist
+        availablePricelists {
+          id
+          name
+        }
+        pricelist {
+          id
+          name
+        }
+        restrictPriceControl
+        paymentMethods {
+          id
+          name
+        }
+        isHeaderOrFooter
+        receiptHeader
+        receiptFooter
         stockLocation {
           id
           name
