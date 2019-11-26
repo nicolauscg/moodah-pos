@@ -7,6 +7,9 @@ const DiscountProductType = new GraphQLObjectType({
     id: globalIdField("product.product"),
     name: {
       type: GraphQLString
+    },
+    displayName: {
+      type: GraphQLString
     }
   })
 });

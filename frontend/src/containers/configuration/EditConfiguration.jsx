@@ -1,24 +1,29 @@
-import React, { Fragment } from 'react'
-import { connect } from 'react-redux'
-import { compose, withHandlers, getContext, withState } from 'recompose'
+import React, { Fragment } from "react";
+import { connect } from "react-redux";
+import { compose, withHandlers, getContext, withState } from "recompose";
 
-import { Col, Container, Row, Card, Button } from 'reactstrap'
-import { Link } from 'react-router-dom'
-import Loader from '../../shared/components/Loader'
-import { PosCategory, UpdatePosCategory, DeletePosCategory } from '../../generated-pos-models'
-import { ErrorHandlerContext } from '../../utils/transformers/general'
-import { addNotif } from '../../redux/modules/general'
+import { Col, Container, Row, Card, Button } from "reactstrap";
+import { Link } from "react-router-dom";
+import Loader from "../../shared/components/Loader";
+import {
+  PosConfig,
+  UpdatePosConfig,
+  DeletePosConfig
+} from "../../generated-pos-models";
+import { preparePosConfig } from "../../utils/transformers/configuration";
+import { ErrorHandlerContext } from "../../utils/transformers/general";
+import { addNotif } from "../../redux/modules/general";
 
-import Breadcrumb from '../../shared/components/Breadcrumb'
-import ProductCategoryForm from './components/ProductCategoryForm'
-import Modal from '../../shared/components/form-custom/Modal'
+import Breadcrumb from "../../shared/components/Breadcrumb";
+import PosConfigForm from "./components/ConfigurationForm";
+import Modal from "../../shared/components/form-custom/Modal";
 
 const DeleteModal = ({ toggle, isOpen, confirm }) => {
   return (
     <Modal
       type="dialog"
-      title="Delete Product Category"
-      body="Are you sure you want to delete this product category?"
+      title="Delete Configuration"
+      body="Are you sure you want to delete this configuration"
       action={
         <Fragment>
           <Button color="primary" size="sm" onClick={confirm}>
@@ -33,10 +38,10 @@ const DeleteModal = ({ toggle, isOpen, confirm }) => {
       isOpen={isOpen}
       centered
     />
-  )
-}
+  );
+};
 
-const EditProductCategory = ({
+const EditPosConfig = ({
   data,
   match,
   deleteState,
@@ -44,34 +49,37 @@ const EditProductCategory = ({
   onDeleteSuccess,
   deleteToggle,
   deleteConfirm,
-  onError,
+  onError
 }) => {
-  const { isOpen } = deleteState
-  const id = match.params.id
+  const { isOpen } = deleteState;
+  const id = match.params.id;
 
   return (
-    <UpdatePosCategory.Component onCompleted={onEditSuccess} onError={onError}>
-      {(updatePosCategory, { loading }) => (
-        <DeletePosCategory.Component
+    <UpdatePosConfig.Component onCompleted={onEditSuccess} onError={onError}>
+      {(UpdatePosConfig, { loading }) => (
+        <DeletePosConfig.Component
           onCompleted={onDeleteSuccess}
           onError={onError}
         >
-          {(deleteResPartner, { loading: deleteLoading }) => {
-            const { loading: dataLoading, posCategory } = data;
+          {(deletePosConfig, { loading: deleteLoading }) => {
+            const { loading: dataLoading, posConfig } = data;
 
             if (loading || dataLoading || deleteLoading) {
-              return <Loader />
+              return <Loader />;
             }
 
             return (
               <Fragment>
-                <Container className="productcategory__form">
+                <Container className="posconfig__form">
                   <Row className="header">
                     <Col md={6} className="header__item">
                       <Breadcrumb
                         crumbs={[
-                          { text: 'Category', path: '/product_category/list' },
-                          { text: posCategory.displayName },
+                          {
+                            text: "Configuration",
+                            path: "/configuration/list"
+                          },
+                          { text: posConfig.name }
                         ]}
                       />
                     </Col>
@@ -87,7 +95,10 @@ const EditProductCategory = ({
                         Delete
                       </Button>
                       <div>
-                        <Link to="/product_category/list" className="btn btn-info btn-sm">
+                        <Link
+                          to="/configuration/list"
+                          className="btn btn-info btn-sm"
+                        >
                           Back
                         </Link>
                       </div>
@@ -96,9 +107,9 @@ const EditProductCategory = ({
                   <Row>
                     <Col xs={12}>
                       <Card>
-                        <ProductCategoryForm
-                          productcategory={data}
-                          handleSubmit={updatePosCategory}
+                        <PosConfigForm
+                          posConfig={preparePosConfig(posConfig)}
+                          handleSubmit={UpdatePosConfig}
                         />
                       </Card>
                     </Col>
@@ -107,31 +118,31 @@ const EditProductCategory = ({
                 <DeleteModal
                   toggle={deleteToggle}
                   isOpen={isOpen}
-                  confirm={() => deleteConfirm(deleteResPartner)}
+                  confirm={() => deleteConfirm(deletePosConfig)}
                 />
               </Fragment>
-            )
+            );
           }}
-        </DeletePosCategory.Component>
+        </DeletePosConfig.Component>
       )}
-    </UpdatePosCategory.Component>
-  )
-}
+    </UpdatePosConfig.Component>
+  );
+};
 
 const defaultDeleteState = {
   isOpen: false,
-  deleteId: null,
-}
+  deleteId: null
+};
 
 const enhance = compose(
-  withState('deleteState', 'setDeleteState', defaultDeleteState),
+  withState("deleteState", "setDeleteState", defaultDeleteState),
   connect(
     null,
     dispatch => ({
-      triggerNotif: notif => dispatch(addNotif(notif)),
+      triggerNotif: notif => dispatch(addNotif(notif))
     })
   ),
-  PosCategory.HOC({
+  PosConfig.HOC({
     options: ({ match }) => ({
       context: {
         clientName: "pos"
@@ -141,53 +152,53 @@ const enhance = compose(
           id: match.params.id
         }
       }
-    }),
+    })
   }),
   withHandlers({
     onEditSuccess: ({ triggerNotif }) => () =>
       triggerNotif({
-        message: 'Product category updated successfully',
-        type: 'success',
+        message: "Configuration updated successfully",
+        type: "success"
       }),
     deleteToggle: ({ deleteState, setDeleteState }) => id => {
-      const isOpen = !deleteState.isOpen
-      const deleteId = id
+      const isOpen = !deleteState.isOpen;
+      const deleteId = id;
 
       setDeleteState({
         isOpen,
-        deleteId,
-      })
+        deleteId
+      });
     },
     deleteConfirm: ({ deleteState, setDeleteState }) => (
-      deleteResPartner,
+      deletePosConfig,
       id
     ) => {
-      const { deleteId } = deleteState
+      const { deleteId } = deleteState;
       const vals = {
         id: deleteId || id
-      }
+      };
 
-      setDeleteState(defaultDeleteState)
-      deleteResPartner({
+      setDeleteState(defaultDeleteState);
+      deletePosConfig({
         context: {
           clientName: "pos"
         },
         variables: {
           input: vals
         }
-      })
+      });
     },
     onDeleteSuccess: ({ triggerNotif, history }) => () => {
-      const message = "Product category successfully deleted"
+      const message = "Configuration successfully deleted";
 
-      history.push(`/product_category/list`)
+      history.push(`/configuration/list`);
       triggerNotif({
         message,
-        type: 'success',
-      })
-    },
+        type: "success"
+      });
+    }
   }),
   getContext(ErrorHandlerContext)
-)
+);
 
-export default enhance(EditProductCategory)
+export default enhance(EditPosConfig);

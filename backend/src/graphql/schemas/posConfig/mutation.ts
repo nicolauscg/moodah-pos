@@ -26,7 +26,7 @@ const posConfigMutations = new GraphQLObjectType({
           // transform to format for many to many relation
           ["availablePricelistIds", "journalIds"].forEach(fieldName => {
             if (fieldsValues[fieldName] !== undefined) {
-              fieldsValues[fieldName] = [6, false, fieldsValues[fieldName]];
+              fieldsValues[fieldName] = [[6, false, fieldsValues[fieldName]]];
             }
           });
           // populate default values
@@ -93,7 +93,7 @@ const posConfigMutations = new GraphQLObjectType({
           const fieldsValues = args.input;
           ["availablePricelistIds", "journalIds"].forEach(fieldName => {
             if (fieldsValues[fieldName] !== undefined) {
-              fieldsValues[fieldName] = [6, false, fieldsValues[fieldName]];
+              fieldsValues[fieldName] = [[6, false, fieldsValues[fieldName]]];
             }
           });
           const decamelizedFieldValues: any = decamelizeKeys(fieldsValues);

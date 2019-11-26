@@ -24,7 +24,8 @@ const PosConfigType = new GraphQLObjectType({
       type: IfaceTaxIncludedType
     },
     globalDiscount: {
-      type: GraphQLBoolean
+      type: GraphQLBoolean,
+      resolve: parent => parent.modulePosDiscount
     },
     discountProduct: {
       type: new GraphQLObjectType({
@@ -165,6 +166,35 @@ const PosConfigType = new GraphQLObjectType({
         })
       }),
       resolve: parent => parent.pickingTypeId
+    },
+    currentSessionState: {
+      type: GraphQLString,
+      resolve: parent =>
+        parent.currentSessionState === false ? null : parent.currentSessionState
+    },
+    currentSessionId: {
+      type: new GraphQLObjectType({
+        name: "PosConfig_CurrentSessionId",
+        fields: () => ({
+          id: globalIdField("product.currentSessionId", parent => parent[0]),
+          name: {
+            type: GraphQLString,
+            resolve: parent => parent[1]
+          }
+        })
+      }),
+      resolve: parent =>
+        parent.currentSessionId === false ? null : parent.currentSessionId
+    },
+    posSessionState: {
+      type: GraphQLString,
+      resolve: parent =>
+        parent.posSessionState === false ? null : parent.posSessionState
+    },
+    posSessionUsername: {
+      type: GraphQLString,
+      resolve: parent =>
+        parent.posSessionUsername === false ? null : parent.posSessionUsername
     }
   })
 });

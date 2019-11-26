@@ -7,6 +7,9 @@ const StockLocationType = new GraphQLObjectType({
     id: globalIdField("stock.location"),
     name: {
       type: GraphQLString
+    },
+    displayName: {
+      type: GraphQLString
     }
   })
 });

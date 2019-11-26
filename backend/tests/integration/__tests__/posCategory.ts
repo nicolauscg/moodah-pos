@@ -6,7 +6,7 @@ import {
 } from "../../utility/createTestServer";
 import posCategoryRequests from "../graphqls/posCategory";
 
-describe("Query", () => {
+describe("Pos Category Query", () => {
   it("query pos categories without session token give error", async () => {
     const server = createTestServer();
     const { query } = createTestClient(server);
@@ -38,9 +38,51 @@ describe("Query", () => {
     });
     expect(res.data.readPosCategories).not.toBeNull();
   });
+
+  it(`fetch singular pos category with session token via id from multiple 
+  pos categories fetch`, async () => {
+    const amountOfIdsToRead = 3;
+    const server = await createTestServerWithSessionToken({
+      signInGql: posCategoryRequests.SIGN_IN
+    });
+    const { query } = createTestClient(server);
+    // posCategoryRes will contain the id that will be used to check
+    // if the singular posCategory is working
+    const posCategoryRes = await query({
+      query: posCategoryRequests.GET_POS_CATEGORIES_WITH_ALL_FIELDS
+    });
+    const idsToRead = posCategoryRes.data.posCategories.records
+      .slice(0, amountOfIdsToRead)
+      .map(posCategory => posCategory.id);
+    // concurrently read posCategory
+    Promise.all(
+      idsToRead.map(id =>
+        query({ query: posCategoryRequests.getPosCategoryQuery(id) })
+      )
+    ).then(posCategoryResults =>
+      posCategoryResults.forEach((posCategoryResult: any) => {
+        expect(posCategoryResult.data.posCategory).not.toBeNull();
+        expect(posCategoryResult.data.posCategory.id).not.toBeNull();
+        expect(posCategoryResult.data.posCategory.name).not.toBeNull();
+      })
+    );
+  });
+
+  it("fetch filtered pos without proper convention", async () => {
+    const server = await createTestServerWithSessionToken({
+      signInGql: posCategoryRequests.SIGN_IN
+    });
+    const { query } = createTestClient(server);
+    // Testing the created graphQL filter function
+    const result = await query({
+      query: posCategoryRequests.filterPosCategoryQueryError
+    });
+    // Manual javascript filter function
+    expect(result.errors).toEqual(expect.anything());
+  });
 });
 
-describe("Mutation", () => {
+describe("Pos Category Mutation", () => {
   it("query pos categories with session token", async () => {
     const server = createTestServer();
     const { query } = createTestClient(server);

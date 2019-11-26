@@ -39,6 +39,40 @@ const PosCategoryParentType = new GraphQLObjectType({
   })
 });
 
+const PosCategoryChildType = new GraphQLObjectType({
+  name: "PosCategoryChild",
+  fields: () => ({
+    id: globalIdField("pos.category", parent => parent[0]),
+    name: {
+      type: GraphQLString,
+      resolve: parent => parent[1]
+    },
+    displayName: {
+      type: GraphQLString,
+      resolve: (parent, _0, context) =>
+        new Promise((res, rej) => {
+          configureService({
+            operation: getDataSet({
+              context
+            }).createRead({
+              modelName: "pos.category",
+              ids: [parent[0]],
+              fields: ["display_name"]
+            }),
+            onError: error => {
+              rej(
+                new ApolloError("Application Error", "APPLICATION_ERROR", {
+                  errorMessage: error.message
+                })
+              );
+            },
+            onResult: result =>
+              res((camelizeKeys(result[0]) as any).displayName)
+          });
+        })
+    }
+  })
+});
 const PosCategoryType = new GraphQLObjectType({
   name: "PosCategory",
   fields: () => ({
@@ -56,6 +90,10 @@ const PosCategoryType = new GraphQLObjectType({
     parent: {
       type: PosCategoryParentType,
       resolve: parent => (parent.parentId === false ? null : parent.parentId)
+    },
+    child: {
+      type: PosCategoryChildType,
+      resolve: parent => (parent.childId === false ? null : parent.childId)
     },
     sequence: {
       type: GraphQLInt
