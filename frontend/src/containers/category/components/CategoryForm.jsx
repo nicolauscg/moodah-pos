@@ -220,7 +220,7 @@ const CategoryForm = compose(
       return {
         name: "",
         parent: null,
-        sequence: ""
+        sequence: "0"
       };
     },
     handleSubmit: (values, { props }) => {
@@ -251,8 +251,8 @@ const CategoryForm = compose(
       if (!values.name) {
         errors.name = "Name is required";
       }
-      if (isNaN(values.sequence)) {
-        errors.sequence = "Sequence should be a number";
+      if (!isNonNegativeInteger(values.sequence)) {
+        errors.sequence = "Sequence should be a non negative integer";
       }
 
       return errors;
