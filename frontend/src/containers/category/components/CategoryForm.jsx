@@ -13,6 +13,7 @@ import FormikInput from "../../../shared/components/formik/TextInput";
 import Select from "../../../shared/components/form-custom/DynamicSelect";
 import Modal from "../../../shared/components/form-custom/Modal";
 import { prepareParents } from "../../../utils/transformers/category";
+import { isNonNegativeInteger } from "../../../utils/formValidators";
 
 const RemoveImageModal = ({ toggle, isOpen, confirm }) => {
   return (
