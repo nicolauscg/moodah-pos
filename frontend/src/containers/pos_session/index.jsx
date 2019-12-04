@@ -16,6 +16,8 @@ import Breadcrumb from '../../shared/components/Breadcrumb'
 import DropzoneGQL from '../../shared/components/Dropzone.jsx'
 import Modal from '../../shared/components/form-custom/Modal'
 
+import NumberKeypad from '../../shared/components/form-custom/NumberKeypad'
+
 const RemoveImageModal = ({ toggle, isOpen, confirm }) => {
   return (
     <Modal

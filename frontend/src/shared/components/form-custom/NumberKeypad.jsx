@@ -14,41 +14,46 @@ import NumberFormat from 'react-number-format'
 import { MuiThemeProvider, createMuiTheme, Grid, Button } from '@material-ui/core'
 
 const styles = theme => ({
-    root: {
-      color: '#4ce1b6',
+    // root: {
+    //   color: '#4ce1b6',
+    // },
+    button: {
+      backgroundColor: '#EFFAFF', 
+      color: '#289FD7', 
+      size: 'large',
     },
   })
 
 
-const NumberKeypad = ({}) => 
-{    
+function NumberKeypad(props) {  
+  const {classes} = props;  
   return(
   <Fragment> 
     <Grid container spacing={2}>
       <Grid item xs={12} md={6}>
         <Grid item>
-          <Button>1</Button>
-          <Button>2</Button>
-          <Button>3</Button>
-          <Button>4</Button>
+          <Button className = {classes.button} color = "#EFFAFF">1</Button>
+          <Button className = {classes.button}>2</Button>
+          <Button className = {classes.button}>3</Button>
+          <Button className = {classes.button}>+</Button>
           </Grid>
         <Grid item>
-          <Button>1</Button>
-          <Button>2</Button>
-          <Button>3</Button>
-          <Button>4</Button>
+          <Button className = {classes.button}>4</Button>
+          <Button className = {classes.button}>5</Button>
+          <Button className = {classes.button}>6</Button>
+          <Button className = {classes.button}>-</Button>
         </Grid>
         <Grid item>
-          <Button>1</Button>
-          <Button>2</Button>
-          <Button>3</Button>
-          <Button>4</Button>
+          <Button className = {classes.button}>7</Button>
+          <Button className = {classes.button}>8</Button>
+          <Button className = {classes.button}>9</Button>
+          <Button className = {classes.button}>*</Button>
         </Grid>
         <Grid item>
-          <Button>1</Button>
-          <Button>2</Button>
-          <Button>3</Button>
-          <Button>4</Button>
+          <Button className = {classes.button}>0</Button>
+          <Button className = {classes.button}>000</Button>
+          <Button className = {classes.button}>back</Button>
+          <Button className = {classes.button}>/</Button>
         </Grid>
       </Grid>
     </Grid>
