@@ -46,6 +46,7 @@ function getUserQuery(id: string) {
         }
         image
       }
+      sequenceNumber
     }
   `;
 }

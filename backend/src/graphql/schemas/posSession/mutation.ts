@@ -2,11 +2,13 @@ import { GraphQLObjectType, GraphQLBoolean } from "graphql";
 import { ApolloError } from "apollo-server-lambda";
 
 import { configureService, getDataSet } from "../utility/nodoo";
-import { camelizeKeys } from "humps";
+import { camelizeKeys, decamelizeKeys } from "humps";
 
 import { OpenSessionInputType } from "./types/openSessionInput";
 import { OpenSessionType } from "./types/openSession";
 import { CloseSessionInputType } from "./types/closeSessionInput";
+import { PosOrderInputType } from "./types/posOrderInput";
+import { PosOrderType } from "./types/posOrder";
 
 const posSessionMutations = new GraphQLObjectType({
   name: "posSessionMutations",
@@ -86,6 +88,53 @@ const posSessionMutations = new GraphQLObjectType({
                 })
               ),
             onResult: () => res({ success: true })
+          });
+        })
+    },
+    posOrder: {
+      type: PosOrderType,
+      args: {
+        input: {
+          type: PosOrderInputType
+        }
+      },
+      resolve: (_0, args, context) =>
+        new Promise((res, rej) => {
+          // populate default values
+          const fieldsValues = args.input;
+          const fieldData = fieldsValues.data;
+
+          let index = 0;
+          fieldData.lines.forEach(order => {
+            fieldData.lines[index].taxIds = [[6, false, []]];
+            fieldData.lines[index].packLotIds = [];
+            fieldData.lines[index] = [0, 0, order];
+            index += 1;
+          });
+
+          fieldData.statementIds = [[0, 0, fieldData.statementIds]];
+
+          const decamelizedFieldValues: any = decamelizeKeys(fieldsValues);
+          // console.log(decamelizedFieldValues);
+          // const util = require('util')
+          // console.log(util.inspect(decamelizedFieldValues, false, null, true /* enable colors */))
+
+          configureService({
+            operation: getDataSet({ context }).createCallMethod({
+              modelName: "pos.order",
+              methodName: "create_from_ui",
+              args: decamelizedFieldValues
+            }),
+            onError: error =>
+              rej(
+                new ApolloError("Application Error", "APPLICATION_ERROR", {
+                  errorMessage: error.message
+                })
+              ),
+            onResult: result => {
+              // console.log(result);
+              res(result);
+            }
           });
         })
     }
