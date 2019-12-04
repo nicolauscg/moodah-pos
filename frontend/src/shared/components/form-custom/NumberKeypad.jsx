@@ -13,6 +13,8 @@ import CircularProgress from '@material-ui/core/CircularProgress'
 import NumberFormat from 'react-number-format'
 import { MuiThemeProvider, createMuiTheme, Grid, Button } from '@material-ui/core'
 
+import DeleteIcon from '@material-ui/icons/Backspace'
+
 const styles = theme => ({
     // root: {
     //   color: '#4ce1b6',
@@ -47,13 +49,15 @@ function NumberKeypad(props) {
           <Button className = {classes.button}>7</Button>
           <Button className = {classes.button}>8</Button>
           <Button className = {classes.button}>9</Button>
-          <Button className = {classes.button}>*</Button>
+          <Button className = {classes.button}>×</Button>
         </Grid>
         <Grid item>
           <Button className = {classes.button}>0</Button>
           <Button className = {classes.button}>000</Button>
-          <Button className = {classes.button}>back</Button>
-          <Button className = {classes.button}>/</Button>
+          <Button className = {classes.button}>
+            <DeleteIcon fontSize = "small"/>
+          </Button>
+          <Button className = {classes.button}>÷</Button>
         </Grid>
       </Grid>
     </Grid>

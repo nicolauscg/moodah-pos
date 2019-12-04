@@ -141,6 +141,12 @@ const Pos_SessionIndex = ({
           </Col>
         </Row>
 
+        <Row className = "header">
+          <Col>
+           <NumberKeypad/>
+          </Col>
+        </Row>
+
       <RemoveImageModal
               toggle={toggleRemoveImage}
               isOpen={removeImageModalIsOpen}
