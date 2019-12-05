@@ -3,7 +3,7 @@ import { debounce } from 'lodash'
 import { compose, withState, withPropsOnChange, withHandlers } from 'recompose'
 import { withRouter } from 'react-router-dom'
 
-import { Col, Container, Row, Button } from 'reactstrap'
+import { Col, Container, Row, Button, Card, CardImg, CardText, CardBody, CardTitle, CardSubtitle, } from 'reactstrap'
 import { Link } from 'react-router-dom'
 import SearchIcon from 'mdi-react/SearchIcon'
 import { withFormik, Form, Field } from 'formik'
@@ -13,8 +13,12 @@ import ChartDatePicker from '../../shared/components/ChartDatePicker'
 import offsetToCursor from '../../utils/offsetToCursor'
 import Breadcrumb from '../../shared/components/Breadcrumb'
 
-import DropzoneGQL from '../../shared/components/Dropzone.jsx'
+import DropzoneGQL from '../../shared/components/Dropzone'
 import Modal from '../../shared/components/form-custom/Modal'
+import AddButton from '../../shared/components/form-custom/AddButton'
+import MinusButton from '../../shared/components/form-custom/MinusButton'
+import RightArrowButton from '../../shared/components/form-custom/RightArrowButton'
+import NakedInput from '../../shared/components/form-custom/NakedInput'
 
 const RemoveImageModal = ({ toggle, isOpen, confirm }) => {
   return (
@@ -111,31 +115,85 @@ const Pos_SessionIndex = ({
        <hr />
 
         <Row className="header">
-          <Col md={10}>
+          <Col md={9}>
+           <Card>
              <div className="example1">
                 <Col md={8} className="header__item">
-                  <Breadcrumb crumbs={[{ text: 'Pos Session' }]} />
+                  <Breadcrumb crumbs={[{ text: 'POS Session' }]} />
                 </Col>
                 <Col >
                   <ImageField toggleRemoveImage={toggleRemoveImage} {...props} />
                 </Col>
-                <Breadcrumb crumbs={[{ text: 'Samuel Adi Prasetyo' }]}  />
-                <Breadcrumb crumbs={[{ text: 'Front Cashier' }]} />
-                <Button color='primary' size='sm' type='submit'>
-                  Close Session
-                </Button>
-                <Breadcrumb crumbs={[{ text: '2019 All Rights Reserved' }]} />
+                <Col>
+                  <NakedInput />
+                </Col>
+                <Col>
+                  <NakedInput />
+                </Col>
+                <Col>
+                  <Button color='primary' size='sm' type='submit'>
+                    Close Session
+                  </Button>
+                </Col>
+                <Col>
+                  <Breadcrumb crumbs={[{ text: '2019 All Rights Reserved' }]} />
+                </Col>
              </div>
+           </Card>
           </Col>
 
-          <Col md={2}>
-            <div className="example2">
+          <Col md={3}>
+           <Col>
+            <div className="example2 form-inline">
+             <Button className="btn btn-primary" size='lg'>
+               Orders#4509
+             </Button>
+
+             <AddButton  />
+             &nbsp;&nbsp;
+             <MinusButton  />
+
+            </div>
+           </Col>
+
+           <br />
+
+           <Col>
+            <div className="example3 form-inline">
              <Col>
-               <Button className="btn btn-primary">
-                 Orders#4509
-               </Button>
+              <Breadcrumb crumbs={[{ text: 'Customer' }]} />
+              <div className="form-inline">
+                <NakedInput />
+                <RightArrowButton  />
+              </div>
              </Col>
             </div>
+           </Col>
+
+           <br />
+
+           <Col>
+             <div className="example4">
+             </div>
+           </Col>
+
+           <br />
+
+           <Col>
+             <div className="example2 form-inline">
+               <Breadcrumb crumbs={[{ text: 'Discount' }]} />
+               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<RightArrowButton  />
+             </div>
+           </Col>
+
+           <br />
+
+           <Col>
+            <div>
+             <Button color="primary" size="lg" block>Payment</Button>
+            </div>
+           </Col>
           </Col>
         </Row>
 
