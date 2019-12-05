@@ -1,0 +1,28 @@
+config:
+  target: "https://j3li8dtqy4.execute-api.us-east-1.amazonaws.com/stag"
+  payload:
+    path: "./load-payload.csv"
+    fields:
+      - "authToken"
+  variables:
+    token:
+      - "f479103fe3a2df945769dabfe2edf62fb8ce8ebc"
+  phases:
+    - duration: 10
+      arrivalRate: 10
+      name: "Sustained load"
+  processor: "./load-test.ts"
+scenarios:
+  - name: "GraphQL Query load test"
+    flow:
+      - function: "testCases"
+      - loop:
+          - post:
+              url: "/graphql-introspect"
+              headers:
+                authorization: "{{ authToken }}"
+              json:
+                query: "{{ $loopElement.query }}"
+        over: cases
+
+    

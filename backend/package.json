@@ -14,16 +14,20 @@
     "gen-docs": "rm -rf ./doc/schema && graphdoc -e http://localhost:3001/graphql -o ./doc/schema",
     "deploy-docs-netlify": "npm run gen-docs && netlify deploy --prod --dir doc/schema",
     "deploy-gql-stag": "serverless deploy function --function graphql --stage stag && serverless deploy function --function playground --stage stag && serverless deploy function --function graphql-introspect --stage stag",
-    "deploy-gql-dev": "serverless deploy function --function graphql --stage dev && serverless deploy function --function playground --stage dev && serverless deploy function --function graphql-introspect --stage dev"
+    "deploy-gql-dev": "serverless deploy function --function graphql --stage dev && serverless deploy function --function playground --stage dev && serverless deploy function --function graphql-introspect --stage dev",
+    "gen-schema": "rm -f ./src/graphql/schemas/schema.gql && ts-node ./src/graphql/schemas/utility/generateSchema.ts",
+    "load-test": "artillery run artillery.yml"
   },
   "dependencies": {
     "@types/graphql-relay": "^0.4.11",
     "@types/humps": "^1.1.2",
     "apollo-server-lambda": "^2.3.1",
+    "artillery": "^1.6.0-29",
     "aws-lambda": "^0.1.2",
     "btoa": "^1.2.1",
     "dataloader": "^1.4.0",
     "date-fns": "^1.30.1",
+    "easygraphql-load-tester": "^0.3.8",
     "fp-ts": "^1.9.0",
     "graphql": "^14.0.2",
     "graphql-fields-list": "^2.1.1",
