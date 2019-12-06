@@ -4,9 +4,6 @@ config:
     path: "./load-payload.csv"
     fields:
       - "authToken"
-  variables:
-    token:
-      - "f479103fe3a2df945769dabfe2edf62fb8ce8ebc"
   phases:
     - duration: 10
       arrivalRate: 10
