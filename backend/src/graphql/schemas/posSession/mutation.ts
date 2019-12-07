@@ -100,10 +100,9 @@ const posSessionMutations = new GraphQLObjectType({
       },
       resolve: (_0, args, context) =>
         new Promise((res, rej) => {
-          // populate default values
+          // adapt shape to match odoo
           const fieldsValues = args.input;
           const fieldData = fieldsValues.data;
-
           let index = 0;
           fieldData.lines.forEach(order => {
             fieldData.lines[index].taxIds = [[6, false, []]];
@@ -111,19 +110,13 @@ const posSessionMutations = new GraphQLObjectType({
             fieldData.lines[index] = [0, 0, order];
             index += 1;
           });
-
           fieldData.statementIds = [[0, 0, fieldData.statementIds]];
-
-          const decamelizedFieldValues: any = decamelizeKeys(fieldsValues);
-          // console.log(decamelizedFieldValues);
-          // const util = require('util')
-          // console.log(util.inspect(decamelizedFieldValues, false, null, true /* enable colors */))
 
           configureService({
             operation: getDataSet({ context }).createCallMethod({
               modelName: "pos.order",
               methodName: "create_from_ui",
-              args: decamelizedFieldValues
+              args: [[decamelizeKeys(fieldsValues)]]
             }),
             onError: error =>
               rej(
@@ -131,10 +124,7 @@ const posSessionMutations = new GraphQLObjectType({
                   errorMessage: error.message
                 })
               ),
-            onResult: result => {
-              // console.log(result);
-              res(result);
-            }
+            onResult: result => res(result)
           });
         })
     }
