@@ -115,15 +115,12 @@ const posSessionMutations = new GraphQLObjectType({
           fieldData.statementIds = [[0, 0, fieldData.statementIds]];
 
           const decamelizedFieldValues: any = decamelizeKeys(fieldsValues);
-          // console.log(decamelizedFieldValues);
-          // const util = require('util')
-          // console.log(util.inspect(decamelizedFieldValues, false, null, true /* enable colors */))
 
           configureService({
             operation: getDataSet({ context }).createCallMethod({
               modelName: "pos.order",
               methodName: "create_from_ui",
-              args: decamelizedFieldValues
+              args: [[decamelizedFieldValues]]
             }),
             onError: error =>
               rej(
@@ -132,7 +129,6 @@ const posSessionMutations = new GraphQLObjectType({
                 })
               ),
             onResult: result => {
-              // console.log(result);
               res(result);
             }
           });
