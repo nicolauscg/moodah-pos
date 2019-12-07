@@ -8,6 +8,9 @@ const PaymentMethodType = new GraphQLObjectType({
     name: {
       type: GraphQLString
     },
+    displayName: {
+      type: GraphQLString
+    },
     company: {
       type: new GraphQLObjectType({
         name: "PaymentMethod_Company",

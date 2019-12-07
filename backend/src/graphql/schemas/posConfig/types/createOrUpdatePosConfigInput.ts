@@ -23,7 +23,7 @@ const CreateOrUpdatePosConfigInputType = new GraphQLInputObjectType({
     ifaceTaxIncluded: {
       type: IfaceTaxIncludedType
     },
-    globalDiscount: {
+    modulePosDiscount: {
       type: GraphQLBoolean
     },
     discountProductId: {

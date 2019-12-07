@@ -46,7 +46,6 @@ function getUserQuery(id: string) {
         }
         image
       }
-      sequenceNumber
     }
   `;
 }
@@ -67,10 +66,42 @@ const CLOSE_SESSION = id => gql`
   }
 `;
 
+const GET_ACCOUNT_BANK_STATEMENT = id => gql`
+  query {
+    accountBankStatement(input: { id: "${id}" }) {
+      length
+      records {
+        currency {
+          id
+          name
+        }
+        account {
+          id
+          name
+        }
+        journal {
+          id
+          name
+        }
+        state
+        posSession {
+          id
+          name
+        }
+        user {
+          id
+          name
+        }
+      }
+    }
+  }
+`;
+
 export default {
   SIGN_IN,
   GET_POS_SESSION,
   getUserQuery,
   OPEN_SESSION,
-  CLOSE_SESSION
+  CLOSE_SESSION,
+  GET_ACCOUNT_BANK_STATEMENT
 };

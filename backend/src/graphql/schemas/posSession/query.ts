@@ -7,6 +7,10 @@ import { GlobalIdInput } from "../utility/types/globalIdInput";
 import { UserType } from "./types/user";
 import { PosSessionType } from "./types/posSession";
 import posSessionFields from "./field";
+import { isFilterArgsValid } from "../utility/filterAndPaginate";
+import { PaginateType } from "../utility/types/paginateType";
+import { paginateOperationParam } from "../utility/paginate";
+import { accountBankStatementType } from "./types/accountBankStatement";
 
 const posSessionQueries = new GraphQLObjectType({
   name: "posSessionQueries",
@@ -98,6 +102,62 @@ const posSessionQueries = new GraphQLObjectType({
                 res(camelizeKeys(result[0]));
               }
             }
+          });
+        })
+    },
+    accountBankStatement: {
+      type: PaginateType(accountBankStatementType),
+      args: {
+        input: {
+          type: new GraphQLInputObjectType({
+            name: "accountBankStatementInput",
+            fields: () => ({
+              id: {
+                type: GlobalIdInput
+              }
+            })
+          }),
+          defaultValue: {
+            first: 10,
+            offset: 0
+          }
+        }
+      },
+      resolve: (_0, args, context) =>
+        new Promise((res, rej) => {
+          if (!isFilterArgsValid(args)) {
+            rej(
+              new ApolloError("Application Error", "APPLICATION_ERROR", {
+                errorMessage:
+                  "invalid filter-related input, ensure each field object " +
+                  "has only 1 key and OR and AND are mutually exclusive"
+              })
+            );
+          }
+          configureService({
+            operation: getDataSet({
+              context
+            }).createSearchRead(
+              paginateOperationParam(
+                {
+                  modelName: "account.bank.statement",
+                  fields: posSessionFields.accountBankStatement,
+                  domain: [
+                    ["state", "=", "open"],
+                    ["pos_session_id", "=", args.input.id]
+                  ]
+                },
+                args
+              )
+            ),
+            onError: error => {
+              rej(
+                new ApolloError("Application Error", "APPLICATION_ERROR", {
+                  errorMessage: error.message
+                })
+              );
+            },
+            onResult: result => res(camelizeKeys(result))
           });
         })
     }
