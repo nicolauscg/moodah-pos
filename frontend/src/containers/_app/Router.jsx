@@ -132,7 +132,6 @@ const RouteList = {
         ],
     },
 
-
   AccountSettings: {
     path: '/account_settings',
     component: [
