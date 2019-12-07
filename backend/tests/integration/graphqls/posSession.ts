@@ -103,7 +103,6 @@ const CREATE_POS_ORDER = gql`
       input: {
         id: "${date}"
         data: {
-          name: "Order ${date}"
           amountPaid: 51000
           amountTotal: 51000
           amountTax: 0
@@ -114,7 +113,6 @@ const CREATE_POS_ORDER = gql`
             { qty: 1, priceUnit: 6000, discount: 0, productId: 183, id: 18 }
           ]
           statementIds: {
-            name: "2019-11-28 18:18:00"
             statementId: 224
             accountId: 52
             journalId: 11
@@ -122,14 +120,9 @@ const CREATE_POS_ORDER = gql`
           }
           posSessionId: 89
           pricelistId: 1
-          partnerId: false
           userId: 1
-          uid: "${date}"
-          sequenceNumber: 7
-          creationDate: "2019-11-27T12:01:00.000Z"
-          fiscalPositionId: false
+          sequenceNumber: 1
         }
-        toInvoice: false
       }
     ) {
       result

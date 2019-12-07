@@ -3,13 +3,14 @@ import { ApolloError } from "apollo-server-lambda";
 
 import { configureService, getDataSet } from "../utility/nodoo";
 import { camelizeKeys, decamelizeKeys } from "humps";
-import moment from "moment/src/moment";
 
 import { OpenSessionInputType } from "./types/openSessionInput";
 import { OpenSessionType } from "./types/openSession";
 import { CloseSessionInputType } from "./types/closeSessionInput";
 import { PosOrderInputType } from "./types/posOrderInput";
 import { PosOrderType } from "./types/posOrder";
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const moment = require("moment");
 
 const posSessionMutations = new GraphQLObjectType({
   name: "posSessionMutations",
