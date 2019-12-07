@@ -142,21 +142,26 @@ describe("Pos Session Mutation", () => {
     expect(closeSessionResult.success).toEqual(true);
   });
 
-  it("open session, then create an order", async () => {
-    const server = await createTestServerWithSessionToken({
-      signInGql: posSessionRequests.SIGN_IN
-    });
-    const { query } = createTestClient(server);
-    const { mutate } = createTestClient(server);
-    const openSessionResult: any = await mutate({
-      mutation: posSessionRequests.OPEN_SESSION("cG9zLmNvbmZpZzo1")
-    });
-    const id = openSessionResult.data.openSession.sessionId;
-    expect(id).toEqual(expect.any(String));
+  // it("open session, then create an order", async () => {
+  //   const server = await createTestServerWithSessionToken({
+  //     signInGql: posSessionRequests.SIGN_IN
+  //   });
+  //   const { query } = createTestClient(server);
+  //   const { mutate } = createTestClient(server);
+  //   const openSessionResult: any = await mutate({
+  //     mutation: posSessionRequests.OPEN_SESSION("cG9zLmNvbmZpZzo1")
+  //   });
+  //   const id = openSessionResult.data.openSession.sessionId;
+  //   expect(id).toEqual(expect.any(String));
 
-    const res = await query({
-      query: posSessionRequests.CREATE_POS_ORDER
-    });
-    expect(res.data.posSession).not.toBeNull();
-  });
+  //   const res = await query({
+  //     query: posSessionRequests.CREATE_POS_ORDER
+  //   });
+  //   expect(res.data.posSession).not.toBeNull();
+
+  //   const closeSessionResult: any = (await mutate({
+  //     mutation: posSessionRequests.CLOSE_SESSION(id)
+  //   })).data.closeSession;
+  //   expect(closeSessionResult.success).toEqual(true);
+  // });
 });
