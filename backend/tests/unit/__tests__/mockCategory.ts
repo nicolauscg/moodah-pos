@@ -7,7 +7,7 @@ import * as customNodoo from "../../../src/graphql/schemas/utility/nodoo";
 
 import { createTestServer } from "../../utility/createTestServer";
 import stubResponse from "../stubResponse";
-import posProductRequests from "../../integration/graphqls/posProduct";
+import posCategoryRequests from "../../integration/graphqls/posCategory";
 
 describe("Mock category tests", () => {
   describe("query tests", () => {
@@ -15,7 +15,10 @@ describe("Mock category tests", () => {
       (packageNodoo as any).createService = jest
         .fn()
         .mockImplementationOnce(() =>
-          xs.of(right(decamelizeKeys(stubResponse.queryAllPosProduct)))
+          xs.of(right(decamelizeKeys(stubResponse.queryAll)))
+        )
+        .mockImplementationOnce(() =>
+          xs.of(right(decamelizeKeys(stubResponse.nestedQueryParent)))
         );
 
       (customNodoo as any).configureService = jest
@@ -40,10 +43,10 @@ describe("Mock category tests", () => {
       const server = createTestServer();
       const { query } = createTestClient(server);
       const result = (await query({
-        query: posProductRequests.GET_POS_PRODUCT_STUB
-      })).data.posProducts;
+        query: posCategoryRequests.GET_POS_CATEGORIES_WITH_ALL_FIELDS
+      })).data.posCategories;
 
-      expect(packageNodoo.createService).toHaveBeenCalledTimes(1);
+      expect(packageNodoo.createService).toHaveBeenCalledTimes(2);
       expect(packageNodoo.createService).toHaveBeenNthCalledWith(
         1,
         expect.objectContaining({
@@ -55,9 +58,20 @@ describe("Mock category tests", () => {
           })
         })
       );
+      expect(packageNodoo.createService).toHaveBeenNthCalledWith(
+        2,
+        expect.objectContaining({
+          operation: expect.objectContaining({
+            kind: "read"
+          }),
+          clientOptions: expect.objectContaining({
+            kind: "secure"
+          })
+        })
+      );
       expect(packageNodoo.createService).toHaveReturnedWith(expect.any(Stream));
 
-      expect(customNodoo.configureService).toHaveBeenCalledTimes(1);
+      expect(customNodoo.configureService).toHaveBeenCalledTimes(2);
       expect(customNodoo.configureService).toHaveBeenCalledWith(
         expect.objectContaining({
           operation: expect.objectContaining({

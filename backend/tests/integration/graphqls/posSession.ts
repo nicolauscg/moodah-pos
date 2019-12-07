@@ -96,6 +96,39 @@ const GET_ACCOUNT_BANK_STATEMENT = id => gql`
     }
   }
 `;
+const date = new Date();
+const CREATE_POS_ORDER = gql`
+  mutation {
+    posOrder(
+      input: {
+        id: "${date}"
+        data: {
+          amountPaid: 51000
+          amountTotal: 51000
+          amountTax: 0
+          amountReturn: 0
+          lines: [
+            { qty: 1, priceUnit: 15000, discount: 0, productId: 186, id: 15 }
+            { qty: 2, priceUnit: 15000, discount: 0, productId: 187, id: 16 }
+            { qty: 1, priceUnit: 6000, discount: 0, productId: 183, id: 18 }
+          ]
+          statementIds: {
+            statementId: 224
+            accountId: 52
+            journalId: 11
+            amount: 51000
+          }
+          posSessionId: 89
+          pricelistId: 1
+          userId: 1
+          sequenceNumber: 1
+        }
+      }
+    ) {
+      result
+    }
+  }
+`;
 
 export default {
   SIGN_IN,
@@ -103,5 +136,6 @@ export default {
   getUserQuery,
   OPEN_SESSION,
   CLOSE_SESSION,
-  GET_ACCOUNT_BANK_STATEMENT
+  GET_ACCOUNT_BANK_STATEMENT,
+  CREATE_POS_ORDER
 };
