@@ -2,8 +2,7 @@ import {
   GraphQLInputObjectType,
   GraphQLString,
   GraphQLInt,
-  GraphQLList,
-  GraphQLBoolean
+  GraphQLList
 } from "graphql";
 
 const OrdersType = new GraphQLInputObjectType({
@@ -33,9 +32,6 @@ const OrdersType = new GraphQLInputObjectType({
 const statementType = new GraphQLInputObjectType({
   name: "statementType",
   fields: () => ({
-    name: {
-      type: GraphQLString
-    },
     statementId: {
       type: GraphQLInt
     },
@@ -54,9 +50,6 @@ const statementType = new GraphQLInputObjectType({
 const PosOrderDataType = new GraphQLInputObjectType({
   name: "posOrderData",
   fields: () => ({
-    name: {
-      type: GraphQLString
-    },
     amountPaid: {
       type: GraphQLInt
     },
@@ -81,23 +74,11 @@ const PosOrderDataType = new GraphQLInputObjectType({
     pricelistId: {
       type: GraphQLInt
     },
-    partnerId: {
-      type: GraphQLBoolean
-    },
     userId: {
       type: GraphQLInt
     },
-    uid: {
-      type: GraphQLString
-    },
     sequenceNumber: {
       type: GraphQLInt
-    },
-    creationDate: {
-      type: GraphQLString
-    },
-    fiscalPositionId: {
-      type: GraphQLBoolean
     }
   })
 });
@@ -110,9 +91,6 @@ const PosOrderInputType = new GraphQLInputObjectType({
     },
     data: {
       type: PosOrderDataType
-    },
-    toInvoice: {
-      type: GraphQLBoolean
     }
   })
 });

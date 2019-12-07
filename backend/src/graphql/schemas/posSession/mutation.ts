@@ -3,6 +3,7 @@ import { ApolloError } from "apollo-server-lambda";
 
 import { configureService, getDataSet } from "../utility/nodoo";
 import { camelizeKeys, decamelizeKeys } from "humps";
+import moment from "moment/src/moment";
 
 import { OpenSessionInputType } from "./types/openSessionInput";
 import { OpenSessionType } from "./types/openSession";
@@ -100,17 +101,32 @@ const posSessionMutations = new GraphQLObjectType({
       },
       resolve: (_0, args, context) =>
         new Promise((res, rej) => {
-          // adapt shape to match odoo
+          const completeDate = new Date();
+          const formattedDate = moment(completeDate)
+            .utc()
+            .format("YYYY-MM-DD HH:mm:ss");
+
+          // set default values
           const fieldsValues = args.input;
-          const fieldData = fieldsValues.data;
+          fieldsValues.toInvoice = false;
+          fieldsValues.data.fiscalPositionId = false;
+          fieldsValues.data.partnerId = false;
+          fieldsValues.data.creationDate = completeDate;
+          fieldsValues.data.statementIds.name = formattedDate;
+          fieldsValues.data.name = `Order ${fieldsValues.id}`;
+          fieldsValues.data.uid = fieldsValues.id;
+
+          // adapt shape to match odoo
           let index = 0;
-          fieldData.lines.forEach(order => {
-            fieldData.lines[index].taxIds = [[6, false, []]];
-            fieldData.lines[index].packLotIds = [];
-            fieldData.lines[index] = [0, 0, order];
+          fieldsValues.data.lines.forEach(order => {
+            fieldsValues.data.lines[index] = [0, 0, order];
             index += 1;
           });
-          fieldData.statementIds = [[0, 0, fieldData.statementIds]];
+          // eslint-disable-next-line array-bracket-newline
+          fieldsValues.data.statementIds = [
+            [0, 0, fieldsValues.data.statementIds]
+            // eslint-disable-next-line array-bracket-newline
+          ];
 
           configureService({
             operation: getDataSet({ context }).createCallMethod({
