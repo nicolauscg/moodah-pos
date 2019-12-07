@@ -4,6 +4,7 @@ import { globalIdField } from "graphql-relay";
 const accountBankStatementType = new GraphQLObjectType({
   name: "accountBankStatementType",
   fields: () => ({
+    id: globalIdField("account.bank.statement"),
     account: {
       type: new GraphQLObjectType({
         name: "accountBankStatement_AccountId",
