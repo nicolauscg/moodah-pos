@@ -105,7 +105,7 @@ describe("Pos Session Query", () => {
     expect(res.errors).toEqual(expect.anything());
   });
 
-  it("open session, then fetch the summary of that session", async () => {
+  it("open session, fetch the summary of that session, then close it", async () => {
     const server = await createTestServerWithSessionToken({
       signInGql: posSessionRequests.SIGN_IN
     });
@@ -121,6 +121,11 @@ describe("Pos Session Query", () => {
       query: posSessionRequests.POS_SESSION_SUMMARY
     });
     expect(res.data.posSessionSummary).not.toBeNull();
+
+    const closeSessionResult: any = await mutate({
+      mutation: posSessionRequests.CLOSE_SESSION(id)
+    });
+    expect(closeSessionResult.data.closeSession.success).toEqual(true);
   });
 });
 
@@ -160,20 +165,13 @@ describe("Pos Session Mutation", () => {
     expect(closeSessionResult.success).toEqual(true);
   });
 
-  it("open session, then create an order", async () => {
+  it("create an order", async () => {
     const server = await createTestServerWithSessionToken({
       signInGql: posSessionRequests.SIGN_IN
     });
-    const { query } = createTestClient(server);
     const { mutate } = createTestClient(server);
-    const openSessionResult: any = await mutate({
-      mutation: posSessionRequests.OPEN_SESSION("cG9zLmNvbmZpZzo1")
-    });
-    const id = openSessionResult.data.openSession.sessionId;
-    expect(id).toEqual(expect.any(String));
-
-    const res = await query({
-      query: posSessionRequests.CREATE_POS_ORDER
+    const res = await mutate({
+      mutation: posSessionRequests.CREATE_POS_ORDER
     });
     expect(res.data.posSession).not.toBeNull();
   });
