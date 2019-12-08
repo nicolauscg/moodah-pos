@@ -1,32 +1,38 @@
-import React from 'react'
-import { debounce } from 'lodash'
-import { compose, withState, withProps, withPropsOnChange, withHandlers } from 'recompose'
+import React from "react";
+import { debounce } from "lodash";
+import {
+  compose,
+  withState,
+  withProps,
+  withPropsOnChange,
+  withHandlers
+} from "recompose";
 
-import { Col, Container, Row, Button } from 'reactstrap'
-import { Link } from 'react-router-dom'
-import SearchIcon from 'mdi-react/SearchIcon'
-import { withFormik, Form, Field } from 'formik'
+import { Col, Container, Row, Button } from "reactstrap";
+import { Link } from "react-router-dom";
+import SearchIcon from "mdi-react/SearchIcon";
+import { withFormik, Form, Field } from "formik";
 
-import Breadcrumb from '../../shared/components/Breadcrumb'
-import ConfigurationTable from './components/ConfigurationTable'
+import Breadcrumb from "../../shared/components/Breadcrumb";
+import ConfigurationTable from "./components/ConfigurationTable";
 
 const SearchInput = ({ field, form, handleSetValue, ...props }) => {
-  const { onChange, ...restField } = field
+  const { onChange, ...restField } = field;
   return (
     <input
       {...restField}
       {...props}
       onChange={e => {
-        form.setFieldValue(field.name, e.target.value)
+        form.setFieldValue(field.name, e.target.value);
 
         if (handleSetValue) {
-          handleSetValue(e.target.value)
+          handleSetValue(e.target.value);
         }
       }}
       type="text"
     />
-  )
-}
+  );
+};
 
 const SearchForm = ({ handleSetValue }) => {
   return (
@@ -37,27 +43,26 @@ const SearchForm = ({ handleSetValue }) => {
         placeholder="Search..."
         handleSetValue={handleSetValue}
         component={SearchInput}
-
       />
       <Button className="search-btn" type="submit">
         <SearchIcon />
       </Button>
     </Form>
-  )
-}
+  );
+};
 
 const FormikSearch = compose(
   withFormik({
     mapPropsToValues: ({ filters }) => ({
-      keyword: filters.name_contains,
+      keyword: filters.name_contains
     }),
-    handleSubmit: () => { },
-    enableReinitialize: true,
+    handleSubmit: () => {},
+    enableReinitialize: true
   }),
-  withPropsOnChange(['handleSetValue'], ({ handleSetValue }) => ({
-    handleSetValue: debounce(handleSetValue, 1000),
+  withPropsOnChange(["handleSetValue"], ({ handleSetValue }) => ({
+    handleSetValue: debounce(handleSetValue, 1000)
   }))
-)(SearchForm)
+)(SearchForm);
 
 const ConfigurationIndex = ({
   filters,
@@ -71,7 +76,7 @@ const ConfigurationIndex = ({
     <Container className="configuration__list">
       <Row className="header">
         <Col md={4} className="header__item">
-          <Breadcrumb crumbs={[{ text: 'Configuration' }]} />
+          <Breadcrumb crumbs={[{ text: "Configuration" }]} />
         </Col>
         <Col
           md={8}
@@ -84,17 +89,13 @@ const ConfigurationIndex = ({
             handleSetValue={handleSetValue}
           />
 
-          <Link
-            to={`/configuration/create`}
-            className="btn btn-primary btn-sm"
-          >
+          <Link to={`/configuration/create`} className="btn btn-primary btn-sm">
             Buat Baru
           </Link>
 
           <Button size="sm" color="help" tag="a" href="mailto:support@rubyh.co">
             Bantuan
           </Button>
-
         </Col>
       </Row>
       <Row>
@@ -107,13 +108,13 @@ const ConfigurationIndex = ({
         />
       </Row>
     </Container>
-  )
-}
+  );
+};
 
 const defaultFilters = {};
 const enhance = compose(
-  withState('filters', 'setFilters', defaultFilters),
-  withState('offset', 'setOffset', 0),
+  withState("filters", "setFilters", defaultFilters),
+  withState("offset", "setOffset", 0),
   withProps({
     limit: 10
   }),
@@ -123,9 +124,9 @@ const enhance = compose(
         ...filters,
         OR: [{ name: value }, { stockLocationName: value }]
       }),
-      setOffset(0)
+        setOffset(0);
     }
   })
-)
+);
 
-export default enhance(ConfigurationIndex)
+export default enhance(ConfigurationIndex);
