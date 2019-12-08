@@ -129,6 +129,20 @@ const CREATE_POS_ORDER = gql`
     }
   }
 `;
+const POS_SESSION_SUMMARY = gql`
+  query {
+    posSessionSummary(
+      input: {
+        bankAccountStatementid: "cG9zLnNlc3Npb246MzM2"
+        posSessionId: "cG9zLmNvbmZpZzox"
+      }
+    ) {
+      totalNetSale
+      transactions
+      averageOrderValue
+    }
+  }
+`;
 
 export default {
   SIGN_IN,
@@ -137,5 +151,6 @@ export default {
   OPEN_SESSION,
   CLOSE_SESSION,
   GET_ACCOUNT_BANK_STATEMENT,
-  CREATE_POS_ORDER
+  CREATE_POS_ORDER,
+  POS_SESSION_SUMMARY
 };
