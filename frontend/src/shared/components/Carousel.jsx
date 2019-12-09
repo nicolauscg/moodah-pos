@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { withStyles } from "@material-ui/core/styles";
 import { unstable_useMediaQuery as useMediaQuery } from "@material-ui/core/useMediaQuery";
 import MobileStepper from "@material-ui/core/MobileStepper";
@@ -44,15 +44,7 @@ const styles = theme => ({
   }
 });
 
-const SwipeableTextMobileStepper = ({
-  activeStep,
-  children,
-  handleNext,
-  handleBack,
-  handleStepChange,
-  classes,
-  theme
-}) => {
+const SwipeableTextMobileStepper = ({ children, classes, theme }) => {
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const itemsPerSlide = isSmallScreen ? 2 : 3;
   const boxedChildren = children.reduce(
@@ -63,13 +55,16 @@ const SwipeableTextMobileStepper = ({
     []
   );
   const maxSteps = boxedChildren.length;
+  const [activeStep, setActiveStep] = useState(0);
+  const handleNext = () => setActiveStep(Math.min(activeStep + 1, maxSteps));
+  const handleBack = () => setActiveStep(Math.max(activeStep - 1, 0));
 
   return (
     <div className={classes.root}>
       <SwipeableViews
         axis={theme.direction === "rtl" ? "x-reverse" : "x"}
         index={activeStep}
-        onChangeIndex={handleStepChange}
+        onChangeIndex={setActiveStep}
         enableMouseEvents
         className={classes.carousel}
       >
