@@ -1,4 +1,4 @@
-import { GraphQLObjectType, GraphQLInputObjectType, GraphQLInt } from "graphql";
+import { GraphQLObjectType, GraphQLInputObjectType } from "graphql";
 import { ApolloError } from "apollo-server-lambda";
 import { camelizeKeys } from "humps";
 
@@ -7,10 +7,7 @@ import { GlobalIdInput } from "../utility/types/globalIdInput";
 import { UserType } from "./types/user";
 import { PosSessionType } from "./types/posSession";
 import posSessionFields from "./field";
-import {
-  isFilterArgsValid,
-  paginateAndFilterOperationParam
-} from "../utility/filterAndPaginate";
+import { isFilterArgsValid } from "../utility/filterAndPaginate";
 import { PaginateType } from "../utility/types/paginateType";
 import { paginateOperationParam } from "../utility/paginate";
 import { accountBankStatementType } from "./types/accountBankStatement";
