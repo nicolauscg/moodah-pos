@@ -131,12 +131,7 @@ const CREATE_POS_ORDER = gql`
 `;
 const POS_SESSION_SUMMARY = gql`
   query {
-    posSessionSummary(
-      input: {
-        bankAccountStatementid: "cG9zLnNlc3Npb246MzM2"
-        posSessionId: "cG9zLmNvbmZpZzox"
-      }
-    ) {
+    posSessionSummary(input: { id: "cG9zLnNlc3Npb246NDI3" }) {
       totalNetSale
       transactions
       averageOrderValue

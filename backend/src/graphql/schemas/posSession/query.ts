@@ -169,10 +169,7 @@ const posSessionQueries = new GraphQLObjectType({
           type: new GraphQLInputObjectType({
             name: "posSessionSummaryInput",
             fields: () => ({
-              bankAccountStatementid: {
-                type: GlobalIdInput
-              },
-              posSessionId: {
+              id: {
                 type: GlobalIdInput
               }
             })
@@ -186,10 +183,10 @@ const posSessionQueries = new GraphQLObjectType({
               context
             }).createSearchRead({
               modelName: "account.bank.statement",
-              fields: posSessionFields.posSessionSummary,
+              fields: posSessionFields.accountBankStatement,
               domain: [
                 ["state", "=", "open"],
-                ["pos_session_id", "=", args.input.bankAccountStatementid]
+                ["pos_session_id", "=", args.input.id]
               ]
             }),
             onError: error => {
@@ -210,46 +207,81 @@ const posSessionQueries = new GraphQLObjectType({
               res({ totalNetSale: totalSale });
             }
           });
-        }).then(
-          (summaryResult: any) =>
-            new Promise((res, rej) => {
-              configureService({
-                operation: getDataSet({
-                  context
-                }).createRead({
-                  ids: [args.input.posSessionId],
-                  modelName: "pos.session",
-                  fields: posSessionFields.posSession
-                }),
-                onError: error => {
+        }).then((saleResult: any) =>
+          new Promise((res, rej) => {
+            configureService({
+              operation: getDataSet({
+                context
+              }).createRead({
+                ids: [args.input.id],
+                modelName: "pos.session",
+                fields: posSessionFields.posSession
+              }),
+              onError: error => {
+                rej(
+                  new ApolloError("Application Error", "APPLICATION_ERROR", {
+                    errorMessage: error.message
+                  })
+                );
+              },
+              onResult: result => {
+                if (result.length === 0) {
                   rej(
                     new ApolloError("Application Error", "APPLICATION_ERROR", {
-                      errorMessage: error.message
+                      errorMessage: result.message
                     })
                   );
-                },
-                onResult: result => {
-                  if (result.length === 0) {
+                } else {
+                  saleResult.sessionName = result[0].name;
+                  res(saleResult);
+                }
+              }
+            });
+          }).then(
+            (summaryResult: any) =>
+              new Promise((res, rej) => {
+                configureService({
+                  operation: getDataSet({
+                    context
+                  }).createSearchRead({
+                    modelName: "pos.order",
+                    fields: posSessionFields.posSession,
+                    domain: [["session_id", "=", summaryResult.sessionName]]
+                  }),
+                  onError: error => {
                     rej(
                       new ApolloError(
                         "Application Error",
                         "APPLICATION_ERROR",
                         {
-                          errorMessage: result.message
+                          errorMessage: error.message
                         }
                       )
                     );
-                  } else {
-                    summaryResult.transactions = result[0].sequence_number;
-                    const averageResult =
-                      summaryResult.totalNetSale / summaryResult.transactions;
-                    summaryResult.averageOrderValue = averageResult;
+                  },
+                  onResult: result => {
+                    if (result.length === 0) {
+                      rej(
+                        new ApolloError(
+                          "Application Error",
+                          "APPLICATION_ERROR",
+                          {
+                            errorMessage: result.message
+                          }
+                        )
+                      );
+                    } else {
+                      summaryResult.transactions = result.length;
+                      const averageResult =
+                        summaryResult.totalNetSale / summaryResult.transactions;
+                      summaryResult.averageOrderValue = averageResult;
 
-                    res(summaryResult);
+                      res(summaryResult);
+                    }
                   }
-                }
-              });
-            })
+                });
+              })
+          )
         )
     }
   })
