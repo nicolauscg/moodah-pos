@@ -1,6 +1,7 @@
 import React, { Fragment } from "react";
 import { Button, Badge } from "reactstrap";
 import { PosConfigsDashboard } from "../../generated-pos-models";
+import { pathOr } from "ramda";
 
 // ====================================================
 // Constants
@@ -24,7 +25,8 @@ const getInProgressName = (configurationName, sessionUsername) => (
 export const preparePosConfigRows = (
   rows: Array<PosConfigsDashboard.Records>,
   open,
-  close
+  close,
+  history
 ) => {
   return rows.map(row => ({
     ...row,
@@ -44,7 +46,10 @@ export const preparePosConfigRows = (
             color="primary"
             tag="a"
             className="text-white"
-            onClick={event => event.stopPropagation()}
+            onClick={event => {
+              event.stopPropagation();
+              history.push(`/session/${row.currentSessionId.id}`);
+            }}
           >
             resume session
           </Button>
@@ -81,6 +86,15 @@ export const preparePosConfigRows = (
               },
               variables: {
                 id: row.id
+              }
+            }).then(result => {
+              const sessionId = pathOr(
+                false,
+                ["data", "openSession", "sessionId"],
+                result
+              );
+              if (sessionId) {
+                history.push(`/session/${sessionId}`);
               }
             });
             event.stopPropagation();

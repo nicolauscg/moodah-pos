@@ -1,8 +1,13 @@
 import React, { Fragment } from "react";
-import { compose, withHandlers, getContext } from "recompose";
+import { compose, withHandlers, getContext, withProps } from "recompose";
 import { withRouter } from "react-router-dom";
 
-import { PosConfigsDashboard } from "../../../generated-pos-models";
+import Loader from "../../../shared/components/Loader";
+import {
+  PosConfigsDashboard,
+  OpenSession,
+  CloseSession
+} from "../../../generated-pos-models";
 import {
   DashboardColumns,
   preparePosConfigRows
@@ -16,20 +21,28 @@ const Table = ({
   handlePageChange,
   onClickRow,
   openSession,
-  closeSession
+  loadingOpen,
+  closeSession,
+  loadingClose,
+  history
 }) => {
+  if (loadingOpen || loadingClose) {
+    return <Loader />;
+  }
+
   const tableColumnExtensions = DashboardColumns.map(col => ({
     columnName: col.name,
     wordWrapEnabled: true
   }));
   const { loading, posConfigs } = data;
+
   const rows = loading || !posConfigs ? [] : posConfigs.records;
   const totalCount = loading || !posConfigs ? 0 : posConfigs.length;
 
   return (
     <Fragment>
       <DataTable
-        rows={preparePosConfigRows(rows, openSession, closeSession)}
+        rows={preparePosConfigRows(rows, openSession, closeSession, history)}
         columns={DashboardColumns}
         totalCount={totalCount}
         defaultSorting={[{ columnName: "name", direction: "asc" }]}
@@ -61,11 +74,44 @@ const DashboardTable = compose(
     })
   }),
   withHandlers({
+    refetchPosConfigs: ({ data }) => () => ({
+      data: data.refetch()
+    })
+  }),
+  WrappedComp => props => (
+    <OpenSession.Component onError={props.onError}>
+      {(openSession, { loading }) => (
+        <WrappedComp
+          openSession={openSession}
+          loadingOpen={loading}
+          {...props}
+        />
+      )}
+    </OpenSession.Component>
+  ),
+  WrappedComp => props => (
+    <CloseSession.Component
+      onCompleted={props.refetchPosConfigs}
+      onError={props.onError}
+    >
+      {(closeSession, { loading }) => (
+        <WrappedComp
+          closeSession={closeSession}
+          loadingClose={loading}
+          {...props}
+        />
+      )}
+    </CloseSession.Component>
+  ),
+  withHandlers({
     onClickRow: ({ history }) => row => {
       history.push(`/configuration/details/${row.id}`);
     },
     handlePageChange: ({ setOffset }) => offset => setOffset(offset)
   })
+  // withProps({
+  //   onOpenSessionSuccess: () => console.log("onOpenSessionSuccess")
+  // })
 )(Table);
 
 export default DashboardTable;
