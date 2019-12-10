@@ -90,6 +90,9 @@ const styles = theme => ({
   },
   paper: {
     backgroundColor: theme.palette.primary.secondary
+  },
+  padRight: {
+    paddingRight: "30px"
   }
 });
 
@@ -194,31 +197,46 @@ const OrderColumn = ({ classes, className }) => {
     <div className={className}>
       <Paper classes={{ root: classes.secondaryBg }} elevation={1}>
         <Col xs={12} className="px-5 py-2">
-          <Row className="justify-content-between mb-2">
+          <Row className="justify-content-between mb-2 pr-3">
             <Typography variant="h6" component="h3">
               Items
             </Typography>
-            <Typography variant="h6" component="h3">
+            <Typography
+              variant="h6"
+              component="h3"
+              className={classes.padRight}
+            >
               Price
             </Typography>
           </Row>
-          <Row className="justify-content-between mb-2">
+          <Row className="d-flex flex-column align-items-stretch">
+            <Order quantity={5} name={"brazilian"} price={14000} />
+          </Row>
+          <Row className="justify-content-between mb-2 pr-3">
             <Typography variant="body1" component="p">
               Subtotal
             </Typography>
-            <Typography variant="body1" component="p">
+            <Typography
+              variant="body1"
+              component="p"
+              className={`${classes.padRight} text-right`}
+            >
               Rp 14.400
             </Typography>
           </Row>
-          <Row className="justify-content-between mb-2">
+          <Row className="justify-content-between mb-2 pr-3">
             <Typography variant="body1" component="p">
               Discount
             </Typography>
-            <Typography variant="body1" component="p">
+            <Typography
+              variant="body1"
+              component="p"
+              className={classes.padRight}
+            >
               Rp 0
             </Typography>
           </Row>
-          <Row className="justify-content-between">
+          <Row className="justify-content-between pr-3">
             <Typography
               variant="body1"
               component="p"
@@ -229,7 +247,7 @@ const OrderColumn = ({ classes, className }) => {
             <Typography
               variant="body1"
               component="p"
-              className="font-weight-bold"
+              className={`font-weight-bold  ${classes.padRight}`}
             >
               Rp 134.000
             </Typography>
