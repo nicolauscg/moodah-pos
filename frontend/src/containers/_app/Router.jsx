@@ -127,12 +127,15 @@ const RouteList = {
     title: 'POS Session',
     component: [
       {
+        path: '/session/test',
+        component: Pos_SessionIndex
+      },
+      {
         path: '/session/:id',
         component: DashboardSession
       }
     ]
   },
-
 
   AccountSettings: {
     path: '/account_settings',
