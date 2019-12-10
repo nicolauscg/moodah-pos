@@ -3,7 +3,10 @@ import { compose, withHandlers } from "recompose";
 import { withRouter } from "react-router-dom";
 
 import { PosConfigs } from "../../../generated-pos-models";
-import { preparePosConfigRows } from "../../../utils/transformers/configuration";
+import {
+  preparePosConfigRows,
+  ConfigurationColumns
+} from "../../../utils/transformers/configuration";
 import DataTable from "../../../shared/components/DataTable";
 
 const Table = ({ data, offset, limit, handlePageChange, onClickRow }) => {
