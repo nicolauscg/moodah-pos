@@ -32,26 +32,18 @@ class Layout extends Component {
   };
 
   render() {
-    const isShowTopSideBar = !new RegExp("/session/").test(
-      this.props.location.pathname
-    );
-
     return (
       <div>
-        {isShowTopSideBar && (
-          <>
-            <Topbar
-              changeMobileSidebarVisibility={this.changeMobileSidebarVisibility}
-              changeSidebarVisibility={this.changeSidebarVisibility}
-            />
-            <Sidebar
-              sidebar={this.props.sidebar}
-              changeToDark={this.changeToDark}
-              changeToLight={this.changeToLight}
-              changeMobileSidebarVisibility={this.changeMobileSidebarVisibility}
-            />
-          </>
-        )}
+        <Topbar
+          changeMobileSidebarVisibility={this.changeMobileSidebarVisibility}
+          changeSidebarVisibility={this.changeSidebarVisibility}
+        />
+        <Sidebar
+          sidebar={this.props.sidebar}
+          changeToDark={this.changeToDark}
+          changeToLight={this.changeToLight}
+          changeMobileSidebarVisibility={this.changeMobileSidebarVisibility}
+        />
       </div>
     );
   }
