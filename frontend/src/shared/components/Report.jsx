@@ -5,14 +5,14 @@ import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button"
 
 const styles = {
-  greyBox: {
-    background: "lightGrey",
+  outterBox: {
     padding: "1rem"
   },
   gridContainer: {
     textAlign: "center",
     backgroundColor: "white",
     borderRadius: "1rem",
+    border: "0.1rem solid lightGrey",
     maxWidth: "30rem"
   },
   upperBorder: {
@@ -40,7 +40,6 @@ const styles = {
   media: {
     height: "6rem",
     width: "6rem",
-    backgroundColor: "lightGrey",
     borderRadius: "0.5rem"
   },
   button: {
@@ -54,9 +53,9 @@ const styles = {
 
 const Report = ({ classes }) => (
   <div>
-    {/* <div className={classes.greyBox}> */}
+    {/* <div className={classes.outterBox}> */}
     
-    <Grid container className={classes.greyBox} alignItems="center" justify="center" maxWidth="sm" spacing={8}>
+    <Grid container className={classes.outterBox} alignItems="center" justify="center" maxWidth="sm" spacing={8}>
       <Grid container className={classes.gridContainer} alignItems="center" justify="center" maxWidth="sm" spacing={8}>
         <Grid container xs={12} sm={12} className={classes.gridRow} alignItems="center" justify="center" spacing={8}>
           <img
