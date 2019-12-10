@@ -1,3 +1,28 @@
+query SessionCategories{
+  posCategories(input:{
+    first: 0
+  }) {
+    records {
+      id
+      name
+      image
+    }
+  }
+}
+
+query SessionProducts{
+  posProducts(input:{
+    first: 0
+  }) {
+    records {
+      id
+      name
+      salesPrice
+      image
+    }
+  }
+}
+
 mutation OpenSession(
   $id: GlobalIdInput
 ) {
