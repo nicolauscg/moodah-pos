@@ -1,12 +1,11 @@
 import React, { Fragment } from "react";
 import { withStyles } from "@material-ui/core/styles";
-import classnames from "classnames";
 
 import { Grid, Button } from "@material-ui/core";
 
 import DeleteIcon from "@material-ui/icons/Backspace";
 
-const styles = theme => ({
+const styles = () => ({
   button: {
     backgroundColor: "#EFFAFF",
     color: "#289FD7",
@@ -14,45 +13,114 @@ const styles = theme => ({
   }
 });
 
-function NumberKeypad(props) {
-  const { classes } = props;
+const NumberKeypad = props => {
+  const { classes, number, setNumber } = props;
+  const append = stringToAppend => () => {
+    if (number === "0") {
+      setNumber(stringToAppend);
+    } else {
+      setNumber(number + stringToAppend);
+    }
+  };
+  const deleteLastDigit = () => {
+    if (number === "0") {
+      return;
+    }
+    if (number.length === 1 && number !== "0") {
+      setNumber("0");
+    } else {
+      setNumber(number.slice(0, number.length - 1));
+    }
+  };
 
   return (
     <Fragment>
       <Grid container spacing={2}>
         <Grid item xs={12}>
-          <Grid item>
-            <Button className={classes.button} color="#EFFAFF">
+          <Grid item className="d-flex">
+            <Button
+              className={`${classes.button} flex-grow py-3`}
+              onClick={append("1")}
+            >
               1
             </Button>
-            <Button className={classes.button}>2</Button>
-            <Button className={classes.button}>3</Button>
-            <Button className={classes.button}>+</Button>
+            <Button
+              className={`${classes.button} flex-grow py-3`}
+              onClick={append("2")}
+            >
+              2
+            </Button>
+            <Button
+              className={`${classes.button} flex-grow py-3`}
+              onClick={append("3")}
+            >
+              3
+            </Button>
           </Grid>
-          <Grid item>
-            <Button className={classes.button}>4</Button>
-            <Button className={classes.button}>5</Button>
-            <Button className={classes.button}>6</Button>
-            <Button className={classes.button}>-</Button>
+          <Grid item className="d-flex">
+            <Button
+              className={`${classes.button} flex-grow py-3`}
+              onClick={append("4")}
+            >
+              4
+            </Button>
+            <Button
+              className={`${classes.button} flex-grow py-3`}
+              onClick={append("5")}
+            >
+              5
+            </Button>
+            <Button
+              className={`${classes.button} flex-grow py-3`}
+              onClick={append("6")}
+            >
+              6
+            </Button>
           </Grid>
-          <Grid item>
-            <Button className={classes.button}>7</Button>
-            <Button className={classes.button}>8</Button>
-            <Button className={classes.button}>9</Button>
-            <Button className={classes.button}>×</Button>
+          <Grid item className="d-flex">
+            <Button
+              className={`${classes.button} flex-grow py-3`}
+              onClick={append("7")}
+            >
+              7
+            </Button>
+            <Button
+              className={`${classes.button} flex-grow py-3`}
+              onClick={append("8")}
+            >
+              8
+            </Button>
+            <Button
+              className={`${classes.button} flex-grow py-3`}
+              onClick={append("9")}
+            >
+              9
+            </Button>
           </Grid>
-          <Grid item>
-            <Button className={classes.button}>0</Button>
-            <Button className={classes.button}>000</Button>
-            <Button className={classes.button}>
+          <Grid item className="d-flex">
+            <Button
+              className={`${classes.button} flex-grow py-3`}
+              onClick={append("0")}
+            >
+              0
+            </Button>
+            <Button
+              className={`${classes.button} flex-grow py-3`}
+              onClick={append("000")}
+            >
+              000
+            </Button>
+            <Button
+              className={`${classes.button} flex-grow py-3`}
+              onClick={deleteLastDigit}
+            >
               <DeleteIcon fontSize="small" />
             </Button>
-            <Button className={classes.button}>÷</Button>
           </Grid>
         </Grid>
       </Grid>
     </Fragment>
   );
-}
+};
 
 export default withStyles(styles)(NumberKeypad);
