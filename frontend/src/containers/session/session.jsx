@@ -12,6 +12,7 @@ import Button from "@material-ui/core/Button";
 import ArrowForwardIcon from "@material-ui/icons/ArrowForward";
 import Modal from "@material-ui/core/Modal";
 import { compose, withHandlers, withState } from "recompose";
+import * as R from "ramda";
 
 import {
   SessionCategories,
@@ -88,13 +89,21 @@ const styles = theme => ({
   },
   gridContainer: {
     overflowY: "scroll",
-    flexGrow: 1
+    flexGrow: 1,
+    "&::-webkit-scrollbar": {
+      display: "none"
+    },
+    msOverflowStyle: "none"
   },
   currentItemInOrderContainer: {
     padding: "1rem",
     overflowY: "scroll",
     height: "1px",
-    flexWrap: "unset"
+    flexWrap: "unset",
+    "&::-webkit-scrollbar": {
+      display: "none"
+    },
+    msOverflowStyle: "none"
   },
   validationContainer: {
     padding: "1rem",
@@ -111,37 +120,41 @@ const styles = theme => ({
     height: "100vh"
   },
   padRight: {
-    paddingRight: "30px"
+    paddingRight: "45px"
   },
   receiptImage: {
     objectFit: "contain"
   },
   overflowYScroll: {
-    overflowY: "scroll"
+    overflowY: "scroll",
+    "&::-webkit-scrollbar": {
+      display: "none"
+    },
+    msOverflowStyle: "none"
   }
 });
 
 const DiscountModal = ({
   discountModalOpen,
   setDiscountModalOpen,
-  classes
+  classes,
+  discountValue,
+  setDiscountValue
 }) => {
   return (
     <Modal
-      aria-labelledby="simple-modal-title"
-      aria-describedby="simple-modal-description"
       className="d-flex justify-content-center align-items-center"
       open={discountModalOpen}
       onClose={() => setDiscountModalOpen(false)}
     >
       <Card className="p-4">
         <div className="d-flex flex-column">
-          <Paper className={`${classes.secondaryBg} mb-2`}>
+          <Paper className={`${classes.secondaryBg} mb-2 p-2`}>
             <Typography variant="h6" component="h3">
-              14000
+              {discountValue}
             </Typography>
           </Paper>
-          <NumberKeypad />
+          <NumberKeypad number={discountValue} setNumber={setDiscountValue} />
           <Button
             variant="contained"
             className={`${classes.primaryContainedButton} mt-2 py-2`}
@@ -232,7 +245,9 @@ const ProductColumn = ({
   classes,
   className,
   categoryRecords,
-  productRecords
+  productRecords,
+  addItemToOrder,
+  getIdCounter
 }) => {
   return (
     <div className={className}>
@@ -259,6 +274,15 @@ const ProductColumn = ({
               image={product.image}
               price={product.salesPrice}
               className="mb-3"
+              onPress={() => {
+                addItemToOrder({
+                  qty: 1,
+                  priceUnit: product.salesPrice,
+                  productId: product.id,
+                  name: product.name,
+                  id: getIdCounter()
+                });
+              }}
             />
           </Grid>
         ))}
@@ -271,7 +295,13 @@ const CurrentItemsInOrderSection = ({
   classes,
   discountModalOpen,
   setDiscountModalOpen,
-  toPaymentMenu
+  toPaymentMenu,
+  discountValue,
+  setDiscountValue,
+  incrementItemInOrder,
+  decrementItemInOrder,
+  removeItemInOrder,
+  itemsToOrder
 }) => {
   return (
     <>
@@ -298,8 +328,15 @@ const CurrentItemsInOrderSection = ({
               classes.currentItemInOrderContainer
             }`}
           >
-            {[...Array(10).keys()].map(() => (
-              <Order quantity={5} name={"brazilian"} price={14000} />
+            {itemsToOrder.map(item => (
+              <Order
+                quantity={item.qty}
+                name={item.name}
+                price={item.qty * item.priceUnit}
+                handleMinus={() => decrementItemInOrder(item.productId)}
+                handlePlus={() => incrementItemInOrder(item.productId)}
+                handleCross={() => removeItemInOrder(item.productId)}
+              />
             ))}
           </Row>
           <Row className="justify-content-between mb-2 pr-3">
@@ -361,6 +398,8 @@ const CurrentItemsInOrderSection = ({
             classes={classes}
             discountModalOpen={discountModalOpen}
             setDiscountModalOpen={setDiscountModalOpen}
+            discountValue={discountValue}
+            setDiscountValue={setDiscountValue}
           />
         </Row>
       </Paper>
@@ -581,6 +620,7 @@ const Session = props => {
             <Col xs={6} xl={7} className="d-flex flex-column pb-3">
               <OrderColumn
                 className="d-flex flex-column flex-grow"
+                productRecords={productRecords}
                 sequenceNumber={1}
                 {...props}
               />
@@ -605,7 +645,10 @@ const SessionPage = compose(
     </MuiThemeProvider>
   ),
   withStyles(styles),
+  withState("idCounter", "setIdCounter", 1),
   withState("orderState", "setOrderState", Menu.ORDER),
+  withState("itemsToOrder", "setItemsToOrder", []),
+  withState("discountValue", "setDiscountValue", "0"),
   withState("discountModalOpen", "setDiscountModalOpen", false),
   WrappedComp => props => (
     <CloseSession.Component onError={props.onError}>
@@ -618,6 +661,24 @@ const SessionPage = compose(
       )}
     </CloseSession.Component>
   ),
+  withHandlers({
+    incrementQuantityOfItem: () => item => R.evolve({ qty: R.add(1) }, item),
+    decrementQuantityOfItem: () => item => R.evolve({ qty: R.add(-1) }, item),
+    getIdCounter: ({ idCounter, setIdCounter }) => () => {
+      const id = idCounter;
+      setIdCounter(idCounter + 1);
+      return id;
+    },
+    removeItemInOrder: ({ itemsToOrder, setItemsToOrder }) => productId => {
+      setItemsToOrder(
+        R.remove(
+          R.findIndex(R.propEq("productId", productId), itemsToOrder),
+          1,
+          itemsToOrder
+        )
+      );
+    }
+  }),
   withHandlers({
     onCloseSession: ({ match, closeSession, history }) => () =>
       closeSession({
@@ -647,35 +708,49 @@ const SessionPage = compose(
       if (orderState == Menu.RECEIPT) {
         setOrderState(Menu.ORDER);
       }
+    },
+    addItemToOrder: ({
+      itemsToOrder,
+      setItemsToOrder,
+      incrementQuantityOfItem
+    }) => newItem => {
+      const index = R.findIndex(
+        R.propEq("productId", newItem.productId),
+        itemsToOrder
+      );
+      if (index === -1) {
+        setItemsToOrder([...itemsToOrder, newItem]);
+      } else {
+        setItemsToOrder(R.adjust(index, incrementQuantityOfItem, itemsToOrder));
+      }
+    },
+    incrementItemInOrder: ({
+      itemsToOrder,
+      setItemsToOrder,
+      incrementQuantityOfItem
+    }) => productId => {
+      setItemsToOrder(
+        R.adjust(
+          R.findIndex(R.propEq("productId", productId), itemsToOrder),
+          incrementQuantityOfItem,
+          itemsToOrder
+        )
+      );
+    },
+    decrementItemInOrder: ({
+      itemsToOrder,
+      setItemsToOrder,
+      decrementQuantityOfItem,
+      removeItemInOrder
+    }) => productId => {
+      const index = R.findIndex(R.propEq("productId", productId), itemsToOrder);
+
+      if (itemsToOrder[index].qty > 1) {
+        setItemsToOrder(R.adjust(index, decrementQuantityOfItem, itemsToOrder));
+      } else {
+        removeItemInOrder(productId);
+      }
     }
-  }),
-  SessionCategories.HOC({
-    name: "categories",
-    options: ({ filters, offset, limit }) => ({
-      context: {
-        clientName: "pos"
-      },
-      variables: {
-        filters,
-        offset,
-        limit
-      },
-      fetchPolicy: "network-only"
-    })
-  }),
-  SessionProducts.HOC({
-    name: "products",
-    options: ({ filters, offset, limit }) => ({
-      context: {
-        clientName: "pos"
-      },
-      variables: {
-        filters,
-        offset,
-        limit
-      },
-      fetchPolicy: "network-only"
-    })
   })
 )(Session);
 
