@@ -533,7 +533,8 @@ const OrderColumn = props => {
 
 const Session = props => {
   const { classes, categories, products, orderState, backToOrderMenu } = props;
-
+  const { loading: loadingCategories, posCategories } = categories;
+  const { loading: loadingProducts, posProducts } = products;
   if (loadingCategories || loadingProducts) {
     return <Loader />;
   }
