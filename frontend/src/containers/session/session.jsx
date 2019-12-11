@@ -96,6 +96,11 @@ const styles = theme => ({
     height: "1px",
     flexWrap: "unset"
   },
+  validationContainer: {
+    padding: "1rem",
+    height: "1px",
+    flexWrap: "unset"
+  },
   gridItem: {
     flexBasis: "33.33%",
     [theme.breakpoints.down("sm")]: {
@@ -110,6 +115,9 @@ const styles = theme => ({
   },
   receiptImage: {
     objectFit: "contain"
+  },
+  overflowYScroll: {
+    overflowY: "scroll"
   }
 });
 
@@ -406,24 +414,19 @@ const ValidationSection = ({ classes, toReceiptMenu }) => {
         <Col xs={12} className="px-3 py-2 d-flex flex-column">
           <Row
             className={`d-flex align-items-stretch flex-grow pb-2 px-0 ${
-              classes.currentItemInOrderContainer
+              classes.validationContainer
             }`}
           >
-            <Col xs={5} className="px-0">
-              <Paper
-                classes={{ root: classes.secondaryBg }}
-                elevation={1}
-                className="mb-3 d-flex align-items-stretch flex-grow p-4"
-              >
-                <Typography variant="h6">Cash (IDR)</Typography>
-              </Paper>
-              <Paper
-                classes={{ root: classes.secondaryBg }}
-                elevation={1}
-                className="mb-3 d-flex align-items-stretch flex-grow p-4"
-              >
-                <Typography variant="h6">Debit(IDR)</Typography>
-              </Paper>
+            <Col xs={5} className={`px-0 ${classes.overflowYScroll}`}>
+              {[...Array(10).keys()].map(() => (
+                <Paper
+                  classes={{ root: classes.secondaryBg }}
+                  elevation={1}
+                  className="mb-3 d-flex align-items-stretch flex-grow p-4"
+                >
+                  <Typography variant="h6">Cash (IDR)</Typography>
+                </Paper>
+              ))}
             </Col>
             <Col xs={7}>
               <NumberKeypad />

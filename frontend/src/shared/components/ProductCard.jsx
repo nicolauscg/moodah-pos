@@ -9,7 +9,8 @@ import NoImage from "../../shared/img/pos/noImage.png";
 
 const styles = {
   card: {
-    width: 110
+    width: 110,
+    height: "fit-content"
   },
   media: {
     height: 110,
