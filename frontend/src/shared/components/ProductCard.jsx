@@ -21,9 +21,9 @@ const styles = {
   }
 };
 
-const MediaCard = ({ classes, className, name, image, price }) => {
+const MediaCard = ({ classes, className, name, image, price, onPress }) => {
   return (
-    <Card className={`${classes.card} ${className}`}>
+    <Card className={`${classes.card} ${className}`} onClick={onPress}>
       <CardActionArea>
         <img
           className={classes.media}
