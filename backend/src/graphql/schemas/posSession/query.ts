@@ -260,24 +260,15 @@ const posSessionQueries = new GraphQLObjectType({
                     );
                   },
                   onResult: result => {
-                    if (result.length === 0) {
-                      rej(
-                        new ApolloError(
-                          "Application Error",
-                          "APPLICATION_ERROR",
-                          {
-                            errorMessage: result.message
-                          }
-                        )
-                      );
-                    } else {
-                      summaryResult.transactions = result.length;
-                      const averageResult =
-                        summaryResult.totalNetSale / summaryResult.transactions;
-                      summaryResult.averageOrderValue = averageResult;
+                    summaryResult.transactions = result.length;
+                    const averageResult =
+                      summaryResult.transactions !== 0
+                        ? summaryResult.totalNetSale /
+                          summaryResult.transactions
+                        : 0;
+                    summaryResult.averageOrderValue = averageResult;
 
-                      res(summaryResult);
-                    }
+                    res(summaryResult);
                   }
                 });
               })
