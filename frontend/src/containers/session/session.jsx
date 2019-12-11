@@ -9,7 +9,9 @@ import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
-import { compose, withHandlers } from "recompose";
+import ArrowForwardIcon from "@material-ui/icons/ArrowForward";
+import Modal from "@material-ui/core/Modal";
+import { compose, withHandlers, withState } from "recompose";
 
 import {
   SessionCategories,
@@ -52,11 +54,16 @@ const styles = theme => ({
   },
   primaryContainedButton: {
     backgroundColor: "#289FD7",
-    color: "#FFFFFF"
+    color: "#FFFFFF",
+    textTransform: "capitalize",
+    "&:hover": {
+      backgroundColor: "#1e77a1"
+    }
   },
   secondaryContainedButton: {
     backgroundColor: "#FFFFFF",
-    color: "#646777"
+    color: "#646777",
+    textTransform: "capitalize"
   },
   parentWidthHeight: {
     width: "100%",
@@ -88,13 +95,60 @@ const styles = theme => ({
   mainRow: {
     height: "100vh"
   },
-  paper: {
-    backgroundColor: theme.palette.primary.secondary
-  },
   padRight: {
     paddingRight: "30px"
   }
 });
+
+const DiscountModal = ({
+  discountModalOpen,
+  setDiscountModalOpen,
+  classes
+}) => {
+  return (
+    <Modal
+      aria-labelledby="simple-modal-title"
+      aria-describedby="simple-modal-description"
+      className="d-flex justify-content-center align-items-center"
+      open={discountModalOpen}
+      onClose={() => setDiscountModalOpen(false)}
+    >
+      <Card className="p-4">
+        <div className="d-flex flex-column">
+          <Paper className={`${classes.secondaryBg} mb-2`}>
+            <Typography variant="h6" component="h3">
+              14000
+            </Typography>
+          </Paper>
+          <NumberKeypad />
+          <Button
+            variant="contained"
+            className={`${classes.primaryContainedButton} mt-2 py-2`}
+            onClick={() => setDiscountModalOpen(false)}
+          >
+            <Typography
+              variant="h6"
+              component="h3"
+              className={classes.secondaryColor}
+            >
+              Okay
+            </Typography>
+          </Button>
+
+          <Button
+            variant="contained"
+            className={`${classes.secondaryContainedButton} mt-2 py-2`}
+            onClick={() => setDiscountModalOpen(false)}
+          >
+            <Typography variant="h6" component="h3">
+              Cancel
+            </Typography>
+          </Button>
+        </div>
+      </Card>
+    </Modal>
+  );
+};
 
 const ProfileColumn = ({ classes, onCloseSession }) => {
   return (
@@ -132,11 +186,12 @@ const ProfileColumn = ({ classes, onCloseSession }) => {
         <div className="d-flex flex-column">
           <Button
             variant="contained"
-            size="small"
             className={`${classes.secondaryContainedButton} mb-2 py-2`}
             onClick={onCloseSession}
           >
-            Close session
+            <Typography variant="h6" component="h3">
+              Close session
+            </Typography>
           </Button>
           <Typography
             classes={{ root: classes.secondaryColor }}
@@ -156,8 +211,7 @@ const ProductColumn = ({
   classes,
   className,
   categoryRecords,
-  productRecords,
-  onCloseSession
+  productRecords
 }) => {
   return (
     <div className={className}>
@@ -192,10 +246,31 @@ const ProductColumn = ({
   );
 };
 
-const OrderColumn = ({ classes, className }) => {
+const OrderColumn = ({
+  classes,
+  className,
+  sequenceNumber,
+  discountModalOpen,
+  setDiscountModalOpen
+}) => {
   return (
     <div className={className}>
-      <Paper classes={{ root: classes.secondaryBg }} elevation={1}>
+      <Paper
+        classes={{ root: classes.secondaryBg }}
+        elevation={1}
+        className="px-5 mb-3 py-2"
+      >
+        <Row>
+          <Typography variant="h6" component="h3">
+            Order {sequenceNumber}
+          </Typography>
+        </Row>
+      </Paper>
+      <Paper
+        classes={{ root: classes.secondaryBg }}
+        elevation={1}
+        className="mb-3 flex-grow"
+      >
         <Col xs={12} className="px-5 py-2">
           <Row className="justify-content-between mb-2 pr-3">
             <Typography variant="h6" component="h3">
@@ -254,17 +329,44 @@ const OrderColumn = ({ classes, className }) => {
           </Row>
         </Col>
       </Paper>
+      <Paper
+        classes={{ root: classes.secondaryBg }}
+        elevation={1}
+        className="mb-3 px-5 py-2"
+      >
+        <Row className="d-flex justify-content-between">
+          <Typography variant="h6" component="h3">
+            Discount
+          </Typography>
+          <IconButton
+            icon={<ArrowForwardIcon />}
+            onPress={() => setDiscountModalOpen(true)}
+          />
+          <DiscountModal
+            classes={classes}
+            discountModalOpen={discountModalOpen}
+            setDiscountModalOpen={setDiscountModalOpen}
+          />
+        </Row>
+      </Paper>
       <Button
         variant="contained"
-        className={`${classes.primaryContainedButton} mt-3`}
+        className={`${classes.primaryContainedButton} mt-3 py-2`}
       >
-        Payment
+        <Typography
+          variant="h5"
+          component="h3"
+          className={classes.secondaryColor}
+        >
+          Payment
+        </Typography>
       </Button>
     </div>
   );
 };
 
-const Session = ({ classes, categories, products, onCloseSession }) => {
+const Session = props => {
+  const { classes, categories, products } = props;
   const { loading: loadingCategories, posCategories } = categories;
   const { loading: loadingProducts, posProducts } = products;
 
@@ -279,7 +381,7 @@ const Session = ({ classes, categories, products, onCloseSession }) => {
     <Container>
       <Row className={classes.mainRow}>
         <Col xs={2} className="pl-0">
-          <ProfileColumn classes={classes} onCloseSession={onCloseSession} />
+          <ProfileColumn classes={classes} {...props} />
         </Col>
         <Col xs={10} className="d-flex flex-column">
           <Row className="d-flex flex-column align-items-stretch pt-4">
@@ -292,14 +394,18 @@ const Session = ({ classes, categories, products, onCloseSession }) => {
           <Row className="flex-grow">
             <Col xs={6} xl={5} className="d-flex flex-column">
               <ProductColumn
-                classes={classes}
                 className={classes.productCol}
                 categoryRecords={categoryRecords}
                 productRecords={productRecords}
+                {...props}
               />
             </Col>
-            <Col xs={6} xl={7}>
-              <OrderColumn classes={classes} className="d-flex flex-column" />
+            <Col xs={6} xl={7} className="d-flex flex-column pb-3">
+              <OrderColumn
+                className="d-flex flex-column flex-grow"
+                sequenceNumber={1}
+                {...props}
+              />
             </Col>
           </Row>
         </Col>
@@ -315,6 +421,7 @@ const SessionPage = compose(
     </MuiThemeProvider>
   ),
   withStyles(styles),
+  withState("discountModalOpen", "setDiscountModalOpen", false),
   WrappedComp => props => (
     <CloseSession.Component onError={props.onError}>
       {(closeSession, { loading }) => (
