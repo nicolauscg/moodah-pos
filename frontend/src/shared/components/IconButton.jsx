@@ -2,8 +2,6 @@ import React from "react";
 import { withStyles } from "@material-ui/core/styles";
 import Fab from "@material-ui/core/Fab";
 
-const styledBy = (property, mapping) => props => mapping(props[property]);
-
 const styles = () => ({
   icon: {
     color: "white"

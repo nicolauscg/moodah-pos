@@ -22,6 +22,10 @@ import Loader from "../../shared/components/Loader";
 import ProductCard from "../../shared/components/ProductCard";
 import Carousel from "../../shared/components/Carousel";
 import Card from "@material-ui/core/Card";
+import Order from "./components/Order";
+import IconButton from "../../shared/components/IconButton";
+import NumberKeypad from "../../shared/components/form-custom/NumberKeypad";
+import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 
 const theme = createMuiTheme({
   typography: {
@@ -251,7 +255,11 @@ const OrderColumn = ({
   className,
   sequenceNumber,
   discountModalOpen,
-  setDiscountModalOpen
+  setDiscountModalOpen,
+  toPaymentMenu,
+  toReceiptMenu,
+  toNextOrder,
+  orderState
 }) => {
   return (
     <div className={className}>
@@ -352,13 +360,24 @@ const OrderColumn = ({
       <Button
         variant="contained"
         className={`${classes.primaryContainedButton} mt-3 py-2`}
+        onClick={
+          orderState == Menu.ORDER
+            ? toPaymentMenu
+            : orderState == Menu.PAYMENT
+            ? toReceiptMenu
+            : toNextOrder
+        }
       >
         <Typography
           variant="h5"
           component="h3"
           className={classes.secondaryColor}
         >
-          Payment
+          {orderState == Menu.ORDER
+            ? "Payment"
+            : orderState == Menu.PAYMENT
+            ? "Validate"
+            : "Next Order"}
         </Typography>
       </Button>
     </div>
@@ -366,9 +385,7 @@ const OrderColumn = ({
 };
 
 const Session = props => {
-  const { classes, categories, products } = props;
-  const { loading: loadingCategories, posCategories } = categories;
-  const { loading: loadingProducts, posProducts } = products;
+  const { classes, categories, products, orderState, backToOrderMenu } = props;
 
   if (loadingCategories || loadingProducts) {
     return <Loader />;
@@ -384,8 +401,19 @@ const Session = props => {
           <ProfileColumn classes={classes} {...props} />
         </Col>
         <Col xs={10} className="d-flex flex-column">
-          <Row className="d-flex flex-column align-items-stretch pt-4">
-            <div className="text-right mr-2">
+          <Row className="d-flex pt-4">
+            {orderState == Menu.PAYMENT && (
+              <div
+                className="align-self-end d-flex align-items-center"
+                onClick={backToOrderMenu}
+              >
+                <IconButton icon={<ArrowBackIcon />} />
+                <Typography variant="h6" component="h3" className="ml-3">
+                  Back
+                </Typography>
+              </div>
+            )}
+            <div className="text-right mr-2 flex-grow">
               <h3>Thursday 24 July 2019, 09.00 AM</h3>
               <h4>Shift Started at 08.00AM ( 1 :00 Hours )</h4>
             </div>
@@ -393,12 +421,14 @@ const Session = props => {
           <hr className={classes.parentWidth} />
           <Row className="flex-grow">
             <Col xs={6} xl={5} className="d-flex flex-column">
-              <ProductColumn
-                className={classes.productCol}
-                categoryRecords={categoryRecords}
-                productRecords={productRecords}
-                {...props}
-              />
+              {orderState == Menu.ORDER && (
+                <ProductColumn
+                  className={classes.productCol}
+                  categoryRecords={categoryRecords}
+                  productRecords={productRecords}
+                  {...props}
+                />
+              )}
             </Col>
             <Col xs={6} xl={7} className="d-flex flex-column pb-3">
               <OrderColumn
@@ -414,6 +444,12 @@ const Session = props => {
   );
 };
 
+const Menu = {
+  ORDER: 0,
+  PAYMENT: 1,
+  RECEIPT: 2
+};
+
 const SessionPage = compose(
   WrappedComp => props => (
     <MuiThemeProvider theme={theme}>
@@ -421,6 +457,7 @@ const SessionPage = compose(
     </MuiThemeProvider>
   ),
   withStyles(styles),
+  withState("orderState", "setOrderState", Menu.ORDER),
   withState("discountModalOpen", "setDiscountModalOpen", false),
   WrappedComp => props => (
     <CloseSession.Component onError={props.onError}>
@@ -442,7 +479,27 @@ const SessionPage = compose(
         variables: {
           id: match.params.id
         }
-      }).then(() => history.push("/dashboard/list"))
+      }).then(() => history.push("/dashboard/list")),
+    toPaymentMenu: ({ orderState, setOrderState }) => () => {
+      if (orderState == Menu.ORDER) {
+        setOrderState(Menu.PAYMENT);
+      }
+    },
+    backToOrderMenu: ({ orderState, setOrderState }) => () => {
+      if (orderState == Menu.PAYMENT) {
+        setOrderState(Menu.ORDER);
+      }
+    },
+    toReceiptMenu: ({ orderState, setOrderState }) => () => {
+      if (orderState == Menu.PAYMENT) {
+        setOrderState(Menu.RECEIPT);
+      }
+    },
+    toNextOrder: ({ orderState, setOrderState }) => () => {
+      if (orderState == Menu.RECEIPT) {
+        setOrderState(Menu.ORDER);
+      }
+    }
   }),
   SessionCategories.HOC({
     name: "categories",
