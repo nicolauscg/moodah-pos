@@ -15,7 +15,7 @@ const Order = ({
   price
 }) => {
   return (
-    <div className="d-flex align-items-center">
+    <div className="d-flex align-items-center mb-2">
       <IconButton icon={<RemoveIcon />} onPress={handleMinus} red />
       <Typography variant="body1" component="p" className="px-3">
         {quantity}

@@ -90,6 +90,12 @@ const styles = theme => ({
     overflowY: "scroll",
     flexGrow: 1
   },
+  currentItemInOrderContainer: {
+    padding: "1rem",
+    overflowY: "scroll",
+    height: "1px",
+    flexWrap: "unset"
+  },
   gridItem: {
     flexBasis: "33.33%",
     [theme.breakpoints.down("sm")]: {
@@ -101,6 +107,9 @@ const styles = theme => ({
   },
   padRight: {
     paddingRight: "30px"
+  },
+  receiptImage: {
+    objectFit: "contain"
   }
 });
 
@@ -250,36 +259,20 @@ const ProductColumn = ({
   );
 };
 
-const OrderColumn = ({
+const CurrentItemsInOrderSection = ({
   classes,
-  className,
-  sequenceNumber,
   discountModalOpen,
   setDiscountModalOpen,
-  toPaymentMenu,
-  toReceiptMenu,
-  toNextOrder,
-  orderState
+  toPaymentMenu
 }) => {
   return (
-    <div className={className}>
+    <>
       <Paper
         classes={{ root: classes.secondaryBg }}
         elevation={1}
-        className="px-5 mb-3 py-2"
+        className="mb-3 d-flex align-items-stretch flex-grow"
       >
-        <Row>
-          <Typography variant="h6" component="h3">
-            Order {sequenceNumber}
-          </Typography>
-        </Row>
-      </Paper>
-      <Paper
-        classes={{ root: classes.secondaryBg }}
-        elevation={1}
-        className="mb-3 flex-grow"
-      >
-        <Col xs={12} className="px-5 py-2">
+        <Col xs={12} className="px-5 py-2 d-flex flex-column">
           <Row className="justify-content-between mb-2 pr-3">
             <Typography variant="h6" component="h3">
               Items
@@ -292,8 +285,14 @@ const OrderColumn = ({
               Price
             </Typography>
           </Row>
-          <Row className="d-flex flex-column align-items-stretch">
-            <Order quantity={5} name={"brazilian"} price={14000} />
+          <Row
+            className={`d-flex flex-column align-items-stretch flex-grow pb-2 ${
+              classes.currentItemInOrderContainer
+            }`}
+          >
+            {[...Array(10).keys()].map(() => (
+              <Order quantity={5} name={"brazilian"} price={14000} />
+            ))}
           </Row>
           <Row className="justify-content-between mb-2 pr-3">
             <Typography variant="body1" component="p">
@@ -360,26 +359,171 @@ const OrderColumn = ({
       <Button
         variant="contained"
         className={`${classes.primaryContainedButton} mt-3 py-2`}
-        onClick={
-          orderState == Menu.ORDER
-            ? toPaymentMenu
-            : orderState == Menu.PAYMENT
-            ? toReceiptMenu
-            : toNextOrder
-        }
+        onClick={toPaymentMenu}
       >
         <Typography
           variant="h5"
           component="h3"
           className={classes.secondaryColor}
         >
-          {orderState == Menu.ORDER
-            ? "Payment"
-            : orderState == Menu.PAYMENT
-            ? "Validate"
-            : "Next Order"}
+          Payment
         </Typography>
       </Button>
+    </>
+  );
+};
+
+const ValidationSection = ({ classes, toReceiptMenu }) => {
+  return (
+    <>
+      <Row className="justify-content-between mb-2 pr-3">
+        <div className="mb-4">
+          <Typography variant="body1" component="p" className="flex-grow">
+            Due
+          </Typography>
+          <Typography variant="h6">Rp 140.000</Typography>
+        </div>
+        <div>
+          <Typography variant="body1" component="p" className="flex-grow">
+            Tendered
+          </Typography>
+          <Typography variant="h6">Rp 140.000</Typography>
+        </div>
+        <div>
+          <Typography variant="body1" component="p" className="flex-grow">
+            Change
+          </Typography>
+          <Typography variant="h6">Rp 140.000</Typography>
+        </div>
+        <div>
+          <Typography variant="body1" component="p" className="flex-grow">
+            Method
+          </Typography>
+          <Typography variant="h6">Cash (IDR)</Typography>
+        </div>
+      </Row>
+      <div className="mb-3 d-flex align-items-stretch flex-grow">
+        <Col xs={12} className="px-3 py-2 d-flex flex-column">
+          <Row
+            className={`d-flex align-items-stretch flex-grow pb-2 px-0 ${
+              classes.currentItemInOrderContainer
+            }`}
+          >
+            <Col xs={5} className="px-0">
+              <Paper
+                classes={{ root: classes.secondaryBg }}
+                elevation={1}
+                className="mb-3 d-flex align-items-stretch flex-grow p-4"
+              >
+                <Typography variant="h6">Cash (IDR)</Typography>
+              </Paper>
+              <Paper
+                classes={{ root: classes.secondaryBg }}
+                elevation={1}
+                className="mb-3 d-flex align-items-stretch flex-grow p-4"
+              >
+                <Typography variant="h6">Debit(IDR)</Typography>
+              </Paper>
+            </Col>
+            <Col xs={7}>
+              <NumberKeypad />
+            </Col>
+          </Row>
+        </Col>
+      </div>
+      <Button
+        variant="contained"
+        className={`${classes.primaryContainedButton} mt-3 py-2`}
+        onClick={toReceiptMenu}
+      >
+        <Typography
+          variant="h5"
+          component="h3"
+          className={classes.secondaryColor}
+        >
+          Validate
+        </Typography>
+      </Button>
+    </>
+  );
+};
+
+const ReceiptSection = ({ classes, toNextOrder }) => {
+  return (
+    <>
+      <Paper classes={{ root: classes.secondaryBg }} className="mb-4 px-5">
+        <Row className="justify-content-between mb-2 pr-3">
+          <Row>
+            <Col xs={12}>
+              <Typography variant="body1" component="p" className="flex-grow">
+                Due
+              </Typography>
+              <Typography variant="h6">Rp 140.000</Typography>
+            </Col>
+          </Row>
+        </Row>
+      </Paper>
+      <Paper
+        classes={{ root: classes.secondaryBg }}
+        className={`mb-3 d-flex align-items-stretch flex-grow ${
+          classes.currentItemInOrderContainer
+        }`}
+      >
+        <Col xs={12} className={`px-5 py-2 d-flex flex-column`}>
+          <img
+            className={classes.receiptImage}
+            src="https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTKjC_nfT9D-owMFBIsMXLfMOfNU5CDdt2bwyoAdufXpgXQuRJW"
+          />
+        </Col>
+      </Paper>
+      <Button
+        variant="contained"
+        className={`${classes.secondaryContainedButton} mt-3 py-2`}
+      >
+        <Typography variant="h5" component="h3">
+          Print Receipt
+        </Typography>
+      </Button>
+      <Button
+        variant="contained"
+        className={`${classes.primaryContainedButton} mt-3 py-2`}
+        onClick={toNextOrder}
+      >
+        <Typography
+          variant="h5"
+          component="h3"
+          className={classes.secondaryColor}
+        >
+          Next Order
+        </Typography>
+      </Button>
+    </>
+  );
+};
+
+const OrderColumn = props => {
+  const { classes, className, sequenceNumber, orderState } = props;
+
+  return (
+    <div className={className}>
+      <Paper
+        classes={{ root: classes.secondaryBg }}
+        elevation={1}
+        className="px-5 mb-3 py-2"
+      >
+        <Row>
+          <Typography variant="h6" component="h3">
+            Order {sequenceNumber}
+          </Typography>
+        </Row>
+      </Paper>
+      {orderState == Menu.ORDER ? (
+        <CurrentItemsInOrderSection {...props} />
+      ) : orderState == Menu.PAYMENT ? (
+        <ValidationSection {...props} />
+      ) : (
+        <ReceiptSection {...props} />
+      )}
     </div>
   );
 };
@@ -404,7 +548,7 @@ const Session = props => {
           <Row className="d-flex pt-4">
             {orderState == Menu.PAYMENT && (
               <div
-                className="align-self-end d-flex align-items-center"
+                className="align-self-end d-flex align-items-center ml-3"
                 onClick={backToOrderMenu}
               >
                 <IconButton icon={<ArrowBackIcon />} />
