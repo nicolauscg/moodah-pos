@@ -597,7 +597,6 @@ const ValidationSection = ({
             });
           } else {
             createOrderFromState(sequenceNumber);
-            toReceiptMenu();
           }
         }}
       >
@@ -1084,7 +1083,9 @@ const SessionPage = compose(
       match,
       uid,
       pricelistId,
-      bankStatement
+      bankStatement,
+      toReceiptMenu,
+      triggerNotif
     }) => sequenceNumber => {
       createOrder({
         context: {
@@ -1111,6 +1112,19 @@ const SessionPage = compose(
           pricelistId: pricelistId,
           userId: uid,
           sequenceNumber: sequenceNumber
+        }
+      }).then(result => {
+        if (R.pathOr(false, ["data", "posOrder", "result"], result)) {
+          triggerNotif({
+            message: "Order created successfuly",
+            type: "success"
+          });
+          toReceiptMenu();
+        } else {
+          triggerNotif({
+            message: "Failed to create order",
+            type: "error"
+          });
         }
       });
     },
