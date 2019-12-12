@@ -58,6 +58,7 @@ export default compose(
         let showExpired = false
         let name = ''
         let isStandardPlan = false
+        let uid = null
 
         if (!getUserInfo.loading) {
           const validDate = pathOr(
@@ -75,6 +76,7 @@ export default compose(
             }
           }
 
+          uid = pathOr(null, ['sessionInfo', 'uid'], getUserInfo)
           name = pathOr('', ['sessionInfo', 'name'], getUserInfo)
           isStandardPlan = pipe(
             path(['sessionInfo', 'companyId', 'userPlan']),
@@ -83,10 +85,11 @@ export default compose(
           )(getUserInfo)
         }
 
-        return { showExpired, name, isStandardPlan }
+        return { showExpired, name, isStandardPlan, uid }
       }),
-      withContext(UserInfoContext, ({ showExpired, name, isStandardPlan }) => ({
+      withContext(UserInfoContext, ({ showExpired, uid, name, isStandardPlan }) => ({
         showExpired,
+        uid,
         name,
         isStandardPlan,
       }))

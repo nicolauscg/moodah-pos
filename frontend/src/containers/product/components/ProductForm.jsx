@@ -333,6 +333,20 @@ const ProductForm = compose(
           input: transformPosProductForm(values, props.imageField)
         }
       });
+    },
+    validate: values => {
+      let erros = {};
+      if (!values.name) {
+        errors.name = "Name is required";
+      }
+      if (isPositiveFloat(values.salesPrice)) {
+        errors.salesPrice = "Sale Price should be positive number";
+      }
+      if (isPositiveFloat(values.cost)) {
+        errors.salesPrice = "Cost should be positive number";
+      }
+
+      return errors;
     }
   })
 )(FormContent);

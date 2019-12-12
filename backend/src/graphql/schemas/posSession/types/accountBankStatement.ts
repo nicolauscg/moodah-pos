@@ -1,14 +1,10 @@
-import {
-  GraphQLObjectType,
-  GraphQLString,
-  GraphQLInt,
-  GraphQLBoolean
-} from "graphql";
+import { GraphQLObjectType, GraphQLString } from "graphql";
 import { globalIdField } from "graphql-relay";
 
 const accountBankStatementType = new GraphQLObjectType({
   name: "accountBankStatementType",
   fields: () => ({
+    id: globalIdField("account.bank.statement"),
     account: {
       type: new GraphQLObjectType({
         name: "accountBankStatement_AccountId",
