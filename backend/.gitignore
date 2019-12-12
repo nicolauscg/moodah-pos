@@ -10,3 +10,5 @@ jspm_packages
 
 coverage
 doc
+src/graphql/schemas/*.gql
+*.csv

@@ -13,8 +13,6 @@ import { Link } from "react-router-dom";
 import SearchIcon from "mdi-react/SearchIcon";
 import { withFormik, Form, Field } from "formik";
 
-import Loader from "../../shared/components/Loader";
-import { OpenSession, CloseSession } from "../../generated-pos-models";
 import Breadcrumb from "../../shared/components/Breadcrumb";
 import DashboardTable from "./components/DashboardTable";
 
@@ -72,16 +70,8 @@ const DashboardIndex = ({
   offset,
   setOffset,
   handleSetValue,
-  limit,
-  openSession,
-  loadingOpen,
-  closeSession,
-  loadingClose
+  limit
 }) => {
-  if (loadingOpen || loadingClose) {
-    return <Loader />;
-  }
-
   return (
     <Container className="configuration__list">
       <Row className="header">
@@ -115,8 +105,6 @@ const DashboardIndex = ({
           offset={offset}
           setOffset={setOffset}
           limit={limit}
-          openSession={openSession}
-          closeSession={closeSession}
         />
       </Row>
     </Container>
@@ -139,35 +127,7 @@ const enhance = compose(
       });
       setOffset(0);
     }
-  }),
-  WrappedComp => props => (
-    <OpenSession.Component
-      onCompleted={props.onOpenSessionSuccess}
-      onError={props.onError}
-    >
-      {(openSession, { loading }) => (
-        <WrappedComp
-          openSession={openSession}
-          loadingOpen={loading}
-          {...props}
-        />
-      )}
-    </OpenSession.Component>
-  ),
-  WrappedComp => props => (
-    <CloseSession.Component
-      onCompleted={props.onCloseSessionSuccess}
-      onError={props.onError}
-    >
-      {(closeSession, { loading }) => (
-        <WrappedComp
-          closeSession={closeSession}
-          loadingClose={loading}
-          {...props}
-        />
-      )}
-    </CloseSession.Component>
-  )
+  })
 );
 
 export default enhance(DashboardIndex);

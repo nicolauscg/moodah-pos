@@ -10,7 +10,8 @@ import {
   DiscountProductsSelect,
   StockLocationsSelect,
   PaymentMethodsSelect,
-  PosConfig
+  PosConfig,
+  PosConfigs
 } from "../../generated-pos-models";
 import * as R from "ramda";
 
@@ -25,6 +26,14 @@ export const ConfigurationColumns = [
 // ====================================================
 // Transformers
 // ====================================================
+export const preparePosConfigRows = (rows: Array<PosConfigs.Records>) => {
+  return rows.map(el => ({
+    id: el.id,
+    name: el.name,
+    stockLocation: el.stockLocation.name
+  }));
+};
+
 export const preparePosConfig = (posConfig: PosConfig.PosConfig) => {
   return R.pipe(
     R.evolve({

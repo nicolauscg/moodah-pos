@@ -1,10 +1,9 @@
 .example1 {
-  width:22%;
+  width:30%;
   height:600px;
   @include themify($themes) {
       //background: themed('colorTopbarSidebarHover');
       background: linear-gradient(180deg, #249CD6 0%, #55C0E1 100%);
-
     }
 }
 .example2 {
@@ -16,6 +15,28 @@
        //background: themed('colorTopbarSidebarHover');
        background: #effaff;
    }
+}
+
+.example3 {
+    width:578px;
+    height:100px;
+    left: 805px;
+    top: 153px;
+      @include themify($themes) {
+          //background: themed('colorTopbarSidebarHover');
+          background: #effaff;
+      }
+}
+
+.example4 {
+    width:578px;
+    height:300px;
+    left: 805px;
+    top: 153px;
+      @include themify($themes) {
+          //background: themed('colorTopbarSidebarHover');
+          background: #effaff;
+      }
 }
 
 .display-linebreak {
