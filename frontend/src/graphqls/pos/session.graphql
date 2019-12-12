@@ -126,7 +126,7 @@ mutation CreateOrder(
   $journalId: GlobalIdInput
   $sessionId: GlobalIdInput
   $pricelistId: GlobalIdInput
-  $userId: GlobalIdInput
+  $userId: Int
   $sequenceNumber: Int
 ) {
   posOrder (

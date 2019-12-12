@@ -19,6 +19,7 @@ import {
   getContext
 } from "recompose";
 import * as R from "ramda";
+var moment = require("moment");
 
 import { UserInfoContext } from "../../utils/transformers/general";
 import {
@@ -449,8 +450,10 @@ const ValidationSection = ({
   bankStatementRecords,
   tenderedValue,
   setTenderedValue,
-  paymentMethod,
-  setPaymentMethod
+  bankStatement,
+  setBankStatement,
+  createOrderFromState,
+  sequenceNumber
 }) => {
   return (
     <>
@@ -480,13 +483,7 @@ const ValidationSection = ({
             Method
           </Typography>
           <Typography variant="h6">
-            {R.path(
-              ["journal", "name"],
-              R.find(
-                R.pathEq(["journal", "id"], paymentMethod),
-                bankStatementRecords
-              )
-            )}
+            {R.pathOr("-", ["journal", "name"], bankStatement)}
           </Typography>
         </div>
       </Row>
@@ -503,7 +500,7 @@ const ValidationSection = ({
                   classes={{ root: classes.secondaryBg }}
                   elevation={1}
                   className="mb-3 d-flex align-items-stretch flex-grow p-4"
-                  onClick={() => setPaymentMethod(statement.journal.id)}
+                  onClick={() => setBankStatement(statement)}
                 >
                   <Typography variant="h6">{statement.journal.name}</Typography>
                 </Paper>
@@ -521,7 +518,10 @@ const ValidationSection = ({
       <Button
         variant="contained"
         className={`${classes.primaryContainedButton} mt-3 py-2`}
-        onClick={toReceiptMenu}
+        onClick={() => {
+          toReceiptMenu();
+          createOrderFromState(sequenceNumber);
+        }}
       >
         <Typography
           variant="h5"
@@ -626,7 +626,8 @@ const Session = props => {
     backToOrderMenu,
     bankStatements,
     sessionInfo,
-    userInfo
+    userInfo,
+    loadingCreateOrder
   } = props;
   const { loading: loadingCategories, posCategories } = categories;
   const { loading: loadingProducts, posProducts } = products;
@@ -643,6 +644,7 @@ const Session = props => {
     loadingBankStatements ||
     loadingSession ||
     loadingUserInfo ||
+    loadingCreateOrder ||
     getUserInfo === undefined
   ) {
     return <Loader />;
@@ -676,8 +678,13 @@ const Session = props => {
               </div>
             )}
             <div className="text-right mr-2 flex-grow">
-              <h3>Thursday 24 July 2019, 09.00 AM</h3>
-              <h4>Shift Started at 08.00AM ( 1 :00 Hours )</h4>
+              <h3>{moment(new Date()).format("dddd D MMMM YYYY, H.mm")}</h3>
+              <h4>
+                Shift Started at{" "}
+                {moment(new Date(posSession.startSession))
+                  .add(7, "h")
+                  .format("H.mm")}
+              </h4>
             </div>
           </Row>
           <hr className={classes.parentWidth} />
@@ -728,7 +735,7 @@ const SessionPage = compose(
   withState("discountValue", "setDiscountValue", "0"),
   withState("discountModalOpen", "setDiscountModalOpen", false),
   withState("tenderedValue", "setTenderedValue", "0"),
-  withState("paymentMethod", "setPaymentMethod", null),
+  withState("bankStatement", "setBankStatement", null),
   WrappedComp => props => (
     <CloseSession.Component onError={props.onError}>
       {(closeSession, { loading }) => (
@@ -739,6 +746,17 @@ const SessionPage = compose(
         />
       )}
     </CloseSession.Component>
+  ),
+  WrappedComp => props => (
+    <CreateOrder.Component onError={props.onError}>
+      {(posOrder, { loading }) => (
+        <WrappedComp
+          createOrder={posOrder}
+          loadingCreateOrder={loading}
+          {...props}
+        />
+      )}
+    </CreateOrder.Component>
   ),
   withHandlers({
     incrementQuantityOfItem: () => item => R.evolve({ qty: R.add(1) }, item),
@@ -797,10 +815,21 @@ const SessionPage = compose(
         setOrderState(Menu.RECEIPT);
       }
     },
-    toNextOrder: ({ orderState, setOrderState }) => () => {
+    toNextOrder: ({
+      orderState,
+      setOrderState,
+      setItemsToOrder,
+      setDiscountValue,
+      setTenderedValue,
+      setBankStatement
+    }) => () => {
       if (orderState == Menu.RECEIPT) {
         setOrderState(Menu.ORDER);
       }
+      setItemsToOrder([]);
+      setDiscountValue("0");
+      setTenderedValue("0");
+      setBankStatement(null);
     },
     addItemToOrder: ({
       itemsToOrder,
@@ -929,6 +958,44 @@ const SessionPage = compose(
           id: uid
         })
       };
+    },
+    createOrderFromState: ({
+      createOrder,
+      getTotal,
+      tenderedValue,
+      itemsToOrder,
+      match,
+      uid,
+      pricelistId,
+      bankStatement
+    }) => sequenceNumber => {
+      createOrder({
+        context: {
+          clientName: "pos"
+        },
+        variables: {
+          id: `${moment(new Date()).format(
+            "DD/MM/YY HH.mm"
+          )} ${sequenceNumber}`,
+          amountPaid: parseInt(tenderedValue),
+          amountTotal: getTotal(),
+          amountReturn: tenderedValue - getTotal(),
+          items: R.map(
+            R.pipe(
+              R.evolve({ discount: 0 }),
+              R.dissoc("name")
+            ),
+            itemsToOrder
+          ),
+          statementId: bankStatement.id,
+          accountId: bankStatement.account.id,
+          journalId: bankStatement.journal.id,
+          sessionId: match.params.sessionId,
+          pricelistId: pricelistId,
+          userId: uid,
+          sequenceNumber: sequenceNumber
+        }
+      });
     }
   }),
   withPropsOnChange(["uid", "userInfo"], ({ uid, userInfo, getUserInfo }) => {
