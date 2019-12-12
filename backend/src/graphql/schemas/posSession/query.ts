@@ -1,4 +1,4 @@
-import { GraphQLObjectType, GraphQLInputObjectType } from "graphql";
+import { GraphQLObjectType, GraphQLInputObjectType, GraphQLInt } from "graphql";
 import { ApolloError } from "apollo-server-lambda";
 import { camelizeKeys } from "humps";
 
@@ -69,7 +69,7 @@ const posSessionQueries = new GraphQLObjectType({
             name: "GetUserInfoInput",
             fields: () => ({
               id: {
-                type: GlobalIdInput
+                type: GraphQLInt
               }
             })
           })
