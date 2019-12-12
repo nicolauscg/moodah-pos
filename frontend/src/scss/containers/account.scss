@@ -1,0 +1,401 @@
+.account {
+  height: 100vh;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  overflow-y: auto;
+  background: #393E46;
+
+  &.account--photo {
+    background: url(../shared/img/404/bg_404.png) no-repeat center;
+    background-size: cover;
+
+    .account__card {
+      background-color: rgba(0, 10, 16, 0.8);
+      color: #ffffff;
+    }
+
+    .form__form-group-icon, .form__form-group-button {
+      background: transparent;
+    }
+
+    .form__form-group-icon, input:not(:last-child) {
+      border-right: none;
+    }
+
+    .form__form-group-button, input {
+      border-left: none;
+    }
+
+    .form__form-group-button.active {
+      border-color: #eff1f5;
+
+      svg {
+        fill: $color-accent;
+      }
+    }
+
+    input {
+      color: #ffffff;
+
+      &:focus {
+        border-color: #eff1f5;
+      }
+    }
+
+    p {
+      color: #ffffff;
+    }
+
+    .account__title {
+      color: #ffffff;
+    }
+  }
+}
+
+.account__wrapper {
+  margin: auto;
+  padding: 10px;
+  background-image: url(../shared/img/background.svg);
+  border-radius: 5px;
+
+  &.message {
+    background: transparent;
+    // margin-top: 20rem;
+    text-align: center;
+
+    .img-wrapper-sent {
+      margin-left: -100px;
+    }
+
+    .img-wrapper-expired {
+      margin-right: -25px;
+
+      img {
+        width: 40%;
+      }
+    }
+
+    h3, h5 {
+      color: white;
+    }
+
+    h3 {
+      font-family: $font-family;
+      margin-top: 40px;
+      margin-bottom: 15px;
+    }
+
+    h5 {
+      font-weight: 300;
+    }
+
+    .account__btn {
+      font-family: $font-family;
+
+      &.btn-outline-primary {
+        color: #FFFFFF;
+        border-color: #FFFFFF;
+
+        &:before {
+          background-color: transparent;
+        }
+      }
+    }
+  }
+}
+
+.account__card {
+
+  // @include themify($themes) {
+  //   background-color: themed('colorBackground');
+  // }
+
+  background-color: transparent;
+  padding: 50px 60px;
+  max-width: 520px;
+  width: 100%;
+
+  .account__head {
+
+    .account__title {
+      color: #FFFFFF;
+      font-family: $font-family;
+    }
+
+    .account__subhead {
+      font-family: $font-family;
+      color: #FFFFFF;
+    }
+  }
+
+  .material-form {
+
+    .material-form__field {
+
+      label, input {
+        color: #FFFFFF;
+        font-family: $font-family;
+      }
+
+      div:before {
+        border-bottom: 1px solid #FFFFFF;
+      }
+
+      div:hover:before {
+        border-bottom: 1px solid #FFFFFF !important;
+      }
+
+      div:after {
+        border-color: #FFFFFF;
+      }
+
+      svg {
+        fill: #FFFFFF;
+      }
+    }
+  }
+
+  .account__forgot-link {
+    display: inline-block;
+    text-align: right;
+    width: 100%;
+    color: darken(#FFFFFF, 5%);
+    font-family: $font-family;
+    font-weight: 300;
+
+    &:hover {
+      color: #FFFFFF;
+    }
+  }
+
+  .account__btn {
+    font-family: $font-family;
+
+    &.btn-primary {
+      margin-top: 50px;
+      background-color: darken(#FFFFFF, 5%);
+      color: #229CD6;
+      margin-bottom: 0px;
+
+      &:before {
+        background-color: #FFFFFF;
+      }
+
+      &:hover, &:focus, &:active {
+        border-color: #FFFFFF;
+        background-color: #FFFFFF;
+        color: #229CD6;
+
+        &:before {
+          background-color: #FFFFFF;
+        }
+      }
+    }
+
+    &.btn-outline-primary {
+      color: #FFFFFF;
+      border-color: #FFFFFF;
+    }
+  }
+
+  &.account__forgot {
+
+    .btn-primary {
+      margin-top: 0;
+    }
+
+    .btn {
+      width: 47.5%;
+      margin-bottom: 0;
+
+      & + .btn {
+        margin-left: 5%;
+      }
+    }
+  }
+
+  &.account__reset {
+
+    .btn-primary {
+      margin-top: 0;
+    }
+
+    .btn {
+      margin-bottom: 0;
+      margin-top: 20px;
+    }
+  }
+}
+
+.account__profile {
+  text-align: center;
+}
+
+.account__btns {
+  display: flex;
+  width: calc(100% + 10px);
+  margin: -10px 0 -20px -10px;
+
+  a {
+    margin: 10px 0 20px 10px;
+    white-space: nowrap;
+  }
+}
+
+.account__btn {
+  width: 100%;
+  margin-right: 0;
+}
+
+.account__avatar {
+  height: 64px;
+  width: 64px;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.account__name {
+  font-size: 11px;
+  text-transform: uppercase;
+  font-weight: 700;
+  line-height: 15px;
+  margin-top: 5px;
+}
+
+.account__sub {
+  margin-top: 0;
+  margin-bottom: 10px;
+  color: $color-additional;
+  font-size: 11px;
+  line-height: 15px;
+}
+
+.account__forgot-password {
+  position: absolute;
+  font-size: 11px;
+  line-height: 15px;
+  bottom: -18px;
+  right: 0;
+
+  a {
+    color: $color-blue;
+
+    &:hover {
+      color: $color-blue-hover;
+      text-decoration: none;
+    }
+  }
+}
+
+.form__form-group--forgot {
+  margin-bottom: 40px;
+}
+
+.account__or {
+  text-align: center;
+  margin-top: 35px;
+  margin-bottom: 20px;
+  position: relative;
+
+  &:before, &:after {
+    content: "";
+    height: 1px;
+    width: calc(50% - 90px);
+    background: #dddddd;
+    position: absolute;
+    top: 10px;
+  }
+
+  &:before {
+    left: 0;
+  }
+
+  &:after {
+    right: 0;
+  }
+}
+
+.account__social {
+  text-align: center;
+}
+
+.account__social-btn {
+  display: inline-block;
+  height: 38px;
+  width: 38px;
+  border-radius: 5px;
+  padding: 9px;
+  margin-right: 10px;
+  transition: all 0.3s;
+  border: none;
+
+  &:last-child {
+    margin-right: 0;
+  }
+
+  svg {
+    fill: #ffffff;
+    height: 20px;
+    width: 20px;
+  }
+
+  &.account__social-btn--facebook {
+    background: #4766a4;
+
+    &:hover {
+      background: darken(#4766a4, 10%);
+    }
+  }
+
+  &.account__social-btn--google {
+    background: #c74d4d;
+
+    &:hover {
+      background: darken(#c74d4d, 10%);
+    }
+  }
+}
+
+.account__head {
+  margin-bottom: 30px;
+  // padding-left: 10px;
+  // border-left: 4px solid $color-blue;
+}
+
+.account__logo {
+  font-weight: 700;
+}
+
+.account__logo-accent {
+  color: $color-blue;
+}
+
+.account__have-account {
+  text-align: center;
+  margin-top: 20px;
+
+  a {
+    color: $color-blue;
+    transition: all 0.3s;
+
+    &:hover {
+      color: $color-blue-hover;
+      text-decoration: none;
+    }
+  }
+}
+
+@media screen and (max-width: 520px) {
+
+  .account__card {
+    padding: 35px 30px;
+  }
+}
+
+@media screen and (max-width: 425px) {
+
+  .account__btns {
+    flex-wrap: wrap;
+  }
+}

@@ -1,0 +1,8 @@
+query CompanyInfo {
+  sessionInfo {
+    companyId {
+      id
+      logo
+    }
+  }
+}

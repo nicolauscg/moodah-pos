@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="664px" height="828px" viewBox="0 0 664 828" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 53.2 (72643) - https://sketchapp.com -->
+    <title>background (old)</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="background-(old)" fill-rule="nonzero">
+            <rect id="Rectangle" fill="#229CD6" x="0" y="0" width="664" height="828" rx="5"></rect>
+            <path d="M601.085434,4.6377509e-13 L654,4.63629135e-13 C659.522847,4.62614604e-13 664,4.4771525 664,10 L664,516.776765 C597.135507,376.471693 521.96161,219.869715 519,150.241935 C516.7853,98.1741089 544.147112,48.0934637 601.085434,4.6377509e-13 Z M240.550339,828 L10,828 C4.4771525,828 6.76353751e-16,823.522847 0,818 L0,158.204933 C278.479709,232.864644 394.479695,342.197554 348,486.203673 C294.524535,651.8845 206.971295,761.424799 240.550339,828 Z" id="Combined-Shape" fill="#3AA6DA"></path>
+        </g>
+    </g>
+</svg>

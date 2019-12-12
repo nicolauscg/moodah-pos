@@ -1,0 +1,33 @@
+mutation GetImportId($model: String!, $key: String) {
+  createBaseImport(input: { resModel: $model, key: $key }) {
+    id
+  }
+}
+
+mutation ActionImport($id: GlobalIdInput!) {
+  actionDoImport(input: { id: $id }) {
+    messages {
+      type
+      message
+      rows {
+        from
+        to
+      }
+      field
+      record
+    }
+  }
+}
+
+mutation actionSetDone($ids: [GlobalIdInput]!) {
+  actionSetToDone(
+    input: {
+      recordContext: {
+        activeModel: "queue.job"
+        activeIds: $ids
+      }
+    }
+  ) {
+    status
+  }
+}
