@@ -1,4 +1,5 @@
 import React from "react";
+import { connect } from "react-redux";
 import { Row, Container, Col } from "reactstrap";
 import {
   MuiThemeProvider,
@@ -21,6 +22,7 @@ import {
 import * as R from "ramda";
 var moment = require("moment");
 
+import { addNotif } from "../../redux/modules/general";
 import { UserInfoContext } from "../../utils/transformers/general";
 import {
   SessionCategories,
@@ -173,7 +175,11 @@ const DiscountModal = ({
               {discountValue}
             </Typography>
           </Paper>
-          <NumberKeypad number={discountValue} setNumber={setDiscountValue} />
+          <NumberKeypad
+            number={discountValue}
+            setNumber={setDiscountValue}
+            maxValue={100}
+          />
           <Button
             variant="contained"
             className={`${classes.primaryContainedButton} mt-2 py-2`}
@@ -453,7 +459,8 @@ const ValidationSection = ({
   bankStatement,
   setBankStatement,
   createOrderFromState,
-  sequenceNumber
+  sequenceNumber,
+  triggerNotif
 }) => {
   return (
     <>
@@ -519,8 +526,20 @@ const ValidationSection = ({
         variant="contained"
         className={`${classes.primaryContainedButton} mt-3 py-2`}
         onClick={() => {
-          toReceiptMenu();
-          createOrderFromState(sequenceNumber);
+          if (bankStatement === null) {
+            triggerNotif({
+              message: "Method not selected",
+              type: "warning"
+            });
+          } else if (parseInt(tenderedValue) < getTotal()) {
+            triggerNotif({
+              message: "Tendered value lower than Due",
+              type: "warning"
+            });
+          } else {
+            createOrderFromState(sequenceNumber);
+            toReceiptMenu();
+          }
         }}
       >
         <Typography
@@ -727,8 +746,14 @@ const SessionPage = compose(
       <WrappedComp {...props} theme={theme} />
     </MuiThemeProvider>
   ),
-  getContext(UserInfoContext),
   withStyles(styles),
+  getContext(UserInfoContext),
+  connect(
+    null,
+    dispatch => ({
+      triggerNotif: notif => dispatch(addNotif(notif))
+    })
+  ),
   withState("idCounter", "setIdCounter", 1),
   withState("orderState", "setOrderState", Menu.ORDER),
   withState("itemsToOrder", "setItemsToOrder", []),
@@ -800,7 +825,20 @@ const SessionPage = compose(
           id: match.params.sessionId
         }
       }).then(() => history.push("/dashboard/list")),
-    toPaymentMenu: ({ orderState, setOrderState }) => () => {
+    toPaymentMenu: ({
+      orderState,
+      setOrderState,
+      itemsToOrder,
+      triggerNotif
+    }) => () => {
+      if (itemsToOrder.length === 0) {
+        triggerNotif({
+          message: "No items in order",
+          type: "warning"
+        });
+
+        return;
+      }
       if (orderState == Menu.ORDER) {
         setOrderState(Menu.PAYMENT);
       }

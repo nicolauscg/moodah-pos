@@ -14,12 +14,17 @@ const styles = () => ({
 });
 
 const NumberKeypad = props => {
-  const { classes, number, setNumber } = props;
+  const { classes, number, setNumber, maxValue } = props;
   const append = stringToAppend => () => {
     if (number === "0") {
       setNumber(stringToAppend);
     } else {
-      setNumber(number + stringToAppend);
+      const next = number + stringToAppend;
+      if (maxValue && parseInt(next) > maxValue) {
+        setNumber(maxValue.toString());
+      } else {
+        setNumber(next);
+      }
     }
   };
   const deleteLastDigit = () => {
