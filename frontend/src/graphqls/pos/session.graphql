@@ -49,6 +49,8 @@ query SessionPosConfig(
   posConfig(input: {
     id: $id
   }) {
+    receiptHeader
+    receiptFooter
     pricelist {
       id
     }

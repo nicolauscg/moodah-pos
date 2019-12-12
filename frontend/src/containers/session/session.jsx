@@ -44,6 +44,7 @@ import Order from "./components/Order";
 import IconButton from "../../shared/components/IconButton";
 import NumberKeypad from "../../shared/components/form-custom/NumberKeypad";
 import SessionSummaryCard from "../../shared/components/Report";
+import OrderReceiptCard from "../../shared/components/Receipt";
 
 const theme = createMuiTheme({
   typography: {
@@ -612,7 +613,19 @@ const ValidationSection = ({
   );
 };
 
-const ReceiptSection = ({ classes, toNextOrder, tenderedValue, getTotal }) => {
+const ReceiptSection = ({
+  classes,
+  toNextOrder,
+  tenderedValue,
+  getTotal,
+  profileInfo,
+  itemsToOrder,
+  bankStatement,
+  posConfig,
+  sequenceNumber,
+  ordersCreated,
+  discountValue
+}) => {
   return (
     <>
       <Paper classes={{ root: classes.secondaryBg }} className="mb-4 px-5 pt-2">
@@ -636,9 +649,28 @@ const ReceiptSection = ({ classes, toNextOrder, tenderedValue, getTotal }) => {
         }`}
       >
         <Col xs={12} className={`px-5 py-2 d-flex flex-column`}>
-          <img
-            className={classes.receiptImage}
-            src="https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTKjC_nfT9D-owMFBIsMXLfMOfNU5CDdt2bwyoAdufXpgXQuRJW"
+          <OrderReceiptCard
+            date={moment(new Date()).format("DD/MM/YY HH.mm")}
+            orderName={`Order ${moment(new Date()).format(
+              "DD/MM/YY HH.mm"
+            )} ${sequenceNumber + ordersCreated}`}
+            companyName={profileInfo.company.name}
+            userName={profileInfo.name}
+            header={posConfig.receiptHeader}
+            footer={posConfig.receiptFooter}
+            items={R.concat(itemsToOrder, [
+              {
+                qty: 1,
+                priceUnit: (-1 * getTotal() * parseInt(discountValue)) / 100,
+                name: "Miscellaneous",
+                productId: "cHJvZHVjdC50ZW1wbGF0ZTo1"
+              }
+            ])}
+            subtotal={getTotal()}
+            total={getTotal()}
+            paymentMethodName={bankStatement.journal.name}
+            tendered={parseInt(tenderedValue)}
+            change={parseInt(tenderedValue) - getTotal()}
           />
         </Col>
       </Paper>
@@ -705,6 +737,7 @@ const Session = props => {
     classes,
     categories,
     products,
+    config,
     orderState,
     backToOrderMenu,
     bankStatements,
@@ -716,6 +749,7 @@ const Session = props => {
   } = props;
   const { loading: loadingCategories, posCategories } = categories;
   const { loading: loadingProducts, posProducts } = products;
+  const { loading: loadingConfig, posConfig } = config;
   const {
     loading: loadingBankStatements,
     accountBankStatement
@@ -732,6 +766,7 @@ const Session = props => {
     loadingUserInfo ||
     loadingCreateOrder ||
     loadingClose ||
+    loadingConfig ||
     getUserInfo === undefined
   ) {
     return <Loader />;
@@ -795,6 +830,8 @@ const Session = props => {
                 productRecords={productRecords}
                 bankStatementRecords={bankStatementRecords}
                 sequenceNumber={posSession.sequenceNumber}
+                profileInfo={getUserInfo}
+                posConfig={posConfig}
                 {...props}
               />
             </Col>

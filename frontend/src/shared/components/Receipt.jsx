@@ -26,7 +26,21 @@ const styles = {
   }
 };
 
-const Receipt = ({ classes }) => (
+const Receipt = ({
+  classes,
+  date,
+  orderName,
+  companyName,
+  userName,
+  header,
+  footer,
+  items,
+  subtotal,
+  total,
+  paymentMethodName,
+  tendered,
+  change
+}) => (
   <div>
     <Grid
       container
@@ -53,7 +67,7 @@ const Receipt = ({ classes }) => (
           spacing={8}
         >
           <Typography variant="span">
-            12/11.9/2019 11:51:24 Order 00501-000-0005
+            {date} {orderName}
           </Typography>
         </Grid>
         <Grid
@@ -65,13 +79,10 @@ const Receipt = ({ classes }) => (
           spacing={8}
         >
           <Typography variant="span" className={classes.leftDescription}>
-            Moodah id
+            {companyName}
           </Typography>
           <Typography variant="span" className={classes.leftDescription}>
-            Phone:
-          </Typography>
-          <Typography variant="span" className={classes.leftDescription}>
-            User: Administrator
+            User: {userName}
           </Typography>
         </Grid>
         <Grid
@@ -82,122 +93,53 @@ const Receipt = ({ classes }) => (
           maxWidth="sm"
           spacing={8}
         >
-          <Typography variant="span">head</Typography>
-        </Grid>
-        <Grid
-          container
-          xs={6}
-          sm={6}
-          className={`${classes.gridRow}  py-0 px-1`}
-          alignItems="start"
-          justify="start"
-          spacing={30}
-        >
-          <Typography variant="span" className={classes.leftDescription}>
-            Coffee
-          </Typography>
+          <Typography variant="span">{header}</Typography>
         </Grid>
 
-        <Grid
-          container
-          xs={2}
-          sm={2}
-          className={`${classes.gridRow}  py-0 px-1`}
-          alignItems="end"
-          justify="start"
-          spacing={8}
-        >
-          <Typography variant="span">1.00</Typography>
-        </Grid>
-        <Grid
-          container
-          xs={4}
-          sm={4}
-          className={`${classes.gridRow}  py-0 px-1`}
-          alignItems="end"
-          justify="start"
-          spacing={8}
-        >
-          <Typography variant="span" className={classes.rightDescription}>
-            Rp 6,000.00
-          </Typography>
-        </Grid>
-        <Grid
-          container
-          xs={6}
-          sm={6}
-          className={`${classes.gridRow}  py-0 px-1`}
-          alignItems="start"
-          justify="start"
-          spacing={30}
-        >
-          <Typography variant="span" className={classes.leftDescription}>
-            Chocolate Cake
-          </Typography>
-        </Grid>
+        {items.map(item => (
+          <>
+            <Grid
+              container
+              xs={6}
+              sm={6}
+              className={`${classes.gridRow}  py-0 px-1`}
+              alignItems="start"
+              justify="start"
+              spacing={30}
+            >
+              <Typography variant="span" className={classes.leftDescription}>
+                {item.name}
+              </Typography>
+            </Grid>
 
-        <Grid
-          container
-          xs={2}
-          sm={2}
-          className={`${classes.gridRow}  py-0 px-1`}
-          alignItems="end"
-          justify="start"
-          spacing={8}
-        >
-          <Typography variant="span">1.00</Typography>
-        </Grid>
-        <Grid
-          container
-          xs={4}
-          sm={4}
-          className={`${classes.gridRow}  py-0 px-1`}
-          alignItems="end"
-          justify="start"
-          spacing={8}
-        >
-          <Typography variant="span" className={classes.rightDescription}>
-            Rp 15,000.00
-          </Typography>
-        </Grid>
-        <Grid
-          container
-          xs={6}
-          sm={6}
-          className={`${classes.gridRow}  py-0 px-1`}
-          alignItems="start"
-          justify="start"
-          spacing={30}
-        >
-          <Typography variant="span" className={classes.leftDescription}>
-            Miscellaneous
-          </Typography>
-        </Grid>
+            <Grid
+              container
+              xs={2}
+              sm={2}
+              className={`${classes.gridRow}  py-0 px-1`}
+              alignItems="end"
+              justify="start"
+              spacing={8}
+            >
+              <Typography variant="span">{item.qty}</Typography>
+            </Grid>
+            <Grid
+              container
+              xs={4}
+              sm={4}
+              className={`${classes.gridRow}  py-0 px-1`}
+              alignItems="end"
+              justify="start"
+              spacing={8}
+            >
+              <Typography variant="span" className={classes.rightDescription}>
+                Rp
+                {item.qty * item.priceUnit}
+              </Typography>
+            </Grid>
+          </>
+        ))}
 
-        <Grid
-          container
-          xs={2}
-          sm={2}
-          className={`${classes.gridRow}  py-0 px-1`}
-          alignItems="end"
-          justify="start"
-          spacing={8}
-        >
-          <Typography variant="span">1.00</Typography>
-        </Grid>
-        <Grid
-          container
-          xs={4}
-          sm={4}
-          className={`${classes.gridRow}  py-0 px-1`}
-          alignItems="end"
-          justify="start"
-          spacing={8}
-        >
-          <Typography variant="span" className={classes.rightDescription}>
-            Rp 18.00
-          </Typography>
-        </Grid>
         <Grid
           container
           xs={6}
@@ -221,7 +163,7 @@ const Receipt = ({ classes }) => (
           spacing={8}
         >
           <Typography variant="span" className={classes.rightDescription}>
-            Rp 21,018.00
+            Rp {subtotal}
           </Typography>
         </Grid>
         <Grid
@@ -247,7 +189,7 @@ const Receipt = ({ classes }) => (
           spacing={8}
         >
           <Typography variant="h6" className={classes.rightDescription}>
-            Rp 21,018.00
+            Rp {total}
           </Typography>
         </Grid>
         <Grid
@@ -260,7 +202,7 @@ const Receipt = ({ classes }) => (
           spacing={30}
         >
           <Typography variant="span" className={classes.leftDescription}>
-            Kas (IDR)
+            {paymentMethodName}
           </Typography>
         </Grid>
         <Grid
@@ -273,7 +215,7 @@ const Receipt = ({ classes }) => (
           spacing={8}
         >
           <Typography variant="span" className={classes.rightDescription}>
-            Rp 30,000.00
+            Rp {tendered}
           </Typography>
         </Grid>
         <Grid
@@ -299,7 +241,7 @@ const Receipt = ({ classes }) => (
           spacing={8}
         >
           <Typography variant="span" className={classes.rightDescription}>
-            Rp 8,982.00
+            Rp {change}
           </Typography>
         </Grid>
         <Grid
@@ -310,7 +252,7 @@ const Receipt = ({ classes }) => (
           maxWidth="sm"
           spacing={8}
         >
-          <Typography variant="span">foot</Typography>
+          <Typography variant="span">{footer}</Typography>
         </Grid>
       </Grid>
     </Grid>
