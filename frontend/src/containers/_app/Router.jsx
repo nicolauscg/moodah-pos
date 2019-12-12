@@ -32,7 +32,6 @@ import ProductIndex from "../product/index";
 import EditProduct from "../product/EditProduct";
 
 import DashboardSession from "../session/session";
-import Pos_SessionIndex from "../pos_session/index";
 
 const RouteList = {
   Partners: {
@@ -80,6 +79,10 @@ const RouteList = {
       {
         path: "/configuration/details/:id",
         component: EditConfiguration
+      },
+      {
+        path: "/configuration/:configId/session/:sessionId",
+        component: DashboardSession
       }
     ]
   },
@@ -118,21 +121,6 @@ const RouteList = {
       {
         path: "/product/details/:id",
         component: EditProduct
-      }
-    ]
-  },
-
-  Session: {
-    path: "/session",
-    title: "POS Session",
-    component: [
-      {
-        path: "/session/test",
-        component: Pos_SessionIndex
-      },
-      {
-        path: "/session/:id",
-        component: DashboardSession
       }
     ]
   },

@@ -48,7 +48,9 @@ export const preparePosConfigRows = (
             className="text-white"
             onClick={event => {
               event.stopPropagation();
-              history.push(`/session/${row.currentSessionId.id}`);
+              history.push(
+                `/configuration/${row.id}/session/${row.currentSessionId.id}`
+              );
             }}
           >
             resume session
@@ -94,7 +96,7 @@ export const preparePosConfigRows = (
                 result
               );
               if (sessionId) {
-                history.push(`/session/${sessionId}`);
+                history.push(`/configuration/${row.id}/session/${sessionId}`);
               }
             });
             event.stopPropagation();

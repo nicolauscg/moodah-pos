@@ -11,13 +11,25 @@ import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
 import ArrowForwardIcon from "@material-ui/icons/ArrowForward";
 import Modal from "@material-ui/core/Modal";
-import { compose, withHandlers, withState } from "recompose";
+import {
+  compose,
+  withHandlers,
+  withState,
+  withPropsOnChange,
+  getContext
+} from "recompose";
 import * as R from "ramda";
 
+import { UserInfoContext } from "../../utils/transformers/general";
 import {
   SessionCategories,
   SessionProducts,
-  CloseSession
+  CloseSession,
+  SessionPosConfig,
+  AccountBankStatements,
+  CreateOrder,
+  SessionInfo,
+  UserInfo
 } from "../../generated-pos-models";
 import Loader from "../../shared/components/Loader";
 import ProductCard from "../../shared/components/ProductCard";
@@ -131,6 +143,12 @@ const styles = theme => ({
       display: "none"
     },
     msOverflowStyle: "none"
+  },
+  flexBasis25: {
+    flexBasis: "25%"
+  },
+  wordBreakAll: {
+    wordBreak: "break-all"
   }
 });
 
@@ -184,7 +202,7 @@ const DiscountModal = ({
   );
 };
 
-const ProfileColumn = ({ classes, onCloseSession }) => {
+const ProfileColumn = ({ classes, onCloseSession, profileInfo }) => {
   return (
     <Card
       className={`${classes.parentWidthHeight} ${
@@ -199,14 +217,15 @@ const ProfileColumn = ({ classes, onCloseSession }) => {
         <div>
           <img
             className={`${classes.profileImage} p-4`}
-            src="https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcR7ULXhTjsUrfpFmzCzUo8T_dMjCwwshvugIVID97Y_5KYouGDJ"
+            src={`data:image/png;base64,${profileInfo.image}`}
           />
           <Typography
             classes={{ root: classes.secondaryColor }}
             variant="h5"
             component="h2"
+            className={classes.wordBreakAll}
           >
-            Samuel
+            {profileInfo.name}
           </Typography>
           <Typography
             classes={{ root: classes.secondaryColor }}
@@ -214,7 +233,7 @@ const ProfileColumn = ({ classes, onCloseSession }) => {
             variant="subtitle1"
             component="h3"
           >
-            front cashier
+            {profileInfo.function}
           </Typography>
         </div>
         <div className="d-flex flex-column">
@@ -301,7 +320,10 @@ const CurrentItemsInOrderSection = ({
   incrementItemInOrder,
   decrementItemInOrder,
   removeItemInOrder,
-  itemsToOrder
+  itemsToOrder,
+  getSubtotal,
+  getTotal,
+  getDiscount
 }) => {
   return (
     <>
@@ -332,7 +354,7 @@ const CurrentItemsInOrderSection = ({
               <Order
                 quantity={item.qty}
                 name={item.name}
-                price={item.qty * item.priceUnit}
+                price={Math.round(item.qty * item.priceUnit)}
                 handleMinus={() => decrementItemInOrder(item.productId)}
                 handlePlus={() => incrementItemInOrder(item.productId)}
                 handleCross={() => removeItemInOrder(item.productId)}
@@ -348,7 +370,7 @@ const CurrentItemsInOrderSection = ({
               component="p"
               className={`${classes.padRight} text-right`}
             >
-              Rp 14.400
+              Rp {getSubtotal()}
             </Typography>
           </Row>
           <Row className="justify-content-between mb-2 pr-3">
@@ -360,7 +382,7 @@ const CurrentItemsInOrderSection = ({
               component="p"
               className={classes.padRight}
             >
-              Rp 0
+              Rp {getDiscount()}
             </Typography>
           </Row>
           <Row className="justify-content-between pr-3">
@@ -376,7 +398,7 @@ const CurrentItemsInOrderSection = ({
               component="p"
               className={`font-weight-bold  ${classes.padRight}`}
             >
-              Rp 134.000
+              Rp {getTotal()}
             </Typography>
           </Row>
         </Col>
@@ -420,33 +442,52 @@ const CurrentItemsInOrderSection = ({
   );
 };
 
-const ValidationSection = ({ classes, toReceiptMenu }) => {
+const ValidationSection = ({
+  classes,
+  toReceiptMenu,
+  getTotal,
+  bankStatementRecords,
+  tenderedValue,
+  setTenderedValue,
+  paymentMethod,
+  setPaymentMethod
+}) => {
   return (
     <>
       <Row className="justify-content-between mb-2 pr-3">
-        <div className="mb-4">
-          <Typography variant="body1" component="p" className="flex-grow">
+        <div className="mb-4" className={classes.flexBasis25}>
+          <Typography variant="body1" component="p">
             Due
           </Typography>
-          <Typography variant="h6">Rp 140.000</Typography>
+          <Typography variant="h6">Rp {getTotal()}</Typography>
         </div>
-        <div>
-          <Typography variant="body1" component="p" className="flex-grow">
+        <div className={classes.flexBasis25}>
+          <Typography variant="body1" component="p">
             Tendered
           </Typography>
-          <Typography variant="h6">Rp 140.000</Typography>
+          <Typography variant="h6">Rp {tenderedValue}</Typography>
         </div>
-        <div>
-          <Typography variant="body1" component="p" className="flex-grow">
+        <div className={classes.flexBasis25}>
+          <Typography variant="body1" component="p">
             Change
           </Typography>
-          <Typography variant="h6">Rp 140.000</Typography>
+          <Typography variant="h6">
+            Rp {Math.max(tenderedValue - getTotal(), 0)}
+          </Typography>
         </div>
-        <div>
-          <Typography variant="body1" component="p" className="flex-grow">
+        <div className={classes.flexBasis25}>
+          <Typography variant="body1" component="p">
             Method
           </Typography>
-          <Typography variant="h6">Cash (IDR)</Typography>
+          <Typography variant="h6">
+            {R.path(
+              ["journal", "name"],
+              R.find(
+                R.pathEq(["journal", "id"], paymentMethod),
+                bankStatementRecords
+              )
+            )}
+          </Typography>
         </div>
       </Row>
       <div className="mb-3 d-flex align-items-stretch flex-grow">
@@ -457,18 +498,22 @@ const ValidationSection = ({ classes, toReceiptMenu }) => {
             }`}
           >
             <Col xs={5} className={`px-0 ${classes.overflowYScroll}`}>
-              {[...Array(10).keys()].map(() => (
+              {bankStatementRecords.map(statement => (
                 <Paper
                   classes={{ root: classes.secondaryBg }}
                   elevation={1}
                   className="mb-3 d-flex align-items-stretch flex-grow p-4"
+                  onClick={() => setPaymentMethod(statement.journal.id)}
                 >
-                  <Typography variant="h6">Cash (IDR)</Typography>
+                  <Typography variant="h6">{statement.journal.name}</Typography>
                 </Paper>
               ))}
             </Col>
             <Col xs={7}>
-              <NumberKeypad />
+              <NumberKeypad
+                number={tenderedValue}
+                setNumber={setTenderedValue}
+              />
             </Col>
           </Row>
         </Col>
@@ -490,17 +535,19 @@ const ValidationSection = ({ classes, toReceiptMenu }) => {
   );
 };
 
-const ReceiptSection = ({ classes, toNextOrder }) => {
+const ReceiptSection = ({ classes, toNextOrder, tenderedValue, getTotal }) => {
   return (
     <>
-      <Paper classes={{ root: classes.secondaryBg }} className="mb-4 px-5">
+      <Paper classes={{ root: classes.secondaryBg }} className="mb-4 px-5 pt-2">
         <Row className="justify-content-between mb-2 pr-3">
           <Row>
             <Col xs={12}>
               <Typography variant="body1" component="p" className="flex-grow">
-                Due
+                Change
               </Typography>
-              <Typography variant="h6">Rp 140.000</Typography>
+              <Typography variant="h6">
+                Rp {Math.max(tenderedValue - getTotal(), 0)}
+              </Typography>
             </Col>
           </Row>
         </Row>
@@ -555,7 +602,7 @@ const OrderColumn = props => {
       >
         <Row>
           <Typography variant="h6" component="h3">
-            Order {sequenceNumber}
+            Order #{sequenceNumber}
           </Typography>
         </Row>
       </Paper>
@@ -571,21 +618,49 @@ const OrderColumn = props => {
 };
 
 const Session = props => {
-  const { classes, categories, products, orderState, backToOrderMenu } = props;
+  const {
+    classes,
+    categories,
+    products,
+    orderState,
+    backToOrderMenu,
+    bankStatements,
+    sessionInfo,
+    userInfo
+  } = props;
   const { loading: loadingCategories, posCategories } = categories;
   const { loading: loadingProducts, posProducts } = products;
-  if (loadingCategories || loadingProducts) {
+  const {
+    loading: loadingBankStatements,
+    accountBankStatement
+  } = bankStatements;
+  const { loading: loadingSession, posSession } = sessionInfo;
+  const { loading: loadingUserInfo, getUserInfo } = userInfo;
+
+  if (
+    loadingCategories ||
+    loadingProducts ||
+    loadingBankStatements ||
+    loadingSession ||
+    loadingUserInfo ||
+    getUserInfo === undefined
+  ) {
     return <Loader />;
   }
 
   const categoryRecords = posCategories.records;
   const productRecords = posProducts.records;
+  const bankStatementRecords = accountBankStatement.records;
 
   return (
     <Container>
       <Row className={classes.mainRow}>
         <Col xs={2} className="pl-0">
-          <ProfileColumn classes={classes} {...props} />
+          <ProfileColumn
+            classes={classes}
+            profileInfo={getUserInfo}
+            {...props}
+          />
         </Col>
         <Col xs={10} className="d-flex flex-column">
           <Row className="d-flex pt-4">
@@ -621,7 +696,8 @@ const Session = props => {
               <OrderColumn
                 className="d-flex flex-column flex-grow"
                 productRecords={productRecords}
-                sequenceNumber={1}
+                bankStatementRecords={bankStatementRecords}
+                sequenceNumber={posSession.sequenceNumber}
                 {...props}
               />
             </Col>
@@ -644,12 +720,15 @@ const SessionPage = compose(
       <WrappedComp {...props} theme={theme} />
     </MuiThemeProvider>
   ),
+  getContext(UserInfoContext),
   withStyles(styles),
   withState("idCounter", "setIdCounter", 1),
   withState("orderState", "setOrderState", Menu.ORDER),
   withState("itemsToOrder", "setItemsToOrder", []),
   withState("discountValue", "setDiscountValue", "0"),
   withState("discountModalOpen", "setDiscountModalOpen", false),
+  withState("tenderedValue", "setTenderedValue", "0"),
+  withState("paymentMethod", "setPaymentMethod", null),
   WrappedComp => props => (
     <CloseSession.Component onError={props.onError}>
       {(closeSession, { loading }) => (
@@ -677,7 +756,21 @@ const SessionPage = compose(
           itemsToOrder
         )
       );
-    }
+    },
+    getSubtotal: ({ itemsToOrder }) => () =>
+      Math.round(
+        itemsToOrder.reduce((acc, item) => acc + item.qty * item.priceUnit, 0)
+      ),
+    getTotal: ({ itemsToOrder, discountValue }) => () =>
+      Math.round(
+        itemsToOrder.reduce((acc, item) => acc + item.qty * item.priceUnit, 0) *
+          (1 - discountValue / 100)
+      ),
+    getDiscount: ({ itemsToOrder, discountValue }) => () =>
+      Math.round(
+        itemsToOrder.reduce((acc, item) => acc + item.qty * item.priceUnit, 0) *
+          (discountValue / 100)
+      )
   }),
   withHandlers({
     onCloseSession: ({ match, closeSession, history }) => () =>
@@ -686,7 +779,7 @@ const SessionPage = compose(
           clientName: "pos"
         },
         variables: {
-          id: match.params.id
+          id: match.params.sessionId
         }
       }).then(() => history.push("/dashboard/list")),
     toPaymentMenu: ({ orderState, setOrderState }) => () => {
@@ -751,6 +844,98 @@ const SessionPage = compose(
         removeItemInOrder(productId);
       }
     }
+  }),
+  SessionCategories.HOC({
+    name: "categories",
+    options: () => ({
+      context: {
+        clientName: "pos"
+      },
+      fetchPolicy: "network-only"
+    })
+  }),
+  SessionProducts.HOC({
+    name: "products",
+    options: () => ({
+      context: {
+        clientName: "pos"
+      },
+      fetchPolicy: "network-only"
+    })
+  }),
+  SessionPosConfig.HOC({
+    name: "config",
+    options: ({ match }) => ({
+      context: {
+        clientName: "pos"
+      },
+      variables: {
+        id: match.params.configId
+      },
+      fetchPolicy: "network-only"
+    })
+  }),
+  AccountBankStatements.HOC({
+    name: "bankStatements",
+    options: ({ match }) => ({
+      context: {
+        clientName: "pos"
+      },
+      variables: {
+        id: match.params.sessionId
+      },
+      fetchPolicy: "network-only"
+    })
+  }),
+  SessionInfo.HOC({
+    name: "sessionInfo",
+    options: ({ match }) => ({
+      context: {
+        clientName: "pos"
+      },
+      variables: {
+        id: match.params.sessionId
+      },
+      fetchPolicy: "network-only"
+    })
+  }),
+  UserInfo.HOC({
+    name: "userInfo",
+    options: () => ({
+      context: {
+        clientName: "pos"
+      },
+      fetchPolicy: "network-only"
+    })
+  }),
+  withPropsOnChange(["config"], ({ config }) => {
+    const defaultPricelistId = R.pathOr(
+      false,
+      ["posConfig", "pricelist", "id"],
+      config
+    );
+    if (defaultPricelistId) {
+      return { pricelistId: defaultPricelistId };
+    }
+    return {};
+  }),
+  withHandlers({
+    getUserInfo: ({ userInfo, uid }) => () => {
+      return {
+        userInfo: userInfo.refetch({
+          context: {
+            clientName: "pos"
+          },
+          id: uid
+        })
+      };
+    }
+  }),
+  withPropsOnChange(["uid", "userInfo"], ({ uid, userInfo, getUserInfo }) => {
+    if (typeof uid === "number" && userInfo.getUserInfo === undefined) {
+      return getUserInfo();
+    }
+    return {};
   })
 )(Session);
 
