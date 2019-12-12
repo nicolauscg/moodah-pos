@@ -668,7 +668,13 @@ const ReceiptSection = ({ classes, toNextOrder, tenderedValue, getTotal }) => {
 };
 
 const OrderColumn = props => {
-  const { classes, className, sequenceNumber, orderState } = props;
+  const {
+    classes,
+    className,
+    sequenceNumber,
+    orderState,
+    ordersCreated
+  } = props;
 
   return (
     <div className={className}>
@@ -679,7 +685,7 @@ const OrderColumn = props => {
       >
         <Row>
           <Typography variant="h6" component="h3">
-            Order #{sequenceNumber}
+            Order #{sequenceNumber + ordersCreated}
           </Typography>
         </Row>
       </Paper>
@@ -827,6 +833,7 @@ const SessionPage = compose(
   withState("summaryModalOpen", "setSummaryModalOpen", false),
   withState("tenderedValue", "setTenderedValue", "0"),
   withState("bankStatement", "setBankStatement", null),
+  withState("ordersCreated", "setOrdersCreated", 0),
   WrappedComp => props => (
     <CloseSession.Component onError={props.onError}>
       {(closeSession, { loading }) => (
@@ -925,7 +932,9 @@ const SessionPage = compose(
       setItemsToOrder,
       setDiscountValue,
       setTenderedValue,
-      setBankStatement
+      setBankStatement,
+      ordersCreated,
+      setOrdersCreated
     }) => () => {
       if (orderState == Menu.RECEIPT) {
         setOrderState(Menu.ORDER);
@@ -934,6 +943,7 @@ const SessionPage = compose(
       setDiscountValue("0");
       setTenderedValue("0");
       setBankStatement(null);
+      setOrdersCreated(ordersCreated + 1);
     },
     addItemToOrder: ({
       itemsToOrder,
@@ -1085,16 +1095,18 @@ const SessionPage = compose(
       pricelistId,
       bankStatement,
       toReceiptMenu,
-      triggerNotif
+      triggerNotif,
+      getIdCounter,
+      discountValue,
+      ordersCreated
     }) => sequenceNumber => {
       createOrder({
         context: {
           clientName: "pos"
         },
         variables: {
-          id: `${moment(new Date()).format(
-            "DD/MM/YY HH.mm"
-          )} ${sequenceNumber}`,
+          id: `${moment(new Date()).format("DD/MM/YY HH.mm")} ${sequenceNumber +
+            ordersCreated}`,
           amountPaid: parseInt(tenderedValue),
           amountTotal: getTotal(),
           amountReturn: tenderedValue - getTotal(),
@@ -1103,7 +1115,14 @@ const SessionPage = compose(
               R.evolve({ discount: 0 }),
               R.dissoc("name")
             ),
-            itemsToOrder
+            R.concat(itemsToOrder, [
+              {
+                qty: 1,
+                priceUnit: (-1 * getTotal() * parseInt(discountValue)) / 100,
+                productId: "cHJvZHVjdC50ZW1wbGF0ZTo1",
+                id: getIdCounter()
+              }
+            ])
           ),
           statementId: bankStatement.id,
           accountId: bankStatement.account.id,
@@ -1111,7 +1130,7 @@ const SessionPage = compose(
           sessionId: match.params.sessionId,
           pricelistId: pricelistId,
           userId: uid,
-          sequenceNumber: sequenceNumber
+          sequenceNumber: sequenceNumber + ordersCreated
         }
       }).then(result => {
         if (R.pathOr(false, ["data", "posOrder", "result"], result)) {
