@@ -27,6 +27,7 @@ export const UserInfoContext = {
   showExpired: PropTypes.bool,
   name: PropTypes.string,
   isStandardPlan: PropTypes.bool,
+  uid: PropTypes.string
 }
 
 export const ProOnlyFeatures = [

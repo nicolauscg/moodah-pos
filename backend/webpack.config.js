@@ -39,7 +39,8 @@ module.exports = {
   },
   plugins: [
     new ForkTsCheckerWebpackPlugin({
-      useTypescriptIncrementalApi: true
+      useTypescriptIncrementalApi: true,
+      memoryLimit: 4096
     })
   ]
 };
