@@ -73,7 +73,7 @@ const PosOrderDataType = new GraphQLInputObjectType({
       type: GlobalIdInput
     },
     userId: {
-      type: GlobalIdInput
+      type: GraphQLInt
     },
     sequenceNumber: {
       type: GraphQLInt
