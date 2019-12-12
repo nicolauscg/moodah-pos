@@ -12,6 +12,7 @@ import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
 import ArrowForwardIcon from "@material-ui/icons/ArrowForward";
 import Modal from "@material-ui/core/Modal";
+import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import {
   compose,
   withHandlers,
@@ -32,7 +33,8 @@ import {
   AccountBankStatements,
   CreateOrder,
   SessionInfo,
-  UserInfo
+  UserInfo,
+  SessionSummary
 } from "../../generated-pos-models";
 import Loader from "../../shared/components/Loader";
 import ProductCard from "../../shared/components/ProductCard";
@@ -41,7 +43,7 @@ import Card from "@material-ui/core/Card";
 import Order from "./components/Order";
 import IconButton from "../../shared/components/IconButton";
 import NumberKeypad from "../../shared/components/form-custom/NumberKeypad";
-import ArrowBackIcon from "@material-ui/icons/ArrowBack";
+import SessionSummaryCard from "../../shared/components/Report";
 
 const theme = createMuiTheme({
   typography: {
@@ -209,7 +211,47 @@ const DiscountModal = ({
   );
 };
 
-const ProfileColumn = ({ classes, onCloseSession, profileInfo }) => {
+const SessionSummaryModal = props => {
+  const {
+    summaryModalOpen,
+    setSummaryModalOpen,
+    posSessionSummary,
+    loadingSessionSummary,
+    classes
+  } = props;
+
+  return (
+    <Modal
+      className="d-flex justify-content-center align-items-center"
+      open={summaryModalOpen}
+      onClose={() => setSummaryModalOpen(false)}
+    >
+      {!loadingSessionSummary && posSessionSummary ? (
+        <SessionSummaryCard
+          {...props}
+          totalNetSales={posSessionSummary.totalNetSale}
+          transactions={posSessionSummary.transactions}
+          averageValue={posSessionSummary.averageOrderValue}
+          parentClasses={classes}
+        />
+      ) : (
+        <Loader />
+      )}
+    </Modal>
+  );
+};
+
+const ProfileColumn = ({
+  classes,
+  onCloseSession,
+  profileInfo,
+  summaryModalOpen,
+  setSummaryModalOpen,
+  posSession,
+  posSessionSummary,
+  loadingSessionSummary,
+  getSessionSummary
+}) => {
   return (
     <Card
       className={`${classes.parentWidthHeight} ${
@@ -247,7 +289,10 @@ const ProfileColumn = ({ classes, onCloseSession, profileInfo }) => {
           <Button
             variant="contained"
             className={`${classes.secondaryContainedButton} mb-2 py-2`}
-            onClick={onCloseSession}
+            onClick={() => {
+              getSessionSummary();
+              setSummaryModalOpen(true);
+            }}
           >
             <Typography variant="h6" component="h3">
               Close session
@@ -262,6 +307,20 @@ const ProfileColumn = ({ classes, onCloseSession, profileInfo }) => {
             2019 all rights
           </Typography>
         </div>
+        <SessionSummaryModal
+          summaryModalOpen={summaryModalOpen}
+          setSummaryModalOpen={setSummaryModalOpen}
+          base64Image={profileInfo.image}
+          name={profileInfo.name}
+          currentDate={moment(new Date()).format("dddd D MMMM YYYY, H.mm")}
+          startOfShift={moment(new Date(posSession.startSession))
+            .add(7, "h")
+            .format("H.mm")}
+          onDone={onCloseSession}
+          posSessionSummary={posSessionSummary}
+          loadingSessionSummary={loadingSessionSummary}
+          classes={classes}
+        />
       </div>
     </Card>
   );
@@ -646,7 +705,9 @@ const Session = props => {
     bankStatements,
     sessionInfo,
     userInfo,
-    loadingCreateOrder
+    loadingCreateOrder,
+    loadingClose,
+    sessionSummary
   } = props;
   const { loading: loadingCategories, posCategories } = categories;
   const { loading: loadingProducts, posProducts } = products;
@@ -656,6 +717,7 @@ const Session = props => {
   } = bankStatements;
   const { loading: loadingSession, posSession } = sessionInfo;
   const { loading: loadingUserInfo, getUserInfo } = userInfo;
+  const { loading: loadingSessionSummary, posSessionSummary } = sessionSummary;
 
   if (
     loadingCategories ||
@@ -664,6 +726,7 @@ const Session = props => {
     loadingSession ||
     loadingUserInfo ||
     loadingCreateOrder ||
+    loadingClose ||
     getUserInfo === undefined
   ) {
     return <Loader />;
@@ -680,6 +743,9 @@ const Session = props => {
           <ProfileColumn
             classes={classes}
             profileInfo={getUserInfo}
+            posSession={posSession}
+            posSessionSummary={posSessionSummary}
+            loadingSessionSummary={loadingSessionSummary}
             {...props}
           />
         </Col>
@@ -759,6 +825,7 @@ const SessionPage = compose(
   withState("itemsToOrder", "setItemsToOrder", []),
   withState("discountValue", "setDiscountValue", "0"),
   withState("discountModalOpen", "setDiscountModalOpen", false),
+  withState("summaryModalOpen", "setSummaryModalOpen", false),
   withState("tenderedValue", "setTenderedValue", "0"),
   withState("bankStatement", "setBankStatement", null),
   WrappedComp => props => (
@@ -975,6 +1042,18 @@ const SessionPage = compose(
       fetchPolicy: "network-only"
     })
   }),
+  SessionSummary.HOC({
+    name: "sessionSummary",
+    options: ({ match }) => ({
+      context: {
+        clientName: "pos"
+      },
+      variables: {
+        id: match.params.sessionId
+      },
+      fetchPolicy: "network-only"
+    })
+  }),
   withPropsOnChange(["config"], ({ config }) => {
     const defaultPricelistId = R.pathOr(
       false,
@@ -1033,6 +1112,11 @@ const SessionPage = compose(
           userId: uid,
           sequenceNumber: sequenceNumber
         }
+      });
+    },
+    getSessionSummary: ({ match, sessionSummary }) => () => {
+      sessionSummary.refetch({
+        id: match.params.sessionId
       });
     }
   }),
