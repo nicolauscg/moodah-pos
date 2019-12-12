@@ -1,0 +1,117 @@
+.load {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  align-items: center;
+  position: fixed;
+  background: #ffffff;
+  z-index: 20000;
+
+  &.load__content {
+    background: transparent;
+    // height: 90vh;
+    // width: 80vw;
+    z-index: 900;
+    margin-top: -80px;
+    margin-left: -170px;
+
+    &.collapsed {
+      margin-left: -60px;
+    }
+  }
+
+  &.load__datatable {
+    background: transparent;
+    height: unset;
+    width: unset;
+    top: 50%;
+    left: 50%;
+    // margin-left: -16px;
+    // margin-top: -16px;
+    margin-left: -48px;
+    margin-top: -24px;
+    position: absolute;
+    z-index: 900;
+  }
+
+  &.load__page {
+    background: transparent;
+  }
+
+  &.load__account {
+    background: transparent;
+    z-index: 900;
+  }
+
+  & + div {
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  &.loaded {
+    animation: ease loaded 0.5s;
+  }
+
+  &.load__modal {
+    height: unset;
+    width: unset;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin-left: -40px;
+
+    & + div {
+      height: unset;
+    }
+  }
+}
+
+.load__icon {
+  animation: linear load 2s infinite;
+  margin: auto;
+  width: 32px;
+  height: 32px;
+}
+
+.load__gif {
+  margin: auto;
+  width: 80px;
+
+  &.app {
+    width: 150px;
+  }
+}
+
+.load__icon-wrap {
+  margin: auto;
+}
+
+.card {
+  .load__content {
+    width: auto;
+    position: unset;
+    height: 40vh;
+  }
+}
+
+@keyframes load {
+  from {
+    transform: rotate(0deg) scale(2);
+  }
+  to {
+    transform: rotate(360deg) scale(2);
+  }
+}
+
+@keyframes loaded {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.white-overlay {
+  opacity: 0.1;
+}

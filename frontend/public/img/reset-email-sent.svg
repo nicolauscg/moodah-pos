@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="477px" height="181px" viewBox="0 0 477 181" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52.5 (67469) - http://www.bohemiancoding.com/sketch -->
+    <title>Group</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Forgot-Password-Copy" transform="translate(-662.000000, -334.000000)">
+            <g id="Group" transform="translate(662.000000, 334.000000)">
+                <rect id="Rectangle" fill="#00ADB5" x="81" y="53" width="235" height="5" rx="2.5"></rect>
+                <rect id="Rectangle-Copy-2" fill="#FFFFFF" x="95" y="98" width="235" height="5" rx="2.5"></rect>
+                <rect id="Rectangle-Copy-5" fill="#FFFFFF" x="0" y="148" width="330" height="5" rx="2.5"></rect>
+                <rect id="Rectangle-Copy" fill="#00ADB5" x="137" y="76" width="235" height="5" rx="2.5"></rect>
+                <rect id="Rectangle-Copy-3" fill="#FFFFFF" x="40" y="76" width="72" height="5" rx="2.5"></rect>
+                <rect id="Rectangle-Copy-4" fill="#00ADB5" x="81" y="126" width="72" height="5" rx="2.5"></rect>
+                <rect id="Rectangle" fill="#EAEAEA" x="159" y="43" width="278" height="138" rx="5"></rect>
+                <path d="M155.481223,41.8286991 L155.481223,68.8149566 C155.481223,70.6843542 156.524046,72.3976089 158.184566,73.2562817 L296.187541,144.619092 C297.628045,145.363992 299.340351,145.363992 300.780855,144.619092 L438.78383,73.2562817 C440.44435,72.3976089 441.487173,70.6843542 441.487173,68.8149566 L441.487173,41.8286991 C441.487173,39.0672754 439.248597,36.8286991 436.487173,36.8286991 L160.481223,36.8286991 C157.719799,36.8286991 155.481223,39.0672754 155.481223,41.8286991 Z" id="Path-4" fill="#FFFFFF"></path>
+                <g id="Group-2" transform="translate(369.000000, 0.000000)">
+                    <circle id="Oval" fill="#00ADB5" cx="54" cy="54" r="54"></circle>
+                    <path d="M54,12 C77.1574444,12 96,30.8425556 96,54 C96,77.1574444 77.1574444,96 54,96 C30.8425556,96 12,77.1574444 12,54 C12,30.8425556 30.8425556,12 54,12 Z M79.0289119,42.7373093 C80.2182486,41.5259748 80.0930553,39.6685953 78.760352,38.5875711 C77.4276487,37.5120529 75.3841703,37.6185035 74.2008914,38.829838 L50.3879067,63.1776608 L36.6307742,53.17681 C35.2435512,52.1655293 33.2081498,52.365583 32.0955445,53.6356488 C30.9768814,54.9038793 31.2050564,56.7539174 32.5922794,57.7651982 L48.7462586,69.5078011 C49.3459751,69.9391096 50.0567502,70.1538462 50.765506,70.1538462 C51.6580133,70.1538462 52.5485014,69.8161408 53.1886029,69.1645897 L79.0289119,42.7373093 Z" id="success-copy" fill="#78CDD1"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

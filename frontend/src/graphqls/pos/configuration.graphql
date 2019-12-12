@@ -1,0 +1,172 @@
+fragment posConfigFields on PosConfig {
+  id
+  name
+  stockLocation {
+    id
+    name
+  }
+  ifaceTaxIncluded
+  globalDiscount
+  discountProduct {
+    id
+    name
+  }
+  discountPc
+  usePricelist
+  availablePricelists {
+    id
+    name
+  }
+  pricelist {
+    id
+    name
+  }
+  restrictPriceControl
+  paymentMethods {
+    id
+    name
+  }
+  isHeaderOrFooter
+  receiptHeader
+  receiptFooter
+}
+
+query PosConfigs (
+  $filters: FilterablePosConfigsInput_where,
+  $limit: Int,
+  $offset: Int
+) {
+  posConfigs(input: {
+    where: $filters,
+    first: $limit,
+    offset: $offset
+  }) {
+    length
+    records {
+      id
+      name
+      stockLocation {
+        name
+      }
+    }
+  }
+}
+
+query PosConfigsDashboard (
+  $filters: FilterablePosConfigsInput_where,
+  $limit: Int,
+  $offset: Int
+) {
+  posConfigs(input: {
+    where: $filters,
+    first: $limit,
+    offset: $offset
+  }) {
+    length
+    records {
+      id
+      name
+      stockLocation {
+        name
+      }
+      currentSessionState
+      currentSessionId {
+        id
+        name
+      }
+      posSessionState
+      posSessionUsername
+    }
+  }
+}
+
+query PosConfig($input: PosConfigInput!) {
+  posConfig(input: $input) {
+    ...posConfigFields
+  }
+}
+
+mutation CreatePosConfig($input: CreateOrUpdatePosConfigInputType!) {
+  createPosConfig(input: $input) {
+    id
+  }
+}
+
+mutation UpdatePosConfig($input: CreateOrUpdatePosConfigInputType!) {
+  updatePosConfig(input: $input) {
+    success
+    posConfig {
+      ...posConfigFields
+    }
+  }
+}
+
+mutation DeletePosConfig($input: DeletePosConfigInputType!){
+  deletePosConfig(input: $input){
+    success
+  }
+}
+
+query AvailablePriceListsSelect(
+  $filters: FilterableAvailablePriceListsInput_where,
+  $limit: Int
+) {
+  availablePriceLists(input: {
+    where: $filters,
+    first: $limit
+  }) {
+    length
+    records {
+      id
+      displayName
+    }
+  }
+}
+
+query PaymentMethodsSelect(
+  $filters: FilterablePaymentMethodsInput_where,
+  $limit: Int
+) {
+  paymentMethods(input: {
+    where: $filters,
+    first: $limit
+  }) {
+    length
+    records {
+      id
+      displayName
+    }
+  }
+}
+
+query StockLocationsSelect(
+  $filters: FilterableStockLocationsInput_where,
+  $limit: Int
+) {
+  stockLocations(input: {
+    where: $filters,
+    first: $limit
+  }) {
+    length
+    records {
+      id
+      displayName
+    }
+  }
+}
+
+query DiscountProductsSelect(
+  $filters: FilterableDiscountProductsInput_where,
+  $limit: Int
+) {
+  discountProducts(input: {
+    where: $filters,
+    first: $limit
+  }) {
+    length
+    records {
+      id
+      displayName
+    }
+  }
+}

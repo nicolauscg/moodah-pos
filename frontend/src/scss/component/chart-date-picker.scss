@@ -1,0 +1,25 @@
+.chart-date-picker__container {
+  border: 1px solid #229cd6;
+  padding: 2px 8px;
+  border-radius: 4px;
+  min-height: 38px;
+  background-color: $color-light-blue;
+
+  .chart-date-picker__label {
+    font-family: $font-family;
+    font-weight: 400;
+    font-size: 13px;
+    color: $color-topbrand;
+  }
+
+  .chart-date-picker__input {
+    border: none;
+    font-family: $font-family;
+    background: transparent;
+    width: 100%;
+
+    &:focus {
+      outline: none;
+    }
+  }
+}

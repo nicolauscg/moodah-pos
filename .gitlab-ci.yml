@@ -1,0 +1,220 @@
+stages:
+  - test
+  - deploy backend
+  - release
+
+test frontend:
+  image: node:10.16.3-alpine
+  stage: test
+  script:
+    - cd frontend
+    - npm install
+    - npm run gql-gen
+    - npm run test -- --coverage
+  coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/
+
+test backend:
+  image: node:10.16.3-alpine
+  stage: test
+  script:
+    - cd backend
+    - npm install
+    - npm run lint
+    - npm run test -- --coverage
+  coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/
+
+release dev frontend:
+  image: docker:19.03.0
+  stage: release
+  tags:
+    - docker
+  services:
+    - name: docker:19.03.0-dind
+      entrypoint: ["env", "-u", "DOCKER_HOST"]
+      command: ["dockerd-entrypoint.sh"]
+  variables:
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: ""
+  before_script:
+    - sed -i 's#https://#http://#g' $HOME/.docker/config.json
+    - set | grep PROXY > ./env && set | grep proxy >> ./env
+  script:
+    - docker pull $CI_REGISTRY_IMAGE/dev/frontend:latest || true
+    - docker build 
+        --cache-from $CI_REGISTRY_IMAGE/dev/frontend:latest 
+        --tag $CI_REGISTRY_IMAGE/dev/frontend:latest ./frontend
+    - docker push $CI_REGISTRY_IMAGE/dev/frontend:latest
+  environment:
+    name: development
+  when: manual
+  except:
+    - master
+    - staging
+
+release stag frontend:
+  image: docker:19.03.0
+  stage: release
+  tags:
+    - docker
+  services:
+    - name: docker:19.03.0-dind
+      entrypoint: ["env", "-u", "DOCKER_HOST"]
+      command: ["dockerd-entrypoint.sh"]
+  variables:
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: ""
+  before_script:
+    - sed -i 's#https://#http://#g' $HOME/.docker/config.json
+    - set | grep PROXY > ./env && set | grep proxy >> ./env
+  script:
+    - docker pull $CI_REGISTRY_IMAGE/stag/frontend:latest || true
+    - docker build 
+        --cache-from $CI_REGISTRY_IMAGE/stag/frontend:latest 
+        --tag $CI_REGISTRY_IMAGE/stag/frontend:latest ./frontend
+    - docker push $CI_REGISTRY_IMAGE/stag/frontend:latest
+  environment:
+    name: staging
+  only:
+    refs:
+      - staging
+
+release prod frontend:
+  image: docker:19.03.0
+  stage: release
+  tags:
+    - docker
+  services:
+    - name: docker:19.03.0-dind
+      entrypoint: ["env", "-u", "DOCKER_HOST"]
+      command: ["dockerd-entrypoint.sh"]
+  variables:
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: ""
+  before_script:
+    - sed -i 's#https://#http://#g' $HOME/.docker/config.json
+    - set | grep PROXY > ./env && set | grep proxy >> ./env
+  script:
+    - docker pull $CI_REGISTRY_IMAGE/prod/frontend:latest || true
+    - docker build 
+        --cache-from $CI_REGISTRY_IMAGE/prod/frontend:latest 
+        --tag $CI_REGISTRY_IMAGE/prod/frontend:latest ./frontend
+    - docker push $CI_REGISTRY_IMAGE/prod/frontend:latest
+  environment:
+    name: production
+  only:
+    refs:
+      - master
+
+deploy dev backend:
+  image: node:10.16.3-alpine
+  stage: release
+  variables:
+    STAGE: dev
+  script:
+    - cd backend
+    - npm install
+    - npm install -g serverless
+    - serverless deploy --stage $STAGE --verbose
+  environment:
+    name: development
+  when: manual
+  only:
+    changes:
+      - backend/serverless.yml
+  except:
+    - master
+    - staging
+
+deploy stag backend:
+  image: node:10.16.3-alpine
+  stage: release
+  variables:
+    STAGE: stag
+  script:
+    - cd backend
+    - npm install
+    - npm install -g serverless
+    - serverless deploy --stage $STAGE --verbose
+  environment:
+    name: staging
+  only:
+    refs:
+      - staging
+    changes:
+      - backend/serverless.yml
+
+deploy prod backend:
+  image: node:10.16.3-alpine
+  stage: release
+  variables:
+    STAGE: prod
+  script:
+    - cd backend
+    - npm install
+    - npm install -g serverless
+    - serverless deploy --stage $STAGE --verbose
+  environment:
+    name: production
+  only:
+    refs:
+      - master
+    changes:
+      - backend/serverless.yml
+
+update dev backend functions:
+  image: node:10.16.3-alpine
+  stage: release
+  variables:
+    STAGE: dev
+  script:
+    - cd backend
+    - npm install
+    - npm install -g serverless
+    - serverless deploy function --function graphql --stage $STAGE --verbose
+    - serverless deploy function --function playground --stage $STAGE --verbose
+    - serverless deploy function --function graphql-introspect --stage $STAGE --verbose
+  environment:
+    name: development
+  when: manual
+  except:
+    - master
+    - staging
+
+update stag backend functions:
+  image: node:10.16.3-alpine
+  stage: release
+  variables:
+    STAGE: stag
+  script:
+    - cd backend
+    - npm install
+    - npm install -g serverless
+    - serverless deploy function --function graphql --stage $STAGE --verbose
+    - serverless deploy function --function playground --stage $STAGE --verbose
+    - serverless deploy function --function graphql-introspect --stage $STAGE --verbose
+  environment:
+    name: staging
+  only:
+    refs:
+      - staging
+
+update prod backend functions:
+  image: node:10.16.3-alpine
+  stage: release
+  variables:
+    STAGE: prod
+  script:
+    - cd backend
+    - npm install
+    - npm install -g serverless
+    - serverless deploy function --function graphql --stage $STAGE --verbose
+    - serverless deploy function --function playground --stage $STAGE --verbose
+    - serverless deploy function --function graphql-introspect --stage $STAGE --verbose
+  environment:
+    name: production
+  only:
+    refs:
+      - master

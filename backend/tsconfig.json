@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "lib": [
+      "es2017",
+      "dom"
+    ],
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "target": "es2017",
+    "outDir": "lib"
+  },
+  "exclude": [
+    "node_modules",
+    "tests",
+    ".serverless",
+    ".vscode",
+    ".webpack"
+  ]
+}

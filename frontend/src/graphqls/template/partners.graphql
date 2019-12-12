@@ -1,0 +1,227 @@
+fragment partnerFormFields on ResPartner {
+  id
+  active
+  name
+  customer
+  supplier
+  email
+  phone
+  vat
+  website
+  countryId {
+    id
+    name
+  }
+  stateId {
+    id
+    name
+  }
+  city
+  street
+  zip
+  childIds(where: { type_in: ["invoice", "delivery"] }, first: 0) {
+    partnerChildIds {
+      id
+      countryId {
+        id
+        name
+      }
+      stateId {
+        id
+        name
+      }
+      city
+      street
+      zip
+      phone
+      email
+      type {
+        value
+        label
+        selected
+      }
+      supplier
+      customer
+    }
+  }
+  userId {
+    id
+    name
+  }
+  propertyPaymentTermId {
+    id
+    name
+  }
+  propertySupplierPaymentTermId {
+    id
+    name
+  }
+  propertyProductPricelist {
+    id
+    displayName
+  }
+  invoiceWarn {
+    value
+    label
+    selected
+  }
+  pickingWarn {
+    value
+    label
+    selected
+  }
+  purchaseWarn {
+    value
+    label
+    selected
+  }
+  saleWarn {
+    value
+    label
+    selected
+  }
+}
+
+query ResPartners(
+  $filters: WhereResPartnerInput
+  $limit: Int
+  $offset: String
+) {
+  resPartners(where: $filters, first: $limit, after: $offset) {
+    partners {
+      id
+      name
+      email
+      phone
+      active
+      customer
+      supplier
+    }
+    totalCount
+  }
+}
+
+query ResPartner($id: GlobalIdInput) {
+  resPartner(id: $id) {
+    ...partnerFormFields
+  }
+}
+
+query ResPartnerContacts(
+  $id: GlobalIdInput
+  $limit: Int
+  $offset: String
+  $keyword: String
+) {
+  resPartners(
+    after: $offset
+    first: $limit
+    where: {
+      parentId_relation: { id: $id }
+      type: "contact"
+      active: true
+      name_contains: $keyword
+    }
+  ) {
+    partners {
+      id
+      name
+      email
+      function
+      phone
+      active
+    }
+    totalCount
+  }
+}
+
+query PartnerFormQuery(
+  $paymentTermFilters: WhereAccountPaymentTermInput
+  $userFilters: WhereResUsersInput
+  $productPricelistFilters: WhereProductPricelistInput
+) {
+  paymentTerms(where: $paymentTermFilters) {
+    paymentTerms {
+      id
+      name
+    }
+  }
+
+  users(where: $userFilters) {
+    users {
+      id
+      name
+    }
+  }
+
+  productPricelists(where: $productPricelistFilters) {
+    productPricelists {
+      id
+      displayName
+    }
+  }
+}
+
+query ResCountries($filters: WhereResCountryInput) {
+  resCountries(where: $filters) {
+    resCountries {
+      id
+      name
+    }
+  }
+}
+
+query ResCountryStates($filters: WhereResCountryStateInput) {
+  resCountryStates(where: $filters) {
+    resCountryStates {
+      id
+      name
+    }
+  }
+}
+
+mutation getDefaultPartner {
+  initResPartner {
+    invoiceWarn {
+      value
+      label
+      selected
+    }
+    pickingWarn {
+      value
+      label
+      selected
+    }
+    purchaseWarn {
+      value
+      label
+      selected
+    }
+    saleWarn {
+      value
+      label
+      selected
+    }
+    propertyAccountPayableId {
+      id
+      name
+    }
+    propertyAccountReceivableId {
+      id
+      name
+    }
+  }
+}
+
+mutation createResPartner($vals: CreateResPartnerInput!) {
+  createResPartner(input: $vals) {
+    id
+    name
+  }
+}
+
+mutation editResPartner($vals: EditResPartnerInput!) {
+  editResPartner(input: $vals) {
+    ...partnerFormFields
+  }
+}

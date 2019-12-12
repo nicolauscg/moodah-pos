@@ -1,0 +1,28 @@
+.breadcrumb {
+  font-weight: 300;
+  padding-left: 0;
+
+  .breadcrumb-item {
+    color: $color-greyish;
+
+    a {
+      color: $color-topbrand;
+      font-size: 18px;
+      font-family: $font-family;
+    }
+
+    span {
+      font-size: 18px;
+      font-family: $font-family;
+    }
+  }
+
+  .breadcrumb-item + .breadcrumb-item:before {
+    content: '>';
+    padding-right: 0.75rem;
+  }
+
+  .breadcrumb-item + .breadcrumb-item {
+    padding-left: 0.75rem;
+  }
+}

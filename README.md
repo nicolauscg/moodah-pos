@@ -4,31 +4,43 @@ IT Project Fasilkom UI 2019 - Group 2
 --------------------
 
 # About Project
-<blockquote>
+
 The project is to create Moodah POS (Point of Sale). The product itself will be a Receipt-like Transaction. And the transaction will be stored in the database. 
-</blockquote>
 
 # Product Target
-<blockquote>
+
 The target is for business owner who wants to track their sales transaction easily. The cashier will use the product to make sales transaction. 
-</blockquote>
 
 # Technology Stack
-<blockquote>
 
 - Nodejs
 - React (HOC, Hooks, Apollo)
 - GraphQL
-</blockquote>
 
 # Brief Instructions
-<blockquote>
-Briefly explain installation/setup steps if the product is mobile/desktop app.
+
+running backend development
+
+```
+cd backend
+npm install
+npm install -g serverless
+serverless offline --port 3001
+```
+
+running frontend development
+
+```
+cd frontend
+npm install
+npm run develop
+```
+
+website link
 
 - [dev](https://itprojectkitwo-dev.cs.ui.ac.id)
 - [staging](https://itprojectkitwo-staging.cs.ui.ac.id)
 - [production](https://itprojectkitwo.cs.ui.ac.id)
-</blockquote>
 
 # Team Members
 - Muhamad Andhar Dezan (1506791775)

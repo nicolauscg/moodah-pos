@@ -1,0 +1,14 @@
+query AddOnInstalled {
+  irModuleModules(
+    first: null
+    where: {
+      name_in: ["moodah_timber_menu"]
+      state_in: ["installed"]
+    }) {
+    irModuleModules {
+      id
+      name
+    }
+    totalCount
+  }
+}

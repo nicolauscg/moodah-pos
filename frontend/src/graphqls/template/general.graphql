@@ -1,0 +1,20 @@
+########################
+# Meta
+########################
+query UserInfo {
+  sessionInfo {
+    uid
+    name
+    username
+    db
+    companyId {
+      id
+      validDate
+      userPlan {
+        value
+        label
+        selected
+      }
+    }
+  }
+}
