@@ -33,10 +33,10 @@ const GET_POS_SESSION = id => gql`
   }
 `;
 
-function getUserQuery(id: string) {
+function getUserQuery(id: number) {
   return gql`
     query {
-      getUserInfo(input: { id: "${id}" }) {
+      getUserInfo(input: { id: ${id} }) {
         id
         name
         function

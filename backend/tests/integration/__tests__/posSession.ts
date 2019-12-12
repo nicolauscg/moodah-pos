@@ -33,7 +33,7 @@ describe("Pos Session Query", () => {
     const server = createTestServer();
     const { query } = createTestClient(server);
     const res = await query({
-      query: posSessionRequests.getUserQuery("cG9zLnNlc3Npb246MQ==")
+      query: posSessionRequests.getUserQuery(1)
     });
     expect(res.errors).toEqual(expect.anything());
   });
@@ -43,7 +43,7 @@ describe("Pos Session Query", () => {
       signInGql: posSessionRequests.SIGN_IN
     });
     // Id is set as natural number, -1 will always be wrong id
-    const WRONG_ID = "-1";
+    const WRONG_ID = -1;
     const { query } = createTestClient(server);
     const GET_POS_SESSION = posSessionRequests.getUserQuery(WRONG_ID);
     const res = await query({ query: GET_POS_SESSION });
@@ -55,9 +55,7 @@ describe("Pos Session Query", () => {
       signInGql: posSessionRequests.SIGN_IN
     });
     const { query } = createTestClient(server);
-    const GET_POS_SESSION = posSessionRequests.getUserQuery(
-      "cG9zLnNlc3Npb246MQ=="
-    );
+    const GET_POS_SESSION = posSessionRequests.getUserQuery(1);
     const res = await query({ query: GET_POS_SESSION });
     expect(res.data.getUserInfo).not.toBeNull();
     if (res.data.getUserInfo.company) {
