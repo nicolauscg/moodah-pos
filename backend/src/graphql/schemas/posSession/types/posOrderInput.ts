@@ -4,6 +4,7 @@ import {
   GraphQLInt,
   GraphQLList
 } from "graphql";
+import { GlobalIdInput } from "../../utility/types/globalIdInput";
 
 const OrdersType = new GraphQLInputObjectType({
   name: "PosOrder_Orders",
@@ -18,10 +19,7 @@ const OrdersType = new GraphQLInputObjectType({
       type: GraphQLInt
     },
     productId: {
-      type: GraphQLInt
-    },
-    taxIds: {
-      type: GraphQLInt
+      type: GlobalIdInput
     },
     id: {
       type: GraphQLInt
@@ -33,13 +31,13 @@ const statementType = new GraphQLInputObjectType({
   name: "statementType",
   fields: () => ({
     statementId: {
-      type: GraphQLInt
+      type: GlobalIdInput
     },
     accountId: {
-      type: GraphQLInt
+      type: GlobalIdInput
     },
     journalId: {
-      type: GraphQLInt
+      type: GlobalIdInput
     },
     amount: {
       type: GraphQLInt
@@ -69,13 +67,13 @@ const PosOrderDataType = new GraphQLInputObjectType({
       type: statementType
     },
     posSessionId: {
-      type: GraphQLInt
+      type: GlobalIdInput
     },
     pricelistId: {
-      type: GraphQLInt
+      type: GlobalIdInput
     },
     userId: {
-      type: GraphQLInt
+      type: GlobalIdInput
     },
     sequenceNumber: {
       type: GraphQLInt
