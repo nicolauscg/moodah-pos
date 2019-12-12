@@ -1,181 +1,173 @@
-import React, { Fragment } from 'react'
-import { Route, Switch } from 'react-router-dom'
-import { compose, withHandlers } from 'recompose'
-import { Helmet } from 'react-helmet'
+import React, { Fragment } from "react";
+import { Route, Switch } from "react-router-dom";
+import { compose, withHandlers } from "recompose";
+import { Helmet } from "react-helmet";
 
-import Layout from '../_layout/index'
-import MainWrapper from './MainWrapper'
-import AuthRoute from './AuthRoute'
-import LogIn from '../authentication/index'
-import ForgotPassword from '../authentication/ForgotPassword'
-import CreatePassword from '../authentication/CreatePassword'
-import ForceLogout from '../authentication/ForceLogout'
-import PartnerIndex from '../partners/index'
-import CreatePartner from '../partners/CreatePartner'
-import EditPartner from '../partners/EditPartner'
-import AccountSettings from '../account_settings/index'
-import withTracker from '../../shared/components/withTracker'
-import withStandardPlanHandler from '../../shared/components/withStandardPlanHandler'
+import Layout from "../_layout/index";
+import MainWrapper from "./MainWrapper";
+import AuthRoute from "./AuthRoute";
+import LogIn from "../authentication/index";
+import ForgotPassword from "../authentication/ForgotPassword";
+import CreatePassword from "../authentication/CreatePassword";
+import ForceLogout from "../authentication/ForceLogout";
+import PartnerIndex from "../partners/index";
+import CreatePartner from "../partners/CreatePartner";
+import EditPartner from "../partners/EditPartner";
+import AccountSettings from "../account_settings/index";
+import withTracker from "../../shared/components/withTracker";
+import withStandardPlanHandler from "../../shared/components/withStandardPlanHandler";
 
-import DashboardIndex from '../dashboard/index'
+import DashboardIndex from "../dashboard/index";
 
-import CategoryIndex from '../category/index'
-import CreateCategory from '../category/CreateCategory'
-import EditCategory from '../category/EditCategory'
+import CategoryIndex from "../category/index";
+import CreateCategory from "../category/CreateCategory";
+import EditCategory from "../category/EditCategory";
 
-import ConfigurationIndex from '../configuration/index'
-import CreateConfiguration from '../configuration/CreateConfiguration'
-import EditConfiguration from '../configuration/EditConfiguration'
+import ConfigurationIndex from "../configuration/index";
+import CreateConfiguration from "../configuration/CreateConfiguration";
+import EditConfiguration from "../configuration/EditConfiguration";
 
-import CreateProduct from '../product/CreateProduct'
-import ProductIndex from '../product/index'
-import EditProduct from '../product/EditProduct'
+import CreateProduct from "../product/CreateProduct";
+import ProductIndex from "../product/index";
+import EditProduct from "../product/EditProduct";
 
-import Pos_SessionIndex from '../pos_session/index'
+import DashboardSession from "../session/session";
 
 const RouteList = {
   Partners: {
-    path: '/partners',
-    title: 'Mitra',
+    path: "/partners",
+    title: "Mitra",
     component: [
       {
-        path: '/partners/list',
-        component: PartnerIndex,
+        path: "/partners/list",
+        component: PartnerIndex
       },
       {
-        path: '/partners/create',
-        component: CreatePartner,
+        path: "/partners/create",
+        component: CreatePartner
       },
       {
-        path: '/partners/details/:id',
-        component: EditPartner,
-      },
-    ],
+        path: "/partners/details/:id",
+        component: EditPartner
+      }
+    ]
   },
 
   Dashboard: {
-    path: '/dashboard',
-    title: 'Dashboard',
+    path: "/dashboard",
+    title: "Dashboard",
     component: [
       {
-        path: '/dashboard/list',
+        path: "/dashboard/list",
         component: DashboardIndex
       }
     ]
   },
 
   Configuration: {
-    path: '/configuration',
-    title: 'Configuration',
+    path: "/configuration",
+    title: "Configuration",
     component: [
       {
-        path: '/configuration/list',
+        path: "/configuration/list",
         component: ConfigurationIndex
       },
       {
-        path: '/configuration/create',
+        path: "/configuration/create",
         component: CreateConfiguration
       },
       {
-        path: '/configuration/details/:id',
+        path: "/configuration/details/:id",
         component: EditConfiguration
+      },
+      {
+        path: "/configuration/:configId/session/:sessionId",
+        component: DashboardSession
       }
     ]
   },
 
   Category: {
-    path: '/category',
-    title: 'Product Category',
+    path: "/category",
+    title: "Product Category",
     component: [
       {
-        path: '/category/list',
+        path: "/category/list",
         component: CategoryIndex
       },
       {
-        path: '/category/create',
+        path: "/category/create",
         component: CreateCategory
       },
       {
-        path: '/category/details/:id',
+        path: "/category/details/:id",
         component: EditCategory
       }
     ]
   },
 
   Product: {
-    path: '/product',
-    title: 'Product',
+    path: "/product",
+    title: "Product",
     component: [
       {
-        path: '/product/list',
+        path: "/product/list",
         component: ProductIndex
       },
       {
-        path: '/product/create',
+        path: "/product/create",
         component: CreateProduct
       },
       {
-        path: '/product/details/:id',
+        path: "/product/details/:id",
         component: EditProduct
       }
     ]
   },
 
-  Session: {
-        path: '/pos_session',
-        title: 'POS Session',
-        component: [
-          {
-            path: '/pos_session/list',
-            component: Pos_SessionIndex,
-          },
-        ],
-    },
-
-
   AccountSettings: {
-    path: '/account_settings',
+    path: "/account_settings",
     component: [
       {
-        path: '/account_settings',
-        component: AccountSettings,
-      },
-    ],
-  },
-}
+        path: "/account_settings",
+        component: AccountSettings
+      }
+    ]
+  }
+};
 
 const wrappedRoutes = compose(
   withHandlers({
     routeComponents: () => (component, metaTitle) => {
       const routes = component.map((value, idx) => {
-        const { component: Comp } = value
+        const { component: Comp } = value;
         return (
           <Route
             exact
             key={idx}
             path={value.path}
             render={withStandardPlanHandler(routeProps => {
-              const title = value.title || metaTitle
+              const title = value.title || metaTitle;
               return (
                 <Fragment>
                   <Helmet>
-                    <title>{title ? `${title} - Moodah` : 'Moodah'}</title>
+                    <title>{title ? `${title} - Moodah` : "Moodah"}</title>
                   </Helmet>
                   <Comp {...routeProps} />
                 </Fragment>
-              )
+              );
             })}
           />
-        )
-      })
+        );
+      });
 
-      return <Switch>{routes}</Switch>
-    },
+      return <Switch>{routes}</Switch>;
+    }
   }),
   withHandlers({
     RenderRoute: ({ routeComponents }) => () => {
       return Object.keys(RouteList).map((name, idx) => {
-        const { component, ...rest } = RouteList[name]
+        const { component, ...rest } = RouteList[name];
 
         return (
           <Route
@@ -185,29 +177,37 @@ const wrappedRoutes = compose(
                 <Fragment>
                   <Helmet>
                     <title>
-                      {rest.title ? `${rest.title} - Moodah` : 'Moodah'}
+                      {rest.title ? `${rest.title} - Moodah` : "Moodah"}
                     </title>
                   </Helmet>
                   {routeComponents(component, rest.title)}
                 </Fragment>
-              )
+              );
             })}
             {...rest}
           />
-        )
-      })
-    },
+        );
+      });
+    }
   })
-)(({ RenderRoute }) => {
+)(({ RenderRoute, location }) => {
+  const isShowTopSideBar = !new RegExp("/session/").test(location.pathname);
+
   return (
     <div>
-      <Layout />
-      <div className="container__wrap">
+      {isShowTopSideBar ? (
+        <>
+          <Layout />
+          <div className="container__wrap">
+            <RenderRoute />
+          </div>
+        </>
+      ) : (
         <RenderRoute />
-      </div>
+      )}
     </div>
-  )
-})
+  );
+});
 
 const Router = () => (
   <MainWrapper>
@@ -226,6 +226,6 @@ const Router = () => (
       </Switch>
     </main>
   </MainWrapper>
-)
+);
 
-export default Router
+export default Router;
