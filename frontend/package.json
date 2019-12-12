@@ -79,6 +79,7 @@
     "react-smooth-scrollbar": "^8.0.6",
     "react-sticky-box": "^0.7.5",
     "react-swipeable-views": "^0.13.3",
+    "react-to-print": "^2.5.0",
     "react-vis": "^1.11.2",
     "react-youtube": "^7.9.0",
     "reactstrap": "^6.4.0",

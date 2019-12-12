@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { connect } from "react-redux";
 import { Row, Container, Col } from "reactstrap";
 import {
@@ -18,9 +18,11 @@ import {
   withHandlers,
   withState,
   withPropsOnChange,
-  getContext
+  getContext,
+  lifecycle
 } from "recompose";
 import * as R from "ramda";
+import ReactToPrint from "react-to-print";
 var moment = require("moment");
 
 import { addNotif } from "../../redux/modules/general";
@@ -511,7 +513,6 @@ const CurrentItemsInOrderSection = ({
 
 const ValidationSection = ({
   classes,
-  toReceiptMenu,
   getTotal,
   bankStatementRecords,
   tenderedValue,
@@ -524,7 +525,7 @@ const ValidationSection = ({
 }) => {
   return (
     <>
-      <Row className="justify-content-between mb-2 pr-3">
+      <Paper elevation={0} className="d-flex justify-content-between mb-2">
         <div className="mb-4" className={classes.flexBasis25}>
           <Typography variant="body1" component="p">
             Due
@@ -553,7 +554,7 @@ const ValidationSection = ({
             {R.pathOr("-", ["journal", "name"], bankStatement)}
           </Typography>
         </div>
-      </Row>
+      </Paper>
       <div className="mb-3 d-flex align-items-stretch flex-grow">
         <Col xs={12} className="px-3 py-2 d-flex flex-column">
           <Row
@@ -618,6 +619,7 @@ const ReceiptSection = ({
   toNextOrder,
   tenderedValue,
   getTotal,
+  getSubtotal,
   profileInfo,
   itemsToOrder,
   bankStatement,
@@ -626,6 +628,8 @@ const ReceiptSection = ({
   ordersCreated,
   discountValue
 }) => {
+  const receiptRef = useRef();
+
   return (
     <>
       <Paper classes={{ root: classes.secondaryBg }} className="mb-4 px-5 pt-2">
@@ -650,6 +654,7 @@ const ReceiptSection = ({
       >
         <Col xs={12} className={`px-5 py-2 d-flex flex-column`}>
           <OrderReceiptCard
+            ref={receiptRef}
             date={moment(new Date()).format("DD/MM/YY HH.mm")}
             orderName={`Order ${moment(new Date()).format(
               "DD/MM/YY HH.mm"
@@ -661,7 +666,9 @@ const ReceiptSection = ({
             items={R.concat(itemsToOrder, [
               {
                 qty: 1,
-                priceUnit: (-1 * getTotal() * parseInt(discountValue)) / 100,
+                priceUnit: Math.round(
+                  (-1 * getSubtotal() * parseInt(discountValue)) / 100
+                ),
                 name: "Miscellaneous",
                 productId: "cHJvZHVjdC50ZW1wbGF0ZTo1"
               }
@@ -674,14 +681,19 @@ const ReceiptSection = ({
           />
         </Col>
       </Paper>
-      <Button
-        variant="contained"
-        className={`${classes.secondaryContainedButton} mt-3 py-2`}
-      >
-        <Typography variant="h5" component="h3">
-          Print Receipt
-        </Typography>
-      </Button>
+      <ReactToPrint
+        trigger={() => (
+          <Button
+            variant="contained"
+            className={`${classes.secondaryContainedButton} mt-3 py-2`}
+          >
+            <Typography variant="h5" component="h3">
+              Print Receipt
+            </Typography>
+          </Button>
+        )}
+        content={() => receiptRef.current}
+      />
       <Button
         variant="contained"
         className={`${classes.primaryContainedButton} mt-3 py-2`}
@@ -745,7 +757,8 @@ const Session = props => {
     userInfo,
     loadingCreateOrder,
     loadingClose,
-    sessionSummary
+    sessionSummary,
+    localTime
   } = props;
   const { loading: loadingCategories, posCategories } = categories;
   const { loading: loadingProducts, posProducts } = products;
@@ -803,12 +816,12 @@ const Session = props => {
               </div>
             )}
             <div className="text-right mr-2 flex-grow">
-              <h3>{moment(new Date()).format("dddd D MMMM YYYY, H.mm")}</h3>
+              <h3>{localTime.format("dddd D MMMM YYYY, H:mm")}</h3>
               <h4>
                 Shift Started at{" "}
                 {moment(new Date(posSession.startSession))
                   .add(7, "h")
-                  .format("H.mm")}
+                  .format("H:mm")}
               </h4>
             </div>
           </Row>
@@ -871,6 +884,20 @@ const SessionPage = compose(
   withState("tenderedValue", "setTenderedValue", "0"),
   withState("bankStatement", "setBankStatement", null),
   withState("ordersCreated", "setOrdersCreated", 0),
+  withState("localTime", "setLocalTime", moment(new Date())),
+  lifecycle({
+    componentDidMount() {
+      const { setLocalTime } = this.props;
+      const localTimeInterval = setInterval(
+        () => setLocalTime(moment(new Date())),
+        60000
+      );
+      this.setState({ localTimeInterval });
+    },
+    componentWillUnmount() {
+      clearInterval(this.localTimeInterval);
+    }
+  }),
   WrappedComp => props => (
     <CloseSession.Component onError={props.onError}>
       {(closeSession, { loading }) => (
@@ -1125,6 +1152,7 @@ const SessionPage = compose(
     createOrderFromState: ({
       createOrder,
       getTotal,
+      getSubtotal,
       tenderedValue,
       itemsToOrder,
       match,
@@ -1155,7 +1183,9 @@ const SessionPage = compose(
             R.concat(itemsToOrder, [
               {
                 qty: 1,
-                priceUnit: (-1 * getTotal() * parseInt(discountValue)) / 100,
+                priceUnit: Math.round(
+                  (-1 * getSubtotal() * parseInt(discountValue)) / 100
+                ),
                 productId: "cHJvZHVjdC50ZW1wbGF0ZTo1",
                 id: getIdCounter()
               }
