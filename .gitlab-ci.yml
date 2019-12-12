@@ -12,10 +12,6 @@ test frontend:
     - npm run gql-gen
     - npm run test -- --coverage
   coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/
-  only:
-    changes:
-      - frontend/**/*
-      - .gitlab-ci.yml
 
 test backend:
   image: node:10.16.3-alpine
@@ -26,10 +22,6 @@ test backend:
     - npm run lint
     - npm run test -- --coverage
   coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/
-  only:
-    changes:
-      - backend/**/*
-      - .gitlab-ci.yml
 
 release dev frontend:
   image: docker:19.03.0
@@ -56,10 +48,6 @@ release dev frontend:
   environment:
     name: development
   when: manual
-  only:
-    changes:
-      - frontend/**/*
-      - .gitlab-ci.yml
   except:
     - master
     - staging
@@ -91,9 +79,6 @@ release stag frontend:
   only:
     refs:
       - staging
-    changes:
-      - frontend/**/*
-      - .gitlab-ci.yml
 
 release prod frontend:
   image: docker:19.03.0
@@ -122,9 +107,6 @@ release prod frontend:
   only:
     refs:
       - master
-    changes:
-      - frontend/**/*
-      - .gitlab-ci.yml
 
 deploy dev backend:
   image: node:10.16.3-alpine
@@ -197,10 +179,6 @@ update dev backend functions:
   environment:
     name: development
   when: manual
-  only:
-    changes:
-      - backend/**/*
-      - .gitlab-ci.yml
   except:
     - master
     - staging
@@ -222,9 +200,6 @@ update stag backend functions:
   only:
     refs:
       - staging
-    changes:
-      - backend/**/*
-      - .gitlab-ci.yml
 
 update prod backend functions:
   image: node:10.16.3-alpine
@@ -243,6 +218,3 @@ update prod backend functions:
   only:
     refs:
       - master
-    changes:
-      - backend/**/*
-      - .gitlab-ci.yml

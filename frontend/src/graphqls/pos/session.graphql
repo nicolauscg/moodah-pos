@@ -1,7 +1,7 @@
 mutation OpenSession(
   $id: GlobalIdInput
 ) {
-  openSession (input:{
+  openSession (input: {
     id: $id
   }) {
     sessionId
@@ -15,5 +15,145 @@ mutation CloseSession(
     id: $id
   }) {
     success
+  }
+}
+
+query SessionCategories {
+  posCategories(input: {
+    first: 0
+  }) {
+    records {
+      id
+      name
+      image
+    }
+  }
+}
+
+query SessionProducts {
+  posProducts(input: {
+    first: 0
+  }) {
+    records {
+      id
+      name
+      salesPrice
+      image
+    }
+  }
+}
+
+query SessionPosConfig(
+  $id: GlobalIdInput
+) {
+  posConfig(input: {
+    id: $id
+  }) {
+    receiptHeader
+    receiptFooter
+    pricelist {
+      id
+    }
+  }
+}
+
+query AccountBankStatements(
+  $id: GlobalIdInput
+){
+  accountBankStatement(input: {
+    id: $id
+  }){
+    records {
+      id
+      account {
+        id
+      }
+      journal {
+        id
+        name
+      }
+      user {
+        id
+      }
+    }
+  }
+}
+
+query SessionInfo(
+  $id: GlobalIdInput
+){
+  posSession(input: {
+    id: $id
+  }) {
+    startSession
+    sequenceNumber
+  }
+}
+
+query UserInfo(
+  $id: Int
+){
+  getUserInfo(input: {
+    id: $id
+  }) {
+    name
+    company {
+      name
+    }
+    function
+    image
+  }
+}
+
+query SessionSummary(
+  $id: GlobalIdInput
+){
+  posSessionSummary(input: {
+    id: $id
+  }) {
+    totalNetSale
+    transactions
+    averageOrderValue
+  }
+} 
+
+mutation CreateOrder(
+  $id: String
+  $amountPaid: Int
+  $amountTotal: Int
+  $amountReturn: Int
+  $items: [PosOrder_Orders]
+  $statementId: GlobalIdInput
+  $accountId: GlobalIdInput
+  $journalId: GlobalIdInput
+  $sessionId: GlobalIdInput
+  $pricelistId: GlobalIdInput
+  $userId: Int
+  $sequenceNumber: Int
+) {
+  posOrder (
+    input: {
+      id: $id
+      data: {
+        amountPaid: $amountPaid
+        amountTotal: $amountTotal
+        amountTax: 0
+        amountReturn: $amountReturn
+        lines: $items
+        statementIds: {
+          statementId: $statementId
+          accountId: $accountId
+          journalId: $journalId
+          amount: $amountPaid
+        }
+        posSessionId: $sessionId
+        pricelistId: $pricelistId
+        userId: $userId
+        sequenceNumber: $sequenceNumber
+      }
+    }
+  )
+  {
+    result
   }
 }

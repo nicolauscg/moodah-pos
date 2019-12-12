@@ -62,6 +62,7 @@ query PosConfigsDashboard (
     first: $limit,
     offset: $offset
   }) {
+    length
     records {
       id
       name
