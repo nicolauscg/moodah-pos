@@ -266,7 +266,7 @@ const posSessionQueries = new GraphQLObjectType({
                         ? summaryResult.totalNetSale /
                           summaryResult.transactions
                         : 0;
-                    summaryResult.averageOrderValue = averageResult;
+                    summaryResult.averageOrderValue = Math.round(averageResult);
 
                     res(summaryResult);
                   }
