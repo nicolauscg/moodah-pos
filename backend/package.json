@@ -24,7 +24,7 @@
     "@types/moment": "^2.13.0",
     "apollo-server-lambda": "^2.3.1",
     "artillery": "^1.6.0-29",
-    "aws-lambda": "^0.1.2",
+    "aws-lambda": "^1.0.5",
     "btoa": "^1.2.1",
     "dataloader": "^1.4.0",
     "date-fns": "^1.30.1",
