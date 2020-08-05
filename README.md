@@ -1,9 +1,8 @@
-# Hello World!
-IT Project Fasilkom UI 2019 - Group 2
+# Software Engineering Project - Moodah POS
 
---------------------
+University of Indonesia Faculty of Computer Science Software Engineering Project Course 2019 - Group 2
 
-# About Project
+## About
 
 The project is to create Moodah POS (Point of Sale). The product itself will be a Receipt-like Transaction. And the transaction will be stored in the database. 
 
@@ -51,4 +50,4 @@ website link
 - Aufa Wiandra Moenzil (1706067512)
 
 # Further Information
-You can access our [GitLab Wiki](https://gitlab.cs.ui.ac.id/it-project-kki/2019/rubyh-moodah-pos/wikis/home) for more information regarding this project.
+You can access our [GitLab Wiki](https://gitlab.cs.ui.ac.id/it-project-kki/2019/rubyh-moodah-pos/wikis/home) for more information regarding this project or read our blog posts at [medium](https://medium.com/moodah-pos).
